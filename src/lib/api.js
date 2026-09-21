@@ -1,5 +1,5 @@
 // Set per environment: .env.development locally, Vercel env vars in production
-export const API_URL = (import.meta.env.VITE_API_URL ?? "").replace(/\/+$/, "");
+export const API_URL = (import.meta.env.API_URL ?? "").replace(/\/+$/, "");
 
 export const buildQuery = (params) => {
   const query = new URLSearchParams();
@@ -17,7 +17,7 @@ export const buildQuery = (params) => {
 // GET a JSON endpoint; throws an Error with the API's message on failure
 export async function apiGet(path, { signal } = {}) {
   if (!API_URL) {
-    throw new Error("The API URL is not configured (VITE_API_URL).");
+    throw new Error("The API URL is not configured (API_URL).");
   }
 
   const response = await fetch(`${API_URL}${path}`, { signal });

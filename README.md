@@ -23,13 +23,13 @@ uvicorn app.main:app --reload
 
 ## Environment variables
 
-| Variable       | Description                                         | Example                   |
-| -------------- | --------------------------------------------------- | ------------------------- |
-| `VITE_API_URL` | Base URL of the FastAPI backend, no trailing slash. | `https://api.example.com` |
+| Variable  | Description                                         | Example                   |
+| --------- | --------------------------------------------------- | ------------------------- |
+| `API_URL` | Base URL of the FastAPI backend, no trailing slash. | `https://api.example.com` |
 
-Vite inlines `VITE_*` variables **at build time**. After changing the value
+Vite inlines `API_URL` (exposed via `envPrefix` in `vite.config.js`) **at build time**. After changing the value
 in Vercel, redeploy for it to take effect. If it's missing, the app still
-loads, but searches show "The API URL is not configured (VITE_API_URL)."
+loads, but searches show "The API URL is not configured (API_URL)."
 
 See `.env.example`. For local overrides, create `.env.local` (git-ignored).
 
@@ -39,7 +39,7 @@ See `.env.example`. For local overrides, create `.env.local` (git-ignored).
 2. Set **Root Directory** to `frontend`.
 3. The framework preset (Vite), build command and output directory are read
    from `vercel.json`, so leave them at their defaults.
-4. Under **Environment Variables**, add `VITE_API_URL` with the public HTTPS
+4. Under **Environment Variables**, add `API_URL` with the public HTTPS
    URL of the backend (for Production, and Preview if needed).
 5. Deploy.
 
