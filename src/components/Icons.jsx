@@ -53,6 +53,19 @@ export const PinIcon = (props) => (
   </Icon>
 );
 
+export const NoticeIcon = (props) => (
+  <Icon {...props}>
+    <path d="M14 3.5H7.5A2 2 0 0 0 5.5 5.5v13a2 2 0 0 0 2 2h9a2 2 0 0 0 2-2V8L14 3.5Z" />
+    <path d="M14 3.5V8h4.5M9 12.5h6M9 16h4" />
+  </Icon>
+);
+
+export const ChevronIcon = ({ direction = "right", ...props }) => (
+  <Icon {...props}>
+    <path d={direction === "left" ? "m14.5 6-6 6 6 6" : "m9.5 6 6 6-6 6"} />
+  </Icon>
+);
+
 export const BuildingIcon = (props) => (
   <Icon {...props}>
     <path d="M4 20h16M6 20V5.5L13 3v17M13 8.5l5 1.8V20" />

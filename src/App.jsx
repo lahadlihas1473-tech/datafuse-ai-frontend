@@ -1,93 +1,42 @@
-import { useState } from "react";
+import { useEffect } from "react";
+import { Route, Routes, useLocation } from "react-router";
 import "./App.css";
-import Capabilities from "./components/Capabilities";
 import Header from "./components/Header";
-import Passport, { PassportSkeleton } from "./components/Passport";
-import SearchPanel from "./components/SearchPanel";
-import { useRecentSearches } from "./hooks/useRecentSearches";
+import { usePassportSearch } from "./hooks/usePassportSearch";
+import AddressesPage from "./pages/AddressesPage";
+import NoticesPage from "./pages/NoticesPage";
+import NotFoundPage from "./pages/NotFoundPage";
+import PassportPage from "./pages/PassportPage";
 
-// Set per environment: .env.development locally, Vercel env vars in production
-const API_URL = (import.meta.env.VITE_API_URL ?? "").replace(/\/+$/, "");
+// Start each new page at the top (search/page changes keep scroll)
+function ScrollToTop() {
+  const { pathname } = useLocation();
+
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [pathname]);
+
+  return null;
+}
 
 function App() {
-  const [address, setAddress] = useState("");
-  const [result, setResult] = useState(null);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
-  const { recentSearches, addRecentSearch, removeRecentSearch } =
-    useRecentSearches();
-
-  // Search an address
-  const searchAddress = async (searchValue) => {
-    const searchedAddress = searchValue.trim();
-
-    if (!searchedAddress) {
-      setError("Please enter an address.");
-      return;
-    }
-
-    if (!API_URL) {
-      setError("The API URL is not configured (VITE_API_URL).");
-      return;
-    }
-
-    setLoading(true);
-    setError("");
-    setResult(null);
-
-    try {
-      const response = await fetch(
-        `${API_URL}/material-estimation/search?address=${encodeURIComponent(
-          searchedAddress
-        )}`
-      );
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(
-          data.detail || "No material estimation found for this address."
-        );
-      }
-
-      setResult(data.data);
-
-      // Save only when the API successfully finds the address
-      addRecentSearch(searchedAddress);
-
-      setAddress(searchedAddress);
-    } catch (err) {
-      setError(err.message);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const hasContent = loading || Boolean(result);
+  // Held here so the last passport survives switching pages
+  const passport = usePassportSearch();
 
   return (
     <div className="app">
       <div className="backdrop" aria-hidden="true" />
+      <ScrollToTop />
 
       <Header />
 
       <main className="container main">
-        <SearchPanel
-          address={address}
-          onAddressChange={setAddress}
-          onSearch={searchAddress}
-          loading={loading}
-          error={error}
-          recentSearches={recentSearches}
-          onRemoveRecent={removeRecentSearch}
-          compact={hasContent}
-        />
-
-        {loading && <PassportSkeleton />}
-
-        {result && <Passport key={result.address} result={result} />}
-
-        {!hasContent && <Capabilities />}
+        <Routes>
+          <Route path="/" element={<PassportPage passport={passport} />} />
+          <Route path="/notices" element={<NoticesPage />} />
+          <Route path="/addresses" element={<AddressesPage />} />
+          <Route path="*" element={<NotFoundPage />} />
+        </Routes>
       </main>
 
       <footer className="container footer">

@@ -1,4 +1,5 @@
-import { useEffect, useRef } from "react";
+import { useRef } from "react";
+import { useSlashFocus } from "../hooks/useSlashFocus";
 import {
   ArrowIcon,
   ClockIcon,
@@ -18,24 +19,7 @@ export default function SearchPanel({
 }) {
   const inputRef = useRef(null);
 
-  // "/" focuses the search field from anywhere on the page
-  useEffect(() => {
-    const handleKeyDown = (event) => {
-      const target = event.target;
-      const isTyping =
-        target instanceof HTMLElement &&
-        (target.isContentEditable ||
-          ["INPUT", "TEXTAREA", "SELECT"].includes(target.tagName));
-
-      if (event.key === "/" && !isTyping) {
-        event.preventDefault();
-        inputRef.current?.focus();
-      }
-    };
-
-    window.addEventListener("keydown", handleKeyDown);
-    return () => window.removeEventListener("keydown", handleKeyDown);
-  }, []);
+  useSlashFocus(inputRef);
 
   const handleSubmit = (event) => {
     event.preventDefault();
