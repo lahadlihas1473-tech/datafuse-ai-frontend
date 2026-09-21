@@ -1,0 +1,118 @@
+/* =========================================================
+   DESIGN TOKENS
+========================================================= */
+
+:root {
+  /* Surfaces — deep green-black, lifted in small steps */
+  --bg: #090d0b;
+  --surface: #111713;
+  --surface-2: #151c17;
+  --surface-3: #1a221c;
+  --surface-hover: #1c251f;
+  --glass: rgba(17, 23, 19, 0.72);
+
+  /* Lines */
+  --line: rgba(236, 231, 218, 0.07);
+  --line-2: rgba(236, 231, 218, 0.12);
+  --line-3: rgba(236, 231, 218, 0.2);
+
+  /* Ink */
+  --ink: #efeadf;
+  --ink-2: #b9b5a8;
+  --ink-3: #82857c;
+
+  /* Accents */
+  --brass: #d4b27a;
+  --brass-2: #e6cb98;
+  --brass-soft: rgba(212, 178, 122, 0.12);
+  --brass-line: rgba(212, 178, 122, 0.38);
+  --teal: #2fa894;
+  --danger: #ec9d8c;
+
+  /* Type */
+  --font-display: "Instrument Serif", "Iowan Old Style", Georgia, serif;
+  --font-sans: "Geist", "Inter", system-ui, -apple-system, "Segoe UI",
+    sans-serif;
+  --font-mono: "Geist Mono", "JetBrains Mono", ui-monospace, Consolas,
+    monospace;
+
+  /* Shape & depth */
+  --r-sm: 8px;
+  --r-md: 12px;
+  --r-lg: 18px;
+  --r-xl: 26px;
+  --shadow-lg: 0 40px 100px -40px rgba(0, 0, 0, 0.85);
+  --inset-top: inset 0 1px 0 rgba(255, 255, 255, 0.035);
+
+  /* Layout */
+  --container-max: 1248px;
+  --gutter: 24px;
+  --header-height: 68px;
+
+  --ease: cubic-bezier(0.2, 0.7, 0.2, 1);
+
+  color-scheme: dark;
+}
+
+/* =========================================================
+   BASE
+========================================================= */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  min-height: 100%;
+  scroll-padding-top: calc(var(--header-height) + 16px);
+}
+
+body {
+  min-height: 100vh;
+  margin: 0;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--font-sans);
+  font-size: 15px;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+#root {
+  min-height: 100vh;
+}
+
+h1,
+h2,
+h3,
+p {
+  margin: 0;
+}
+
+button {
+  font: inherit;
+  color: inherit;
+}
+
+::selection {
+  background: var(--brass);
+  color: var(--bg);
+}
+
+:focus-visible {
+  outline: 2px solid var(--brass);
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
