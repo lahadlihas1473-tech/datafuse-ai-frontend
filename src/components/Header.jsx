@@ -11,10 +11,10 @@ export default function Header() {
   return (
     <header className="site-header">
       <div className="container site-header__inner">
-        <Link className="brand" to="/" aria-label="DataFuseAI home">
+        <Link className="brand" to="/" aria-label="Resource Paspoort home">
           <LogoMark />
           <span className="brand__name">
-            DataFuse<span>AI</span>
+            Resource <span>Paspoort</span>
           </span>
         </Link>
 

@@ -40,7 +40,7 @@ function App() {
       </main>
 
       <footer className="container footer">
-        <span className="footer__brand">DataFuseAI</span>
+        <span className="footer__brand">Resource Paspoort</span>
         <span>
           Estimates per building (pand) · mass in tonnes · carbon in CO₂e
         </span>

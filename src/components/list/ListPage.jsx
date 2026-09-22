@@ -41,7 +41,7 @@ export default function ListPage({
   });
 
   useEffect(() => {
-    document.title = `${title} · DataFuseAI`;
+    document.title = `${title} · Resource Paspoort`;
   }, [title]);
 
   const updateParams = useCallback(

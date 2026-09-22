@@ -1,6 +1,6 @@
-# DataFuseAI — Frontend
+# Resource Paspoort — Frontend
 
-React + Vite frontend for the DataFuseAI Material & CO₂ Building Passport.
+React + Vite frontend for the Resource Paspoort Material & CO₂ Building Passport.
 It calls the FastAPI backend's `/material-estimation/search` endpoint.
 
 ## Requirements

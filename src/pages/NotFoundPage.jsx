@@ -3,7 +3,7 @@ import { Link } from "react-router";
 
 export default function NotFoundPage() {
   useEffect(() => {
-    document.title = "Page not found · DataFuseAI";
+    document.title = "Page not found · Resource Paspoort";
   }, []);
 
   return (

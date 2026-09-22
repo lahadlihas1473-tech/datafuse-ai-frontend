@@ -16,7 +16,7 @@ export default function PassportPage({ passport }) {
   } = passport;
 
   useEffect(() => {
-    document.title = "DataFuseAI — Material & CO₂ Building Passport";
+    document.title = "Resource Paspoort — Material & CO₂ Building Passport";
   }, []);
 
   const hasContent = loading || Boolean(result);
