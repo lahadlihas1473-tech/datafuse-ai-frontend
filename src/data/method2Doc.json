@@ -498,6 +498,69 @@
    "text": "A_outline = ½ × | Σ (xᵢ × yᵢ₊₁ − xᵢ₊₁ × yᵢ) |"
   },
   {
+   "type": "p",
+   "text": "Where the two constants come from: the Earth is an ellipsoid (WGS84, equatorial radius 6,378,137 m, flattening 1/298.257223563), so a degree is not the same length everywhere. A degree of latitude measures 110,574 m at the equator and 111,694 m at the pole, because the meridian curves less near the poles. Writing that exact length as a series in the latitude gives: one degree of latitude = 111,132.95 − 559.82 × cos 2φ + 1.175 × cos 4φ − 0.0023 × cos 6φ metres, and one degree of longitude = 111,412.84 × cos φ − 93.5 × cos 3φ + 0.118 × cos 5φ metres."
+  },
+  {
+   "type": "p",
+   "text": "So 111,132.95 m is the average length of a degree of latitude over the whole ellipsoid and 559.82 m is how far it swings above or below that average between equator and pole; 111,412.84 m is the length of a degree of longitude at the equator, which shrinks with cos φ towards the poles. We keep only the first term of each series - the terms left out are at most about 1 m (latitude) and 94 m (longitude) per degree."
+  },
+  {
+   "type": "table",
+   "head": [
+    "Latitude",
+    "Exact metres per degree",
+    "Formula used",
+    "Difference"
+   ],
+   "rows": [
+    [
+     "0° latitude",
+     "110,574.3",
+     "110,573.1",
+     "-0.0010%"
+    ],
+    [
+     "52° latitude (Netherlands)",
+     "111,269.8",
+     "111,270.8",
+     "+0.0009%"
+    ],
+    [
+     "90° latitude",
+     "111,694.0",
+     "111,692.8",
+     "-0.0011%"
+    ],
+    [
+     "0° longitude",
+     "111,319.5",
+     "111,412.8",
+     "+0.0839%"
+    ],
+    [
+     "52° longitude (Netherlands)",
+     "68,478.9",
+     "68,393.2",
+     "-0.1251%"
+    ],
+    [
+     "60° longitude",
+     "55,800.0",
+     "55,706.4",
+     "-0.1677%"
+    ]
+   ]
+  },
+  {
+   "type": "p",
+   "text": "The latitude formula is right to about one part in a hundred thousand anywhere on Earth. The longitude formula is the coarser of the two because it drops the 93.5 × cos 3φ term: at Dutch latitudes it reads 0.13% short, which on the 38.8 m perimeter of the worked example is about 5 cm. Both are far inside the 1% the assumption claims, and both are much smaller than the uncertainty in the construction build-up."
+  },
+  {
+   "type": "p",
+   "text": "Worked through for the example building at 52.13° N: cos 2φ = −0.2463, so m_lat = 111,132.95 − 559.82 × (−0.2463) = 111,270.8 m per degree, and m_lon = 111,412.84 × cos 52.13° = 68,393.2 m per degree. A degree of longitude is only about 61% as long as a degree of latitude at this latitude, which is why the two axes are scaled separately before the sides are measured."
+  },
+  {
    "type": "h3",
    "text": "6.2 Outline check and correction"
   },
