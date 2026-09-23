@@ -1929,7 +1929,7 @@
   },
   {
    "type": "p",
-   "text": "Building 0995100000714625, 8224HW Lelystad, built 1979, material_profile_id EEN_1970_2000 → profile RES_1970_2000."
+   "text": "Building 0310100000664117, Jan Provostlaan 16, 3723RD Bilthoven, built 1988, material_profile_id EEN_1970_2000 → profile RES_1970_2000. It is the same building the Method 1 document works through, so the two estimates can be compared line by line."
   },
   {
    "type": "h3",
@@ -1945,32 +1945,32 @@
    "rows": [
     [
      "opp_grond (footprint)",
-     "61.3 m²",
+     "74.59 m²",
      "MEASURED"
     ],
     [
      "opp_buitenmuur (external wall)",
-     "100.75 m²",
+     "88.21 m²",
      "MEASURED"
     ],
     [
      "opp_scheidingsmuur (party wall)",
-     "101.3 m²",
+     "172.29 m²",
      "MEASURED"
     ],
     [
      "opp_dak_plat (flat roof)",
-     "31.75 m²",
+     "41.96 m²",
      "MEASURED"
     ],
     [
      "opp_dak_schuin (sloped roof)",
-     "52.8 m²",
+     "39.51 m²",
      "MEASURED"
     ],
     [
      "volume_lod22 (volume)",
-     "418.299 m³",
+     "484.984 m³",
      "MEASURED"
     ],
     [
@@ -1980,7 +1980,7 @@
     ],
     [
      "GO (usable floor area)",
-     "136 m²",
+     "137 m²",
      "MEASURED"
     ]
    ]
@@ -1990,40 +1990,40 @@
    "text": "12.2 Derived"
   },
   {
-   "type": "li",
-   "text": "Perimeter P = 36.069 m; outline area 61.232 m² vs opp_grond 61.3 m² (−0.1%, no correction). DERIVED"
+   "type": "p",
+   "text": "Perimeter P = 38.822 m; outline area 74.520 m² against opp_grond 74.59 m² (-0.1%, no correction). DERIVED"
   },
   {
-   "type": "li",
-   "text": "H_max = 4.718 − (−3.467) = 8.185 m; H_mean = 418.299 ÷ 61.3 = 6.824 m. DERIVED"
+   "type": "p",
+   "text": "H_max = 11.652 − 3.215 = 8.437 m; H_mean = 484.984 ÷ 74.59 = 6.502 m. DERIVED"
   },
   {
-   "type": "li",
-   "text": "Roof pitch: cos = (61.3 − 31.75) ÷ 52.8 = 0.5597 → 56.0°. DERIVED"
+   "type": "p",
+   "text": "Roof pitch: cos = (74.59 − 41.96) ÷ 39.51 = 0.8259 → 34.3°. DERIVED"
   },
   {
-   "type": "li",
-   "text": "L_facade = 36.069 × 100.75 ÷ 202.05 = 17.985 m; L_party = 18.084 m. [ASSUMED A1]"
+   "type": "p",
+   "text": "[ASSUMED A1] L_facade = 38.822 × 88.21 ÷ 260.50 = 13.146 m; L_party = 25.676 m."
   },
   {
-   "type": "li",
-   "text": "BVO = max(61.3 , 418.299 ÷ 2.8) = 149.393 m²; upper floors = 149.393 − 61.3 = 88.093 m². Storey height 2.8 m [ASSUMED A2]"
+   "type": "p",
+   "text": "[ASSUMED A2] BVO = max(74.59 , 484.984 ÷ 2.8) = 173.209 m²; upper floors = 173.209 − 74.59 = 98.619 m². Storey height 2.8 m"
   },
   {
-   "type": "li",
-   "text": "GO ÷ BVO = 136 ÷ 149.393 = 0.91 (in range). DERIVED"
+   "type": "p",
+   "text": "GO ÷ BVO = 137 ÷ 173.209 = 0.79 (in range). DERIVED"
   },
   {
-   "type": "li",
-   "text": "Window area = 100.75 × 0.25 = 25.188 m²; closed façade = 75.562 m². Window share 25% [ASSUMED A3]"
+   "type": "p",
+   "text": "[ASSUMED A3] Window area = 88.21 × 0.25 = 22.052 m²; closed façade = 66.157 m². Window share 25%"
   },
   {
-   "type": "li",
-   "text": "Foundation length = 17.985 + 0.5 × 18.084 = 27.027 m. [ASSUMED A1, A4]"
+   "type": "p",
+   "text": "[ASSUMED A1, A4] Foundation length = 13.146 + 0.5 × 25.676 = 25.984 m."
   },
   {
-   "type": "li",
-   "text": "Internal walls = min(136, 149.393) × 0.5 = 68.0 m². [ASSUMED A5, A15]"
+   "type": "p",
+   "text": "[ASSUMED A5, A15] Internal walls = min(137, 173.209) × 0.5 = 68.5 m²."
   },
   {
    "type": "h3",
@@ -2045,146 +2045,146 @@
     [
      "Façade, closed part (gevel)",
      "Clay brick (baksteen)",
-     "75.56 × 180.0",
-     "13,601.2"
+     "66.16 × 180.0",
+     "11,908.4"
     ],
     [
      "Façade, closed part (gevel)",
      "Mineral wool (minerale wol)",
-     "75.56 × 1.5",
-     "113.3"
+     "66.16 × 1.5",
+     "99.2"
     ],
     [
      "Façade, closed part (gevel)",
      "Calcium silicate brick (kalkzandsteen)",
-     "75.56 × 185.0",
-     "13,979.0"
+     "66.16 × 185.0",
+     "12,239.1"
     ],
     [
      "Windows (ramen)",
      "Glass (glas)",
-     "25.19 × 20.0",
-     "503.8"
+     "22.05 × 20.0",
+     "441.0"
     ],
     [
      "Windows (ramen)",
      "Timber (hout)",
-     "25.19 × 12.0",
-     "302.3"
+     "22.05 × 12.0",
+     "264.6"
     ],
     [
      "Party walls (scheidingsmuren)",
      "Concrete (beton)",
-     "50.65 × 480.0",
-     "24,312.0"
+     "86.14 × 480.0",
+     "41,349.6"
     ],
     [
      "Party walls (scheidingsmuren)",
      "Reinforcement steel (wapeningsstaal)",
-     "50.65 × 16.0",
-     "810.4"
+     "86.14 × 16.0",
+     "1,378.3"
     ],
     [
      "Ground floor (begane grondvloer)",
      "Concrete (beton)",
-     "61.30 × 480.0",
-     "29,424.0"
+     "74.59 × 480.0",
+     "35,803.2"
     ],
     [
      "Ground floor (begane grondvloer)",
      "Reinforcement steel (wapeningsstaal)",
-     "61.30 × 16.0",
-     "980.8"
+     "74.59 × 16.0",
+     "1,193.4"
     ],
     [
      "Upper floors (verdiepingsvloeren)",
      "Concrete (beton)",
-     "88.09 × 480.0",
-     "42,284.6"
+     "98.62 × 480.0",
+     "47,337.0"
     ],
     [
      "Upper floors (verdiepingsvloeren)",
      "Reinforcement steel (wapeningsstaal)",
-     "88.09 × 16.0",
-     "1,409.5"
+     "98.62 × 16.0",
+     "1,577.9"
     ],
     [
      "Sloped roof (schuin dak)",
      "Timber (hout)",
-     "52.80 × 20.0",
-     "1,056.0"
+     "39.51 × 20.0",
+     "790.2"
     ],
     [
      "Sloped roof (schuin dak)",
      "Concrete roof tiles (betondakpannen)",
-     "52.80 × 42.0",
-     "2,217.6"
+     "39.51 × 42.0",
+     "1,659.4"
     ],
     [
      "Sloped roof (schuin dak)",
      "Mineral wool (minerale wol)",
-     "52.80 × 1.8",
-     "95.0"
+     "39.51 × 1.8",
+     "71.1"
     ],
     [
      "Flat roof (plat dak)",
      "Timber (hout)",
-     "31.75 × 20.0",
-     "635.0"
+     "41.96 × 20.0",
+     "839.2"
     ],
     [
      "Flat roof (plat dak)",
      "Bitumen roofing (bitumen)",
-     "31.75 × 8.0",
-     "254.0"
+     "41.96 × 8.0",
+     "335.7"
     ],
     [
      "Flat roof (plat dak)",
      "Mineral wool (minerale wol)",
-     "31.75 × 1.8",
-     "57.1"
+     "41.96 × 1.8",
+     "75.5"
     ],
     [
      "Foundation beams (funderingsbalken)",
      "Concrete (beton)",
-     "27.03 × 480.0",
-     "12,973.0"
+     "25.98 × 480.0",
+     "12,472.2"
     ],
     [
      "Foundation beams (funderingsbalken)",
      "Reinforcement steel (wapeningsstaal)",
-     "27.03 × 16.0",
-     "432.4"
+     "25.98 × 16.0",
+     "415.7"
     ],
     [
      "Internal walls (binnenwanden)",
      "Gypsum blocks (gipsblokken)",
-     "68.00 × 70.0",
-     "4,760.0"
+     "68.50 × 70.0",
+     "4,795.0"
     ],
     [
      "Installations and fixings (installaties)",
      "Structural steel (constructiestaal)",
-     "149.39 × 8.0",
-     "1,195.1"
+     "173.21 × 8.0",
+     "1,385.7"
     ],
     [
      "Installations and fixings (installaties)",
      "Copper (koper)",
-     "149.39 × 1.5",
-     "224.1"
+     "173.21 × 1.5",
+     "259.8"
     ],
     [
      "Installations and fixings (installaties)",
      "Zinc / lead (zink / lood)",
-     "149.39 × 1.0",
-     "149.4"
+     "173.21 × 1.0",
+     "173.2"
     ],
     [
      "Installations and fixings (installaties)",
      "Plastic (kunststof)",
-     "149.39 × 3.0",
-     "448.2"
+     "173.21 × 3.0",
+     "519.6"
     ]
    ]
   },
@@ -2207,93 +2207,93 @@
    "rows": [
     [
      "Concrete (beton)",
-     "108,993.5",
+     "136,962.0",
      "0.120",
-     "13,079.2"
+     "16,435.4"
     ],
     [
      "Calcium silicate brick (kalkzandsteen)",
-     "13,979.1",
+     "12,239.1",
      "0.210",
-     "2,935.6"
+     "2,570.2"
     ],
     [
      "Clay brick (baksteen)",
-     "13,601.2",
+     "11,908.4",
      "0.210",
-     "2,856.3"
+     "2,500.8"
     ],
     [
      "Gypsum blocks (gipsblokken)",
-     "4,760.0",
+     "4,795.0",
      "0.500",
-     "2,380.0"
+     "2,397.5"
     ],
     [
      "Reinforcement steel (wapeningsstaal)",
-     "3,633.1",
+     "4,565.4",
      "1.550",
-     "5,631.3"
-    ],
-    [
-     "Concrete roof tiles (betondakpannen)",
-     "2,217.6",
-     "0.120",
-     "266.1"
+     "7,076.4"
     ],
     [
      "Timber (hout)",
-     "1,993.2",
+     "1,894.0",
      "0.400",
-     "797.3"
+     "757.6"
+    ],
+    [
+     "Concrete roof tiles (betondakpannen)",
+     "1,659.4",
+     "0.120",
+     "199.1"
     ],
     [
      "Structural steel (constructiestaal)",
-     "1,195.1",
+     "1,385.7",
      "1.550",
-     "1,852.5"
-    ],
-    [
-     "Glass (glas)",
-     "503.8",
-     "0.900",
-     "453.4"
+     "2,147.8"
     ],
     [
      "Plastic (kunststof)",
-     "448.2",
+     "519.6",
      "0.500",
-     "224.1"
+     "259.8"
     ],
     [
-     "Mineral wool (minerale wol)",
-     "265.5",
-     "0.500",
-     "132.8"
+     "Glass (glas)",
+     "441.0",
+     "0.900",
+     "396.9"
     ],
     [
      "Bitumen roofing (bitumen)",
-     "254.0",
+     "335.7",
      "0.500",
-     "127.0"
+     "167.8"
     ],
     [
      "Copper (koper)",
-     "224.1",
+     "259.8",
      "0.500",
-     "112.0"
+     "129.9"
+    ],
+    [
+     "Mineral wool (minerale wol)",
+     "245.9",
+     "0.500",
+     "122.9"
     ],
     [
      "Zinc / lead (zink / lood)",
-     "149.4",
+     "173.2",
      "0.500",
-     "74.7"
+     "86.6"
     ],
     [
      "Total",
-     "152,217.9",
+     "177,384.2",
      "",
-     "30,922.3"
+     "35,248.7"
     ]
    ]
   },
@@ -2311,43 +2311,43 @@
    "rows": [
     [
      "Steel (staal)",
-     "4.828",
-     "7.484"
+     "5.951",
+     "9.224"
     ],
     [
      "Wood (hout)",
-     "1.993",
-     "0.797"
+     "1.894",
+     "0.758"
     ],
     [
      "Brick (baksteen)",
-     "27.580",
-     "5.792"
+     "24.148",
+     "5.071"
     ],
     [
      "Concrete (beton)",
-     "111.211",
-     "13.345"
+     "138.621",
+     "16.635"
     ],
     [
      "Glass (glas)",
-     "0.504",
-     "0.453"
+     "0.441",
+     "0.397"
     ],
     [
      "Copper (koper)",
-     "0.224",
-     "0.112"
+     "0.260",
+     "0.130"
     ],
     [
      "Others (overig)",
-     "5.877",
-     "2.939"
+     "6.069",
+     "3.035"
     ],
     [
      "Total",
-     "152.218",
-     "30.922"
+     "177.384",
+     "35.249"
     ]
    ]
   },
