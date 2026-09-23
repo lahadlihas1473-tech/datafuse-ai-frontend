@@ -2,7 +2,7 @@ import { Link, NavLink } from "react-router";
 import { LogoMark } from "./Icons";
 
 const NAV_ITEMS = [
-  { to: "/", label: "Passport", end: true },
+  { to: "/", label: "Method 1", end: true },
   { to: "/method-2", label: "Method 2" },
   { to: "/notices", label: "Notices" },
   { to: "/addresses", label: "Addresses" },
