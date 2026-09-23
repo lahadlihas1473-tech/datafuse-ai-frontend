@@ -1,11 +1,19 @@
-import { formatNumber, isNumber } from "../lib/format";
+import { formatAmount, formatNumber, formatPercent, isNumber } from "../lib/format";
+import { GROUPS, TOTAL_LABEL } from "../lib/materials";
+import CompositionChart from "./CompositionChart";
 import {
   BuildingIcon,
   CloudIcon,
   GaugeIcon,
+  LayersIcon,
   RulerIcon,
   WeightIcon,
 } from "./Icons";
+
+// Same palette as the passport, so a material keeps its colour in both views
+const COLOR = Object.fromEntries(
+  GROUPS.map((group) => [group.key, group.color])
+);
 
 // public.method_2 returns NUMERIC columns as strings
 const toNumber = (value) => {
@@ -44,13 +52,13 @@ const measure = (value, unit, digits = 2) => {
 
 // The seven reported material groups, as stored in public.method_2
 const MATERIALS = [
-  { key: "concrete", label: "Beton (Concrete)" },
-  { key: "brick", label: "Baksteen (Brick)" },
-  { key: "steel", label: "Staal (Steel)" },
-  { key: "wood", label: "Hout (Wood)" },
-  { key: "glass", label: "Glas (Glass)" },
-  { key: "copper", label: "Koper (Copper)" },
-  { key: "other", label: "Overig (Other)" },
+  { key: "concrete", label: "Beton (Concrete)", color: COLOR.minerals },
+  { key: "brick", label: "Baksteen (Brick)", color: COLOR.masonry },
+  { key: "steel", label: "Staal (Steel)", color: COLOR.metals },
+  { key: "wood", label: "Hout (Wood)", color: COLOR.wood },
+  { key: "glass", label: "Glas (Glass)", color: COLOR.glass },
+  { key: "copper", label: "Koper (Copper)", color: COLOR.plastics },
+  { key: "other", label: "Overig (Other)", color: COLOR.other },
 ];
 
 function StatCard({ icon: CardIcon, label, accent, children, footer }) {
@@ -83,6 +91,23 @@ function Panel({ title, description, meta, children, index }) {
   );
 }
 
+// Same bar-in-a-cell as the passport's material table
+function ShareCell({ value, color }) {
+  return (
+    <td className="col-share">
+      <span className="share">
+        <span className="share__track">
+          <span
+            className="share__fill"
+            style={{ width: `${value * 100}%`, background: color }}
+          />
+        </span>
+        <span className="share__value">{formatPercent(value)}</span>
+      </span>
+    </td>
+  );
+}
+
 function Facts({ items }) {
   return (
     <dl className="facts">
@@ -106,19 +131,29 @@ export default function Method2({ record }) {
   const totalMass = toNumber(record.total_material_mass_tonnes);
   const totalCo2 = toNumber(record.total_co2_tonnes);
 
-  const rows = MATERIALS.map(({ key, label }) => {
-    const tonnes = toNumber(record[`${key}_tonnes`]);
-    const co2Tonnes = toNumber(record[`${key}_co2_tonnes`]);
+  const rows = MATERIALS.map(({ key, label, color }) => {
+    const tonnes = toNumber(record[`${key}_tonnes`]) ?? 0;
+    const co2Tonnes = toNumber(record[`${key}_co2_tonnes`]) ?? 0;
 
     return {
       key,
       label,
+      color,
       tonnes,
       co2Tonnes,
-      share: totalMass && tonnes !== null ? tonnes / totalMass : null,
+      massShare: totalMass > 0 ? tonnes / totalMass : 0,
+      co2Share: totalCo2 > 0 ? co2Tonnes / totalCo2 : 0,
+      // One material per segment, so the chart legend needs no member list
+      members: [],
     };
   });
 
+  const dominant = rows.reduce(
+    (best, row) => (row.massShare > (best?.massShare ?? 0) ? row : best),
+    null
+  );
+
+  const presentCount = rows.filter((row) => row.tonnes > 0).length;
   const flags = record.flags ?? [];
 
   return (
@@ -183,6 +218,25 @@ export default function Method2({ record }) {
         >
           {formatNumber(toNumber(record.height_max_m), 1)}
           <span className="stat__unit">m</span>
+        </StatCard>
+
+        <StatCard
+          icon={LayersIcon}
+          label="Dominant material"
+          footer={
+            dominant
+              ? `${formatPercent(dominant.massShare)} of total mass`
+              : "No material data"
+          }
+        >
+          {dominant ? (
+            <span className="stat__text">
+              <i className="swatch" style={{ background: dominant.color }} />
+              {dominant.label}
+            </span>
+          ) : (
+            "—"
+          )}
         </StatCard>
       </div>
 
@@ -266,42 +320,63 @@ export default function Method2({ record }) {
 
       <Panel
         index={4}
+        title="Composition"
+        description="Share of each material by mass and by embodied carbon. Hover or focus a segment for details."
+        meta={`${MATERIALS.length} materials`}
+      >
+        <CompositionChart
+          groups={rows}
+          total={{ tonnes: totalMass, co2_tonnes: totalCo2 }}
+        />
+      </Panel>
+
+      <Panel
+        index={5}
         title="Materials and CO₂"
         description="Estimated mass and embodied carbon (A1–A3) per reported material group."
-        meta={`${rows.filter((row) => row.tonnes > 0).length} of ${
-          MATERIALS.length
-        } present`}
+        meta={`${presentCount} of ${MATERIALS.length} present`}
       >
         <div className="table-wrap">
           <table className="data-table method2__table">
             <thead>
               <tr>
-                <th scope="col">Material</th>
-                <th scope="col">Mass (t)</th>
-                <th scope="col">Share</th>
-                <th scope="col">CO₂e (t)</th>
+                <th scope="col" className="col-material">Material</th>
+                <th scope="col" className="num">Mass (t)</th>
+                <th scope="col" className="col-share">Share of mass</th>
+                <th scope="col" className="num">CO₂e (t)</th>
+                <th scope="col" className="col-share">Share of CO₂e</th>
               </tr>
             </thead>
             <tbody>
               {rows.map((row) => (
-                <tr key={row.key}>
-                  <th scope="row">{row.label}</th>
-                  <td>{formatNumber(row.tonnes)}</td>
-                  <td>
-                    {row.share === null
-                      ? "—"
-                      : `${(row.share * 100).toFixed(1)}%`}
-                  </td>
-                  <td>{formatNumber(row.co2Tonnes)}</td>
+                <tr
+                  key={row.key}
+                  className={!row.tonnes && !row.co2Tonnes ? "is-zero" : undefined}
+                >
+                  <th scope="row" className="col-material">
+                    <span className="material">
+                      <i className="swatch" style={{ background: row.color }} />
+                      {row.label}
+                    </span>
+                  </th>
+                  <td className="num">{formatAmount(row.tonnes)}</td>
+                  <ShareCell value={row.massShare} color={row.color} />
+                  <td className="num">{formatAmount(row.co2Tonnes)}</td>
+                  <ShareCell value={row.co2Share} color={row.color} />
                 </tr>
               ))}
             </tbody>
             <tfoot>
               <tr>
-                <th scope="row">Totaal (Total)</th>
-                <td>{formatNumber(totalMass)}</td>
-                <td>100.0%</td>
-                <td>{formatNumber(totalCo2)}</td>
+                <th scope="row" className="col-material">{TOTAL_LABEL}</th>
+                <td className="num">{formatNumber(totalMass)}</td>
+                <td className="col-share">
+                  <span className="share__value">100%</span>
+                </td>
+                <td className="num">{formatNumber(totalCo2)}</td>
+                <td className="col-share">
+                  <span className="share__value">100%</span>
+                </td>
               </tr>
             </tfoot>
           </table>
