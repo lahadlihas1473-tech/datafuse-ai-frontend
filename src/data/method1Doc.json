@@ -157,59 +157,7 @@
   },
   {
    "type": "h3",
-   "text": "2.1 Files and tables"
-  },
-  {
-   "type": "table",
-   "head": [
-    "File or table",
-    "Role",
-    "Records"
-   ],
-   "rows": [
-    [
-     "dataset/archive/B2.json",
-     "Material intensities per building type and cohort (Tabel B2)",
-     "28 profiles"
-    ],
-    [
-     "BAG (PDOK) - bag:pand and verblijfsobject",
-     "Gross floor area, year built, address, pand geometry",
-     "-"
-    ],
-    [
-     "dataset/archive/2data.py",
-     "Worked example for one building (B2 lookup, quantity, CO2)",
-     "-"
-    ],
-    [
-     "dataset/archive/import_jan_provostlaan_16.py",
-     "Loads the added building into the table",
-     "1"
-    ],
-    [
-     "public.material_estimation_final",
-     "Output: one row per building, 13 materials with factor and CO2",
-     "1,082"
-    ],
-    [
-     "/material-estimation/search, /addresses, /notices",
-     "API endpoints that read this table",
-     "-"
-    ]
-   ]
-  },
-  {
-   "type": "h3",
-   "text": "2.2 Why 1,082 buildings"
-  },
-  {
-   "type": "p",
-   "text": "The demolition dataset holds 1,187 notices; counting unique pand_id gives 1,081 buildings, so each building is counted once. Jan Provostlaan 16 (pand_id 0310100000664117) has no demolition notice and was added by hand, which makes 1,082. Its row has no notice_id but does have a pand_id, and it is the same building the Method 2 document uses as its added building."
-  },
-  {
-   "type": "h3",
-   "text": "2.3 Fields used"
+   "text": "2.1 Fields used"
   },
   {
    "type": "table",
@@ -260,7 +208,7 @@
   },
   {
    "type": "h3",
-   "text": "2.4 Units and conventions"
+   "text": "2.2 Units and conventions"
   },
   {
    "type": "table",

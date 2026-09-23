@@ -131,74 +131,7 @@
   },
   {
    "type": "h3",
-   "text": "2.1 Files"
-  },
-  {
-   "type": "table",
-   "head": [
-    "File",
-    "Role",
-    "Records"
-   ],
-   "rows": [
-    [
-     "dataset/3dbag_typegebouw_cohort_b2_profile_ids.json",
-     "Source: all demolition notices with BAG + 3DBAG data",
-     "1,187"
-    ],
-    [
-     "dataset/material_estimation_1081_co2.json",
-     "Selection: one notice per unique building",
-     "1,081"
-    ],
-    [
-     "dataset/jan_provostlaan_16_bag_input.json",
-     "Source: Jan Provostlaan 16 (address, pand_id, building type); no demolition notice",
-     "1"
-    ],
-    [
-     "dataset/build_input_1082.py",
-     "Builds the input: keeps the 1,081 selected notices and adds Jan Provostlaan 16 (BAG from PDOK, 3DBAG from api.3dbag.nl)",
-     "–"
-    ],
-    [
-     "dataset/3dbag_input_1082.json",
-     "Input: 1,081 notices + Jan Provostlaan 16, with BAG + 3DBAG data",
-     "1,082"
-    ],
-    [
-     "dataset/geometry_material_co2_batch.py",
-     "Calculation script (all assumptions live here)",
-     "–"
-    ],
-    [
-     "dataset/material_estimation_1082_geometry_co2.json",
-     "Output: every step per building",
-     "1,082"
-    ],
-    [
-     "dataset/material_estimation_1082_geometry_co2_summary.csv",
-     "Output: one summary row per building",
-     "1,082"
-    ],
-    [
-     "dataset/import_geometry_co2.py",
-     "Loads the output into PostgreSQL",
-     "–"
-    ]
-   ]
-  },
-  {
-   "type": "h3",
-   "text": "2.2 Why 1,082 buildings"
-  },
-  {
-   "type": "p",
-   "text": "The source file has 1,187 notices, but some buildings appear in more than one notice. Counting unique pand_id (building ID) gives 1,081 buildings. We keep the same 1,081 notices as the existing estimation file, so each building is counted once; the other 106 notices are left out of the input file. One building without a demolition notice is added: Jan Provostlaan 16, 3723RD Bilthoven (pand_id 0310100000664117, single-family house built 1988, material_profile_id EEN_1970_2000). Its outline and dwelling unit come from the PDOK BAG API and its measured areas and volume from the 3DBAG API – the same fields as for the notices. It has no notice, so its notice_id is manual-0310100000664117. build_input_1082.py writes these 1,082 buildings to 3dbag_input_1082.json, the single input of the calculation."
-  },
-  {
-   "type": "h3",
-   "text": "2.3 Fields used (Dutch name with English meaning)"
+   "text": "2.1 Fields used (Dutch name with English meaning)"
   },
   {
    "type": "table",
@@ -279,7 +212,7 @@
   },
   {
    "type": "h3",
-   "text": "2.4 Units and conventions"
+   "text": "2.2 Units and conventions"
   },
   {
    "type": "table",
@@ -819,7 +752,7 @@
      "A18",
      "One notice per building",
      "1,081 of 1,187 notices + Jan Provostlaan 16",
-     "2.2",
+     "2",
      "avoid counting a building twice"
     ],
     [
@@ -2739,7 +2672,7 @@
     ],
     [
      "22 September 2026",
-     "Jan Provostlaan 16 added as building 1,082; the input file became 3dbag_input_1082.json (sections 2.1, 2.2).",
+     "Jan Provostlaan 16 added as building 1,082; the input file became 3dbag_input_1082.json.",
      "+177 t material, +37 t CO2e"
     ],
     [
