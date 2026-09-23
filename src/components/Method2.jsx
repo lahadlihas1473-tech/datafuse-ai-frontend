@@ -15,6 +15,27 @@ const toNumber = (value) => {
 
 const text = (value) => (value === null || value === "" ? "—" : value);
 
+const clean = (value) => String(value ?? "").trim();
+
+// The address column holds a street, but some rows carry the house number
+// and city as well. Add each part only when it is not already there.
+const streetLine = ({ address, house_number: houseNumber, city }) => {
+  const house = clean(houseNumber);
+  const town = clean(city);
+  let line = clean(address);
+
+  [`, ${town}`, ` ${town}`].forEach((suffix) => {
+    if (town && line.toLowerCase().endsWith(suffix.toLowerCase())) {
+      line = line.slice(0, -suffix.length).trim().replace(/,$/, "");
+    }
+  });
+
+  const endsWithHouse =
+    house && line.toLowerCase().endsWith(` ${house.toLowerCase()}`);
+
+  return house && !endsWithHouse ? `${line} ${house}`.trim() : line;
+};
+
 // Value with a unit, or an em dash when the column is empty
 const measure = (value, unit, digits = 2) => {
   const number = toNumber(value);
@@ -76,9 +97,7 @@ function Facts({ items }) {
 }
 
 export default function Method2({ record }) {
-  const street = [record.address, record.house_number]
-    .filter(Boolean)
-    .join(" ");
+  const street = streetLine(record);
 
   const locality = [record.postal_code, record.city]
     .filter(Boolean)
