@@ -16,8 +16,11 @@ const formatDate = (value) => {
       });
 };
 
-// Only Notice ID, Title and Publication date are shown
+// Notice ID, Title and Publication date. One building (Jan Provostlaan 16)
+// has no notice, so it is listed by its pand ID instead.
 function NoticeRow({ notice, search }) {
+  const hasNotice = Boolean(notice.notice_id);
+
   return (
     <>
       <span className="record__icon" aria-hidden="true">
@@ -26,8 +29,14 @@ function NoticeRow({ notice, search }) {
 
       <div className="record__main">
         <span className="record__id">
-          <span className="visually-hidden">Notice ID: </span>
-          <Highlight text={notice.notice_id} term={search} />
+          <span className="visually-hidden">
+            {hasNotice ? "Notice ID: " : "Pand ID: "}
+          </span>
+          <Highlight
+            text={hasNotice ? notice.notice_id : notice.pand_id}
+            term={search}
+          />
+          {!hasNotice && <span className="tag">No notice</span>}
         </span>
         <p className="record__title">
           <Highlight text={notice.title} term={search} />
@@ -53,12 +62,12 @@ export default function NoticesPage() {
     <ListPage
       eyebrow="Demolition notices"
       title="Notices"
-      description="Every published demolition notice, newest first. Search a city to see its notices first, followed by other matches."
+      description="Every building with an estimate, newest notice first. Search a city to see its buildings first, followed by other matches."
       endpoint="/notices"
       noun={{ singular: "notice", plural: "notices" }}
       searchLabel="Search notices"
-      searchPlaceholder="Search by city, title or notice ID…"
-      getKey={(notice) => notice.notice_id}
+      searchPlaceholder="Search by city, title, notice ID or pand ID…"
+      getKey={(notice) => notice.notice_id ?? notice.pand_id}
       renderItem={(notice, search) => (
         <NoticeRow notice={notice} search={search} />
       )}

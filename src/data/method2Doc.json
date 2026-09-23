@@ -1,0 +1,2753 @@
+{
+ "source": "Material_CO2_Estimation_Method_1082_Buildings.docx",
+ "sections": [
+  "1. Summary",
+  "2. Input data",
+  "3. Method in 7 steps",
+  "4. Step 1 – Assign a build-up profile",
+  "5. Step 2 – Measured inputs",
+  "6. Step 3 – Derived geometry",
+  "7. Step 4 – Floor areas",
+  "8. Our own assumptions",
+  "9. Step 5 – Component quantities",
+  "10. Step 6 – Material mass",
+  "11. Step 7 – CO2",
+  "12. Worked example – one building",
+  "13. Data quality flags",
+  "14. Results per profile",
+  "15. Database output",
+  "16. Limits",
+  "17. Comparison with the previous method",
+  "18. How to reproduce",
+  "19. Change log"
+ ],
+ "blocks": [
+  {
+   "type": "title",
+   "text": "Material & CO2 Estimation for 1,082 Buildings – Method and Results"
+  },
+  {
+   "type": "p",
+   "text": "23 September 2026"
+  },
+  {
+   "type": "h2",
+   "text": "1. Summary"
+  },
+  {
+   "type": "p",
+   "text": "This document explains how material mass and CO2 were calculated for 1,082 buildings from their 3DBAG and BAG data: 1,081 demolition buildings plus one added building, Jan Provostlaan 16 in Bilthoven. The result is 1,800,610 tonnes of material and 393,535 tonnes CO2e, reported in 7 materials."
+  },
+  {
+   "type": "table",
+   "head": [
+    "Material",
+    "Mass (tonnes)",
+    "CO2e (tonnes)",
+    "Buildings with 0"
+   ],
+   "rows": [
+    [
+     "Steel (staal)",
+     "85,604",
+     "132,686",
+     "0"
+    ],
+    [
+     "Wood (hout)",
+     "17,898",
+     "7,159",
+     "103"
+    ],
+    [
+     "Brick (baksteen)",
+     "253,796",
+     "53,297",
+     "0"
+    ],
+    [
+     "Concrete (beton)",
+     "1,376,665",
+     "165,200",
+     "304"
+    ],
+    [
+     "Glass (glas)",
+     "4,675",
+     "4,207",
+     "0"
+    ],
+    [
+     "Copper (koper)",
+     "3,729",
+     "1,865",
+     "0"
+    ],
+    [
+     "Others (overig)",
+     "58,243",
+     "29,121",
+     "0"
+    ],
+    [
+     "Total",
+     "1,800,610",
+     "393,535",
+     ""
+    ]
+   ]
+  },
+  {
+   "type": "p",
+   "text": "Mass is unchanged by the factors; only CO2 moves. Before 23 September 2026 each detailed material had its own factor and the total was 447,580 t CO2e. The factors are now one flat value per reported material group (section 8.7), which gives 393,535 t CO2e, 12% lower. Steel falls most (156,131 → 132,686 t) because reinforcement went from 1.99 to 1.55 kg CO2e per kg; wood and brick rise slightly."
+  },
+  {
+   "type": "p",
+   "text": "Every number is one of three kinds:"
+  },
+  {
+   "type": "li",
+   "text": "MEASURED – read directly from a BAG or 3DBAG field."
+  },
+  {
+   "type": "li",
+   "text": "DERIVED – calculated only from measured numbers."
+  },
+  {
+   "type": "li",
+   "text": "ASSUMED – our own chosen value, used only where 3DBAG cannot tell us (construction build-up, storey height, window share, emission factors)."
+  },
+  {
+   "type": "p",
+   "text": "Where the assumptions are: every assumption has an ID (A1–A19). Section 8.1 is the complete assumption register: value, where it is used, why it is needed and how much it changes the result. In the text and tables, an assumed value is marked [ASSUMED Ax]."
+  },
+  {
+   "type": "p",
+   "text": "Section 12 repeats the whole calculation step by step for one building, so every figure can be checked by hand."
+  },
+  {
+   "type": "h2",
+   "text": "2. Input data"
+  },
+  {
+   "type": "h3",
+   "text": "2.1 Files"
+  },
+  {
+   "type": "table",
+   "head": [
+    "File",
+    "Role",
+    "Records"
+   ],
+   "rows": [
+    [
+     "dataset/3dbag_typegebouw_cohort_b2_profile_ids.json",
+     "Source: all demolition notices with BAG + 3DBAG data",
+     "1,187"
+    ],
+    [
+     "dataset/material_estimation_1081_co2.json",
+     "Selection: one notice per unique building",
+     "1,081"
+    ],
+    [
+     "dataset/jan_provostlaan_16_bag_input.json",
+     "Source: Jan Provostlaan 16 (address, pand_id, building type); no demolition notice",
+     "1"
+    ],
+    [
+     "dataset/build_input_1082.py",
+     "Builds the input: keeps the 1,081 selected notices and adds Jan Provostlaan 16 (BAG from PDOK, 3DBAG from api.3dbag.nl)",
+     "–"
+    ],
+    [
+     "dataset/3dbag_input_1082.json",
+     "Input: 1,081 notices + Jan Provostlaan 16, with BAG + 3DBAG data",
+     "1,082"
+    ],
+    [
+     "dataset/geometry_material_co2_batch.py",
+     "Calculation script (all assumptions live here)",
+     "–"
+    ],
+    [
+     "dataset/material_estimation_1082_geometry_co2.json",
+     "Output: every step per building",
+     "1,082"
+    ],
+    [
+     "dataset/material_estimation_1082_geometry_co2_summary.csv",
+     "Output: one summary row per building",
+     "1,082"
+    ],
+    [
+     "dataset/import_geometry_co2.py",
+     "Loads the output into PostgreSQL",
+     "–"
+    ]
+   ]
+  },
+  {
+   "type": "h3",
+   "text": "2.2 Why 1,082 buildings"
+  },
+  {
+   "type": "p",
+   "text": "The source file has 1,187 notices, but some buildings appear in more than one notice. Counting unique pand_id (building ID) gives 1,081 buildings. We keep the same 1,081 notices as the existing estimation file, so each building is counted once; the other 106 notices are left out of the input file. One building without a demolition notice is added: Jan Provostlaan 16, 3723RD Bilthoven (pand_id 0310100000664117, single-family house built 1988, material_profile_id EEN_1970_2000). Its outline and dwelling unit come from the PDOK BAG API and its measured areas and volume from the 3DBAG API – the same fields as for the notices. It has no notice, so its notice_id is manual-0310100000664117. build_input_1082.py writes these 1,082 buildings to 3dbag_input_1082.json, the single input of the calculation."
+  },
+  {
+   "type": "h3",
+   "text": "2.3 Fields used (Dutch name with English meaning)"
+  },
+  {
+   "type": "table",
+   "head": [
+    "Field",
+    "English meaning",
+    "Source",
+    "Used for"
+   ],
+   "rows": [
+    [
+     "opp_grond",
+     "footprint area (m²)",
+     "3DBAG",
+     "ground floor, floor area, checks"
+    ],
+    [
+     "opp_buitenmuur",
+     "external wall area (m²)",
+     "3DBAG",
+     "façade and windows"
+    ],
+    [
+     "opp_scheidingsmuur",
+     "party wall area, shared with neighbours (m²)",
+     "3DBAG",
+     "party walls"
+    ],
+    [
+     "opp_dak_plat",
+     "flat roof area (m²)",
+     "3DBAG",
+     "flat roof, roof pitch"
+    ],
+    [
+     "opp_dak_schuin",
+     "sloped roof area (m²)",
+     "3DBAG",
+     "sloped roof, roof pitch"
+    ],
+    [
+     "volume_lod22",
+     "building volume, detailed model (m³)",
+     "3DBAG",
+     "gross floor area"
+    ],
+    [
+     "h_maaiveld / h_dak_max",
+     "ground level / highest roof point (m NAP)",
+     "3DBAG",
+     "building height (check)"
+    ],
+    [
+     "bouwlagen",
+     "number of storeys",
+     "3DBAG",
+     "check only (often missing)"
+    ],
+    [
+     "geometry",
+     "footprint outline (longitude / latitude)",
+     "BAG",
+     "perimeter → foundation length"
+    ],
+    [
+     "verblijfsobjecten.oppervlakte_m2",
+     "usable floor area of each dwelling unit, GO (m²)",
+     "BAG",
+     "internal walls, check"
+    ],
+    [
+     "material_profile_id",
+     "building type + age group, e.g. EEN_1970_2000",
+     "input file",
+     "choice of build-up"
+    ]
+   ]
+  },
+  {
+   "type": "h3",
+   "text": "2.4 Units and conventions"
+  },
+  {
+   "type": "table",
+   "head": [
+    "Item",
+    "Convention"
+   ],
+   "rows": [
+    [
+     "Areas",
+     "m² (square metres)"
+    ],
+    [
+     "Volumes",
+     "m³ (cubic metres)"
+    ],
+    [
+     "Lengths and heights",
+     "m (metres); heights in 3DBAG are m NAP (Normaal Amsterdams Peil, Dutch reference level ≈ sea level)"
+    ],
+    [
+     "Mass",
+     "kg in calculations, tonnes (1 t = 1,000 kg) in results"
+    ],
+    [
+     "CO2e",
+     "CO2 equivalent: all greenhouse gases expressed as the same warming effect as CO2"
+    ],
+    [
+     "A1–A3",
+     "Life-cycle stages of EN 15804: raw material supply (A1), transport to factory (A2), manufacturing (A3). Transport to site, demolition and waste processing are not included."
+    ],
+    [
+     "GO",
+     "gebruiksoppervlakte – usable floor area inside the walls (from BAG)"
+    ],
+    [
+     "BVO",
+     "bruto vloeroppervlakte – gross floor area including walls (derived here)"
+    ],
+    [
+     "Rounding",
+     "Calculations use full precision; tables show rounded values, so hand checks may differ in the last digit."
+    ]
+   ]
+  },
+  {
+   "type": "h2",
+   "text": "3. Method in 7 steps"
+  },
+  {
+   "type": "li",
+   "text": "Assign a build-up profile from building type and age (section 4)."
+  },
+  {
+   "type": "li",
+   "text": "Read the measured fields from 3DBAG and BAG (section 5)."
+  },
+  {
+   "type": "li",
+   "text": "Derive geometry: perimeter, heights, wall lengths (section 6)."
+  },
+  {
+   "type": "li",
+   "text": "Derive floor areas from volume and storey height (section 7)."
+  },
+  {
+   "type": "li",
+   "text": "Calculate component quantities – m² or m of each building part (section 9)."
+  },
+  {
+   "type": "li",
+   "text": "Calculate material mass = quantity × kg per m² of each layer, summed per material (section 10)."
+  },
+  {
+   "type": "li",
+   "text": "Calculate CO2 = mass × emission factor, and group into 7 materials (section 11)."
+  },
+  {
+   "type": "h2",
+   "text": "4. Step 1 – Assign a build-up profile"
+  },
+  {
+   "type": "p",
+   "text": "3DBAG tells us sizes, not materials. So each building gets one of 10 build-up profiles, chosen from the first and second part of its material_profile_id. [ASSUMED A10] – the link between building type/age and construction is our own choice."
+  },
+  {
+   "type": "table",
+   "head": [
+    "Prefix in material_profile_id",
+    "Meaning",
+    "Group"
+   ],
+   "rows": [
+    [
+     "EEN",
+     "eengezinswoning (single-family house)",
+     "RES"
+    ],
+    [
+     "APP",
+     "appartementen (apartments)",
+     "RES"
+    ],
+    [
+     "WF",
+     "woonflat (residential flat)",
+     "RES"
+    ],
+    [
+     "IND",
+     "industrie (industrial)",
+     "IND"
+    ],
+    [
+     "COM",
+     "commercieel (retail)",
+     "NONRES"
+    ],
+    [
+     "KANT",
+     "kantoor (office)",
+     "NONRES"
+    ],
+    [
+     "OVR",
+     "overig (other: assembly, healthcare, hotel, sports, education)",
+     "NONRES"
+    ]
+   ]
+  },
+  {
+   "type": "p",
+   "text": "The age part (PRE_1945, 1945_1970, 1970_2000, POST_2000) is kept as it is. Industrial buildings use only two age groups: before 1970 and from 1970."
+  },
+  {
+   "type": "table",
+   "head": [
+    "Profile",
+    "Description",
+    "Buildings"
+   ],
+   "rows": [
+    [
+     "RES_PRE_1945",
+     "Houses and apartments built before 1945: solid brick walls, timber floors, ceramic roof tiles, masonry footings.",
+     "241"
+    ],
+    [
+     "RES_1945_1970",
+     "Houses and apartments 1945–1970: cavity brick wall without insulation, concrete floors and party walls.",
+     "174"
+    ],
+    [
+     "RES_1970_2000",
+     "Houses and apartments 1970–2000: brick + insulation + calcium silicate cavity wall, concrete floors (the worked example building).",
+     "180"
+    ],
+    [
+     "RES_POST_2000",
+     "Houses and apartments after 2000: as 1970–2000 with thicker insulation and 250 mm party walls.",
+     "31"
+    ],
+    [
+     "IND_PRE_1970",
+     "Industrial buildings before 1970: brick-walled hall with light steel roof frame.",
+     "113"
+    ],
+    [
+     "IND_POST_1970",
+     "Industrial buildings from 1970: steel frame hall with steel sandwich panels.",
+     "103"
+    ],
+    [
+     "NONRES_PRE_1945",
+     "Offices, shops and other buildings before 1945: solid brick, timber floors.",
+     "63"
+    ],
+    [
+     "NONRES_1945_1970",
+     "Offices, shops and other 1945–1970: cavity brick, concrete floors, concrete frame.",
+     "64"
+    ],
+    [
+     "NONRES_1970_2000",
+     "Offices, shops and other 1970–2000: insulated cavity wall, concrete frame, concrete flat roof.",
+     "76"
+    ],
+    [
+     "NONRES_POST_2000",
+     "Offices, shops and other after 2000: as 1970–2000 with thicker insulation.",
+     "37"
+    ],
+    [
+     "Total",
+     "",
+     "1,082"
+    ]
+   ]
+  },
+  {
+   "type": "h2",
+   "text": "5. Step 2 – Measured inputs"
+  },
+  {
+   "type": "p",
+   "text": "For every building these values are read without change. Short symbols used below:"
+  },
+  {
+   "type": "table",
+   "head": [
+    "Symbol",
+    "Field",
+    "Unit"
+   ],
+   "rows": [
+    [
+     "A_ground",
+     "opp_grond (footprint area)",
+     "m²"
+    ],
+    [
+     "A_facade",
+     "opp_buitenmuur (external wall area)",
+     "m²"
+    ],
+    [
+     "A_party",
+     "opp_scheidingsmuur (party wall area)",
+     "m²"
+    ],
+    [
+     "A_flat",
+     "opp_dak_plat (flat roof area)",
+     "m²"
+    ],
+    [
+     "A_slope",
+     "opp_dak_schuin (sloped roof area)",
+     "m²"
+    ],
+    [
+     "V",
+     "volume_lod22 (building volume)",
+     "m³"
+    ],
+    [
+     "GO",
+     "sum of oppervlakte_m2 of all dwelling units (usable floor area)",
+     "m²"
+    ]
+   ]
+  },
+  {
+   "type": "p",
+   "text": "Empty wall or roof areas count as 0. A value of 0 is real: for example opp_scheidingsmuur = 0 means a detached building with no shared wall. [ASSUMED A17] – an empty (null) field is treated as 0."
+  },
+  {
+   "type": "h2",
+   "text": "6. Step 3 – Derived geometry"
+  },
+  {
+   "type": "h3",
+   "text": "6.1 Perimeter from the footprint outline"
+  },
+  {
+   "type": "p",
+   "text": "The outline is in degrees. Each corner is converted to metres around the building's own latitude φ (a local flat-earth approximation, accurate to well under 1% at building size) [ASSUMED A19]:"
+  },
+  {
+   "type": "p",
+   "text": "m_lat = 111132.95 − 559.82 × cos(2φ)      m_lon = 111412.84 × cos(φ)"
+  },
+  {
+   "type": "p",
+   "text": "x = (lon − lon₁) × m_lon      y = (lat − lat₁) × m_lat"
+  },
+  {
+   "type": "p",
+   "text": "Each side is then √(Δx² + Δy²) and the perimeter P is the sum of all sides. The outline area follows from the shoelace formula:"
+  },
+  {
+   "type": "p",
+   "text": "A_outline = ½ × | Σ (xᵢ × yᵢ₊₁ − xᵢ₊₁ × yᵢ) |"
+  },
+  {
+   "type": "h3",
+   "text": "6.2 Outline check and correction"
+  },
+  {
+   "type": "li",
+   "text": "If A_outline differs from opp_grond by more than 2%, the building is flagged."
+  },
+  {
+   "type": "li",
+   "text": "If it differs by more than 10%, the outline is not this 3DBAG footprint. We keep its shape but scale it to the measured size: P_used = P × √(A_ground ÷ A_outline). [ASSUMED A14]"
+  },
+  {
+   "type": "h3",
+   "text": "6.3 Heights (checks)"
+  },
+  {
+   "type": "p",
+   "text": "H_max = h_dak_max − h_maaiveld      H_mean = V ÷ A_ground"
+  },
+  {
+   "type": "h3",
+   "text": "6.4 Roof pitch (information)"
+  },
+  {
+   "type": "p",
+   "text": "cos(pitch) = (A_ground − A_flat) ÷ A_slope"
+  },
+  {
+   "type": "h3",
+   "text": "6.5 Façade and party wall length (our assumption A1)"
+  },
+  {
+   "type": "p",
+   "text": "3DBAG gives wall areas, not lengths. [ASSUMED A1] façade and party walls have the same average height, so the perimeter is split in the ratio of their areas:"
+  },
+  {
+   "type": "p",
+   "text": "L_facade = P × A_facade ÷ (A_facade + A_party)      L_party = P − L_facade"
+  },
+  {
+   "type": "p",
+   "text": "These lengths are only used for the foundation beams."
+  },
+  {
+   "type": "h2",
+   "text": "7. Step 4 – Floor areas"
+  },
+  {
+   "type": "p",
+   "text": "The gross floor area (BVO – bruto vloeroppervlakte) is the volume divided by our assumed gross storey height (floor to floor) for the profile [ASSUMED A2]. It can never be smaller than the footprint [ASSUMED A16]."
+  },
+  {
+   "type": "p",
+   "text": "BVO = max(A_ground , V ÷ storey height)      Upper floors = BVO − A_ground"
+  },
+  {
+   "type": "table",
+   "head": [
+    "Profile",
+    "Storey height (m)"
+   ],
+   "rows": [
+    [
+     "RES_PRE_1945",
+     "3.0"
+    ],
+    [
+     "RES_1945_1970",
+     "2.7"
+    ],
+    [
+     "RES_1970_2000",
+     "2.8"
+    ],
+    [
+     "RES_POST_2000",
+     "2.8"
+    ],
+    [
+     "IND_PRE_1970",
+     "5.0"
+    ],
+    [
+     "IND_POST_1970",
+     "5.0"
+    ],
+    [
+     "NONRES_PRE_1945",
+     "3.5"
+    ],
+    [
+     "NONRES_1945_1970",
+     "3.3"
+    ],
+    [
+     "NONRES_1970_2000",
+     "3.5"
+    ],
+    [
+     "NONRES_POST_2000",
+     "3.6"
+    ]
+   ]
+  },
+  {
+   "type": "p",
+   "text": "Check: usable ÷ gross floor area (GO ÷ BVO) should be 0.6–1.0. If GO is larger than BVO the dwelling unit spans several buildings, so internal walls use min(GO, BVO) [ASSUMED A15]."
+  },
+  {
+   "type": "h2",
+   "text": "8. Our own assumptions"
+  },
+  {
+   "type": "p",
+   "text": "3DBAG and BAG measure the size of a building (areas, volume, outline) but not what it is made of or how it is divided inside. Everything in this section fills that gap. None of these values are measured for the individual building; they are our own chosen values for a typical building of that type and age. They can be replaced building by building when better information exists."
+  },
+  {
+   "type": "h3",
+   "text": "8.1 Assumption register"
+  },
+  {
+   "type": "table",
+   "head": [
+    "ID",
+    "Assumption",
+    "Value used",
+    "Used in",
+    "Why it is needed"
+   ],
+   "rows": [
+    [
+     "A1",
+     "Façade and party walls have the same average height",
+     "–",
+     "6.5 wall lengths → foundation length",
+     "3DBAG gives wall areas, not lengths"
+    ],
+    [
+     "A2",
+     "Gross storey height (floor to floor)",
+     "2.7–5.0 m per profile (section 7)",
+     "7 floor areas, all floors",
+     "3DBAG never gives floor area; storey count is missing for 323 buildings"
+    ],
+    [
+     "A3",
+     "Window share of the façade",
+     "10–40% per profile (8.5)",
+     "9 windows and closed façade",
+     "3DBAG has no window openings"
+    ],
+    [
+     "A4",
+     "Share of a party wall that belongs to this building",
+     "50%",
+     "9 party walls, foundation length",
+     "a shared wall stands between two owners; avoids counting it twice"
+    ],
+    [
+     "A5",
+     "Internal wall area per m² floor",
+     "0.1–0.5 m² per profile (8.5)",
+     "9 internal walls",
+     "3DBAG has no interior"
+    ],
+    [
+     "A6",
+     "Foundation beam section",
+     "0.40 × 0.50 m = 0.20 m³ per m",
+     "9 foundation",
+     "foundations are underground and not in 3DBAG"
+    ],
+    [
+     "A7",
+     "Reinforced concrete composition",
+     "2,400 kg/m³ concrete + 80 kg/m³ rebar",
+     "all concrete parts",
+     "reinforcement is not visible"
+    ],
+    [
+     "A8",
+     "Material densities",
+     "brick 1,800 · calcium silicate 1,850 · mineral wool 30 · gypsum 1,000 kg/m³",
+     "8.5 kg per m²",
+     "needed to turn thickness into mass"
+    ],
+    [
+     "A9",
+     "Construction layers and thicknesses per profile",
+     "tables in 8.5",
+     "all building parts",
+     "3DBAG has no material information"
+    ],
+    [
+     "A10",
+     "Building type + age decides the construction",
+     "10 profiles (section 4)",
+     "choice of A2, A3, A5, A9",
+     "the actual construction per building is unknown"
+    ],
+    [
+     "A11",
+     "Installations and fixings",
+     "steel 8, copper 1.5, zinc/lead 1, plastic 3 kg per m² BVO",
+     "8.6",
+     "pipes, wiring, radiators, gutters are not visible"
+    ],
+    [
+     "A12",
+     "Emission factors",
+     "table in 8.7",
+     "section 11 CO2",
+     "CO2 is not measured; it depends on how materials were made"
+    ],
+    [
+     "A13",
+     "Foundation piles excluded",
+     "0",
+     "–",
+     "piles normally stay in the ground at demolition"
+    ],
+    [
+     "A14",
+     "Wrong outline: scale perimeter to opp_grond",
+     "P × √(opp_grond ÷ outline area) if > 10% difference",
+     "6.2 (144 buildings)",
+     "some outlines do not belong to the 3DBAG footprint"
+    ],
+    [
+     "A15",
+     "Usable area capped at gross area",
+     "min(GO, BVO)",
+     "internal walls",
+     "some dwelling units span several buildings"
+    ],
+    [
+     "A16",
+     "Gross floor area at least the footprint",
+     "BVO ≥ opp_grond",
+     "7",
+     "a very low building must still have a ground floor"
+    ],
+    [
+     "A17",
+     "Empty (null) area fields",
+     "treated as 0",
+     "5",
+     "no value means no such surface"
+    ],
+    [
+     "A18",
+     "One notice per building",
+     "1,081 of 1,187 notices + Jan Provostlaan 16",
+     "2.2",
+     "avoid counting a building twice"
+    ],
+    [
+     "A19",
+     "Degrees to metres",
+     "local flat-earth conversion (6.1)",
+     "perimeter",
+     "error well under 1% at building size"
+    ]
+   ]
+  },
+  {
+   "type": "h3",
+   "text": "8.2 What is NOT assumed"
+  },
+  {
+   "type": "li",
+   "text": "Footprint, wall and roof areas and volume – measured by 3DBAG from AHN laser height data."
+  },
+  {
+   "type": "li",
+   "text": "Footprint outline and usable floor area (GO) – from BAG, the Dutch national building register."
+  },
+  {
+   "type": "li",
+   "text": "Building type and age group – from the input file (material_profile_id)."
+  },
+  {
+   "type": "li",
+   "text": "Perimeter, heights, roof pitch – calculated from the above without any assumption."
+  },
+  {
+   "type": "h3",
+   "text": "8.3 How much each assumption matters (sensitivity)"
+  },
+  {
+   "type": "p",
+   "text": "We changed one assumption at a time and re-ran all 1,082 buildings. The table shows the change in total mass and total CO2 compared with the result in this document (1,800,610 t, 393,535 t CO2e)."
+  },
+  {
+   "type": "table",
+   "head": [
+    "ID",
+    "Change tested",
+    "Total mass",
+    "Total CO2"
+   ],
+   "rows": [
+    [
+     "A2",
+     "Storey height −10%",
+     "+8.0%",
+     "+7.7%"
+    ],
+    [
+     "A2",
+     "Storey height +10%",
+     "-6.5%",
+     "-6.3%"
+    ],
+    [
+     "A3",
+     "Window share −10 points",
+     "+1.7%",
+     "+1.3%"
+    ],
+    [
+     "A3",
+     "Window share +10 points",
+     "-1.7%",
+     "-1.3%"
+    ],
+    [
+     "A4",
+     "Party wall 100% instead of 50%",
+     "+0.8%",
+     "+0.6%"
+    ],
+    [
+     "A5",
+     "Internal wall ratio −50%",
+     "-1.3%",
+     "-2.4%"
+    ],
+    [
+     "A5",
+     "Internal wall ratio +50%",
+     "+1.3%",
+     "+2.4%"
+    ],
+    [
+     "A7",
+     "Rebar 60 instead of 80 kg/m³",
+     "-0.6%",
+     "-4.5%"
+    ],
+    [
+     "A7",
+     "Rebar 100 instead of 80 kg/m³",
+     "+0.6%",
+     "+4.5%"
+    ],
+    [
+     "A9",
+     "Concrete floors 25% thinner (e.g. 150 instead of 200 mm)",
+     "-15.2%",
+     "-11.5%"
+    ],
+    [
+     "A9",
+     "Façade layers 25% thinner",
+     "-3.1%",
+     "-3.1%"
+    ],
+    [
+     "A11",
+     "No installations",
+     "-1.9%",
+     "-9.6%"
+    ],
+    [
+     "A11",
+     "Installations doubled",
+     "+1.9%",
+     "+9.6%"
+    ],
+    [
+     "A12",
+     "All emission factors ±20%",
+     "0.0%",
+     "±20.0%"
+    ]
+   ]
+  },
+  {
+   "type": "p",
+   "text": "For mass, concrete floor thickness (A9, -15.2%) and storey height (A2, +8.0%) matter most, because concrete floors are the heaviest part of most buildings. Since 23 September 2026 each reported material group has one flat emission factor, so CO2 now follows mass closely: floor thickness (A9, -11.5%), storey height (A2, +7.7%), installations (A11, ±9.6%) and the amount of reinforcement (A7, ±4.5%) are the largest. The factors themselves (A12) move CO2 one for one."
+  },
+  {
+   "type": "h3",
+   "text": "8.4 Thickness to mass"
+  },
+  {
+   "type": "p",
+   "text": "[ASSUMED A7, A8] Mass per m² = thickness × density. Examples: 100 mm brick = 0.10 × 1,800 = 180 kg/m²; 200 mm reinforced concrete = 0.20 × 2,400 = 480 kg concrete + 0.20 × 80 = 16 kg rebar per m²; 50 mm mineral wool = 0.05 × 30 = 1.5 kg/m²."
+  },
+  {
+   "type": "h3",
+   "text": "8.5 Build-up per profile (kg per m², or kg per m for foundation)"
+  },
+  {
+   "type": "p",
+   "text": "[ASSUMED A3, A5, A9] Every value in the tables below is our own assumption for a typical building of that profile."
+  },
+  {
+   "type": "p",
+   "text": "RES_PRE_1945 – Houses and apartments built before 1945: solid brick walls, timber floors, ceramic roof tiles, masonry footings. Window share 20%, internal walls 0.5 m² per m² floor, storey height 3.0 m."
+  },
+  {
+   "type": "table",
+   "head": [
+    "Component",
+    "Layers (kg per unit)",
+    "Total kg per unit"
+   ],
+   "rows": [
+    [
+     "Façade, closed part (gevel)",
+     "Clay brick 396.0",
+     "396.0"
+    ],
+    [
+     "Windows (ramen)",
+     "Glass 10.0; Timber 15.0",
+     "25.0"
+    ],
+    [
+     "Party walls (scheidingsmuren)",
+     "Clay brick 396.0",
+     "396.0"
+    ],
+    [
+     "Ground floor (begane grondvloer)",
+     "Timber 30.0",
+     "30.0"
+    ],
+    [
+     "Upper floors (verdiepingsvloeren)",
+     "Timber 35.0",
+     "35.0"
+    ],
+    [
+     "Sloped roof (schuin dak)",
+     "Timber 25.0; Ceramic roof tiles 45.0",
+     "70.0"
+    ],
+    [
+     "Flat roof (plat dak)",
+     "Timber 20.0; Bitumen roofing 8.0",
+     "28.0"
+    ],
+    [
+     "Foundation beams (funderingsbalken)",
+     "Clay brick 486.0",
+     "486.0"
+    ],
+    [
+     "Internal walls (binnenwanden)",
+     "Clay brick 180.0",
+     "180.0"
+    ]
+   ]
+  },
+  {
+   "type": "p",
+   "text": "RES_1945_1970 – Houses and apartments 1945–1970: cavity brick wall without insulation, concrete floors and party walls. Window share 25%, internal walls 0.5 m² per m² floor, storey height 2.7 m."
+  },
+  {
+   "type": "table",
+   "head": [
+    "Component",
+    "Layers (kg per unit)",
+    "Total kg per unit"
+   ],
+   "rows": [
+    [
+     "Façade, closed part (gevel)",
+     "Clay brick 180.0; Clay brick 180.0",
+     "360.0"
+    ],
+    [
+     "Windows (ramen)",
+     "Glass 10.0; Timber 12.0",
+     "22.0"
+    ],
+    [
+     "Party walls (scheidingsmuren)",
+     "Concrete 480.0; Reinforcement steel 16.0",
+     "496.0"
+    ],
+    [
+     "Ground floor (begane grondvloer)",
+     "Concrete 360.0; Reinforcement steel 12.0",
+     "372.0"
+    ],
+    [
+     "Upper floors (verdiepingsvloeren)",
+     "Concrete 384.0; Reinforcement steel 12.8",
+     "396.8"
+    ],
+    [
+     "Sloped roof (schuin dak)",
+     "Timber 20.0; Concrete roof tiles 42.0",
+     "62.0"
+    ],
+    [
+     "Flat roof (plat dak)",
+     "Timber 20.0; Bitumen roofing 8.0",
+     "28.0"
+    ],
+    [
+     "Foundation beams (funderingsbalken)",
+     "Concrete 480.0; Reinforcement steel 16.0",
+     "496.0"
+    ],
+    [
+     "Internal walls (binnenwanden)",
+     "Gypsum blocks 70.0",
+     "70.0"
+    ]
+   ]
+  },
+  {
+   "type": "p",
+   "text": "RES_1970_2000 – Houses and apartments 1970–2000: brick + insulation + calcium silicate cavity wall, concrete floors (the worked example building). Window share 25%, internal walls 0.5 m² per m² floor, storey height 2.8 m."
+  },
+  {
+   "type": "table",
+   "head": [
+    "Component",
+    "Layers (kg per unit)",
+    "Total kg per unit"
+   ],
+   "rows": [
+    [
+     "Façade, closed part (gevel)",
+     "Clay brick 180.0; Mineral wool 1.5; Calcium silicate brick 185.0",
+     "366.5"
+    ],
+    [
+     "Windows (ramen)",
+     "Glass 20.0; Timber 12.0",
+     "32.0"
+    ],
+    [
+     "Party walls (scheidingsmuren)",
+     "Concrete 480.0; Reinforcement steel 16.0",
+     "496.0"
+    ],
+    [
+     "Ground floor (begane grondvloer)",
+     "Concrete 480.0; Reinforcement steel 16.0",
+     "496.0"
+    ],
+    [
+     "Upper floors (verdiepingsvloeren)",
+     "Concrete 480.0; Reinforcement steel 16.0",
+     "496.0"
+    ],
+    [
+     "Sloped roof (schuin dak)",
+     "Timber 20.0; Concrete roof tiles 42.0; Mineral wool 1.8",
+     "63.8"
+    ],
+    [
+     "Flat roof (plat dak)",
+     "Timber 20.0; Bitumen roofing 8.0; Mineral wool 1.8",
+     "29.8"
+    ],
+    [
+     "Foundation beams (funderingsbalken)",
+     "Concrete 480.0; Reinforcement steel 16.0",
+     "496.0"
+    ],
+    [
+     "Internal walls (binnenwanden)",
+     "Gypsum blocks 70.0",
+     "70.0"
+    ]
+   ]
+  },
+  {
+   "type": "p",
+   "text": "RES_POST_2000 – Houses and apartments after 2000: as 1970–2000 with thicker insulation and 250 mm party walls. Window share 25%, internal walls 0.5 m² per m² floor, storey height 2.8 m."
+  },
+  {
+   "type": "table",
+   "head": [
+    "Component",
+    "Layers (kg per unit)",
+    "Total kg per unit"
+   ],
+   "rows": [
+    [
+     "Façade, closed part (gevel)",
+     "Clay brick 180.0; Mineral wool 3.6; Calcium silicate brick 185.0",
+     "368.6"
+    ],
+    [
+     "Windows (ramen)",
+     "Glass 20.0; Timber 12.0",
+     "32.0"
+    ],
+    [
+     "Party walls (scheidingsmuren)",
+     "Concrete 600.0; Reinforcement steel 20.0",
+     "620.0"
+    ],
+    [
+     "Ground floor (begane grondvloer)",
+     "Concrete 480.0; Reinforcement steel 16.0",
+     "496.0"
+    ],
+    [
+     "Upper floors (verdiepingsvloeren)",
+     "Concrete 480.0; Reinforcement steel 16.0",
+     "496.0"
+    ],
+    [
+     "Sloped roof (schuin dak)",
+     "Timber 20.0; Concrete roof tiles 42.0; Mineral wool 4.5",
+     "66.5"
+    ],
+    [
+     "Flat roof (plat dak)",
+     "Timber 20.0; Bitumen roofing 8.0; Mineral wool 4.5",
+     "32.5"
+    ],
+    [
+     "Foundation beams (funderingsbalken)",
+     "Concrete 480.0; Reinforcement steel 16.0",
+     "496.0"
+    ],
+    [
+     "Internal walls (binnenwanden)",
+     "Gypsum blocks 70.0",
+     "70.0"
+    ]
+   ]
+  },
+  {
+   "type": "p",
+   "text": "IND_PRE_1970 – Industrial buildings before 1970: brick-walled hall with light steel roof frame. Window share 15%, internal walls 0.1 m² per m² floor, storey height 5.0 m."
+  },
+  {
+   "type": "table",
+   "head": [
+    "Component",
+    "Layers (kg per unit)",
+    "Total kg per unit"
+   ],
+   "rows": [
+    [
+     "Façade, closed part (gevel)",
+     "Clay brick 396.0",
+     "396.0"
+    ],
+    [
+     "Windows (ramen)",
+     "Glass 10.0; Timber 15.0",
+     "25.0"
+    ],
+    [
+     "Party walls (scheidingsmuren)",
+     "Clay brick 396.0",
+     "396.0"
+    ],
+    [
+     "Ground floor (begane grondvloer)",
+     "Concrete 360.0; Reinforcement steel 12.0",
+     "372.0"
+    ],
+    [
+     "Upper floors (verdiepingsvloeren)",
+     "Concrete 480.0; Reinforcement steel 16.0",
+     "496.0"
+    ],
+    [
+     "Sloped roof (schuin dak)",
+     "Timber 25.0; Ceramic roof tiles 45.0",
+     "70.0"
+    ],
+    [
+     "Flat roof (plat dak)",
+     "Timber 20.0; Bitumen roofing 8.0",
+     "28.0"
+    ],
+    [
+     "Foundation beams (funderingsbalken)",
+     "Concrete 480.0; Reinforcement steel 16.0",
+     "496.0"
+    ],
+    [
+     "Load-bearing frame (draagconstructie)",
+     "Structural steel 15.0",
+     "15.0"
+    ],
+    [
+     "Internal walls (binnenwanden)",
+     "Clay brick 180.0",
+     "180.0"
+    ]
+   ]
+  },
+  {
+   "type": "p",
+   "text": "IND_POST_1970 – Industrial buildings from 1970: steel frame hall with steel sandwich panels. Window share 10%, internal walls 0.1 m² per m² floor, storey height 5.0 m."
+  },
+  {
+   "type": "table",
+   "head": [
+    "Component",
+    "Layers (kg per unit)",
+    "Total kg per unit"
+   ],
+   "rows": [
+    [
+     "Façade, closed part (gevel)",
+     "Steel sheet 10.0; Mineral wool 3.0",
+     "13.0"
+    ],
+    [
+     "Windows (ramen)",
+     "Glass 20.0; Aluminium 8.0",
+     "28.0"
+    ],
+    [
+     "Party walls (scheidingsmuren)",
+     "Calcium silicate brick 277.5",
+     "277.5"
+    ],
+    [
+     "Ground floor (begane grondvloer)",
+     "Concrete 480.0; Reinforcement steel 16.0",
+     "496.0"
+    ],
+    [
+     "Upper floors (verdiepingsvloeren)",
+     "Concrete 480.0; Reinforcement steel 16.0",
+     "496.0"
+    ],
+    [
+     "Sloped roof (schuin dak)",
+     "Steel sheet 10.0; Mineral wool 3.0",
+     "13.0"
+    ],
+    [
+     "Flat roof (plat dak)",
+     "Steel sheet 10.0; Bitumen roofing 8.0; Mineral wool 3.0",
+     "21.0"
+    ],
+    [
+     "Foundation beams (funderingsbalken)",
+     "Concrete 480.0; Reinforcement steel 16.0",
+     "496.0"
+    ],
+    [
+     "Load-bearing frame (draagconstructie)",
+     "Structural steel 30.0",
+     "30.0"
+    ],
+    [
+     "Internal walls (binnenwanden)",
+     "Gypsum blocks 70.0",
+     "70.0"
+    ]
+   ]
+  },
+  {
+   "type": "p",
+   "text": "NONRES_PRE_1945 – Offices, shops and other buildings before 1945: solid brick, timber floors. Window share 30%, internal walls 0.4 m² per m² floor, storey height 3.5 m."
+  },
+  {
+   "type": "table",
+   "head": [
+    "Component",
+    "Layers (kg per unit)",
+    "Total kg per unit"
+   ],
+   "rows": [
+    [
+     "Façade, closed part (gevel)",
+     "Clay brick 396.0",
+     "396.0"
+    ],
+    [
+     "Windows (ramen)",
+     "Glass 10.0; Timber 15.0",
+     "25.0"
+    ],
+    [
+     "Party walls (scheidingsmuren)",
+     "Clay brick 396.0",
+     "396.0"
+    ],
+    [
+     "Ground floor (begane grondvloer)",
+     "Timber 30.0",
+     "30.0"
+    ],
+    [
+     "Upper floors (verdiepingsvloeren)",
+     "Timber 35.0",
+     "35.0"
+    ],
+    [
+     "Sloped roof (schuin dak)",
+     "Timber 25.0; Ceramic roof tiles 45.0",
+     "70.0"
+    ],
+    [
+     "Flat roof (plat dak)",
+     "Timber 20.0; Bitumen roofing 8.0",
+     "28.0"
+    ],
+    [
+     "Foundation beams (funderingsbalken)",
+     "Clay brick 486.0",
+     "486.0"
+    ],
+    [
+     "Internal walls (binnenwanden)",
+     "Clay brick 180.0",
+     "180.0"
+    ]
+   ]
+  },
+  {
+   "type": "p",
+   "text": "NONRES_1945_1970 – Offices, shops and other 1945–1970: cavity brick, concrete floors, concrete frame. Window share 35%, internal walls 0.4 m² per m² floor, storey height 3.3 m."
+  },
+  {
+   "type": "table",
+   "head": [
+    "Component",
+    "Layers (kg per unit)",
+    "Total kg per unit"
+   ],
+   "rows": [
+    [
+     "Façade, closed part (gevel)",
+     "Clay brick 180.0; Clay brick 180.0",
+     "360.0"
+    ],
+    [
+     "Windows (ramen)",
+     "Glass 10.0; Timber 12.0",
+     "22.0"
+    ],
+    [
+     "Party walls (scheidingsmuren)",
+     "Concrete 480.0; Reinforcement steel 16.0",
+     "496.0"
+    ],
+    [
+     "Ground floor (begane grondvloer)",
+     "Concrete 360.0; Reinforcement steel 12.0",
+     "372.0"
+    ],
+    [
+     "Upper floors (verdiepingsvloeren)",
+     "Concrete 480.0; Reinforcement steel 16.0",
+     "496.0"
+    ],
+    [
+     "Sloped roof (schuin dak)",
+     "Timber 20.0; Concrete roof tiles 42.0",
+     "62.0"
+    ],
+    [
+     "Flat roof (plat dak)",
+     "Concrete 360.0; Reinforcement steel 12.0; Bitumen roofing 8.0",
+     "380.0"
+    ],
+    [
+     "Foundation beams (funderingsbalken)",
+     "Concrete 480.0; Reinforcement steel 16.0",
+     "496.0"
+    ],
+    [
+     "Load-bearing frame (draagconstructie)",
+     "Concrete 72.0; Reinforcement steel 2.4",
+     "74.4"
+    ],
+    [
+     "Internal walls (binnenwanden)",
+     "Gypsum blocks 70.0",
+     "70.0"
+    ]
+   ]
+  },
+  {
+   "type": "p",
+   "text": "NONRES_1970_2000 – Offices, shops and other 1970–2000: insulated cavity wall, concrete frame, concrete flat roof. Window share 40%, internal walls 0.4 m² per m² floor, storey height 3.5 m."
+  },
+  {
+   "type": "table",
+   "head": [
+    "Component",
+    "Layers (kg per unit)",
+    "Total kg per unit"
+   ],
+   "rows": [
+    [
+     "Façade, closed part (gevel)",
+     "Clay brick 180.0; Mineral wool 1.8; Calcium silicate brick 185.0",
+     "366.8"
+    ],
+    [
+     "Windows (ramen)",
+     "Glass 20.0; Aluminium 8.0",
+     "28.0"
+    ],
+    [
+     "Party walls (scheidingsmuren)",
+     "Concrete 480.0; Reinforcement steel 16.0",
+     "496.0"
+    ],
+    [
+     "Ground floor (begane grondvloer)",
+     "Concrete 480.0; Reinforcement steel 16.0",
+     "496.0"
+    ],
+    [
+     "Upper floors (verdiepingsvloeren)",
+     "Concrete 480.0; Reinforcement steel 16.0",
+     "496.0"
+    ],
+    [
+     "Sloped roof (schuin dak)",
+     "Timber 20.0; Concrete roof tiles 42.0; Mineral wool 1.8",
+     "63.8"
+    ],
+    [
+     "Flat roof (plat dak)",
+     "Concrete 480.0; Reinforcement steel 16.0; Bitumen roofing 8.0; Mineral wool 2.4",
+     "506.4"
+    ],
+    [
+     "Foundation beams (funderingsbalken)",
+     "Concrete 480.0; Reinforcement steel 16.0",
+     "496.0"
+    ],
+    [
+     "Load-bearing frame (draagconstructie)",
+     "Concrete 72.0; Reinforcement steel 2.4",
+     "74.4"
+    ],
+    [
+     "Internal walls (binnenwanden)",
+     "Gypsum blocks 70.0",
+     "70.0"
+    ]
+   ]
+  },
+  {
+   "type": "p",
+   "text": "NONRES_POST_2000 – Offices, shops and other after 2000: as 1970–2000 with thicker insulation. Window share 40%, internal walls 0.4 m² per m² floor, storey height 3.6 m."
+  },
+  {
+   "type": "table",
+   "head": [
+    "Component",
+    "Layers (kg per unit)",
+    "Total kg per unit"
+   ],
+   "rows": [
+    [
+     "Façade, closed part (gevel)",
+     "Clay brick 180.0; Mineral wool 4.2; Calcium silicate brick 185.0",
+     "369.2"
+    ],
+    [
+     "Windows (ramen)",
+     "Glass 20.0; Aluminium 8.0",
+     "28.0"
+    ],
+    [
+     "Party walls (scheidingsmuren)",
+     "Concrete 480.0; Reinforcement steel 16.0",
+     "496.0"
+    ],
+    [
+     "Ground floor (begane grondvloer)",
+     "Concrete 480.0; Reinforcement steel 16.0",
+     "496.0"
+    ],
+    [
+     "Upper floors (verdiepingsvloeren)",
+     "Concrete 480.0; Reinforcement steel 16.0",
+     "496.0"
+    ],
+    [
+     "Sloped roof (schuin dak)",
+     "Timber 20.0; Concrete roof tiles 42.0; Mineral wool 4.5",
+     "66.5"
+    ],
+    [
+     "Flat roof (plat dak)",
+     "Concrete 480.0; Reinforcement steel 16.0; Bitumen roofing 8.0; Mineral wool 4.5",
+     "508.5"
+    ],
+    [
+     "Foundation beams (funderingsbalken)",
+     "Concrete 480.0; Reinforcement steel 16.0",
+     "496.0"
+    ],
+    [
+     "Load-bearing frame (draagconstructie)",
+     "Concrete 72.0; Reinforcement steel 2.4",
+     "74.4"
+    ],
+    [
+     "Internal walls (binnenwanden)",
+     "Gypsum blocks 70.0",
+     "70.0"
+    ]
+   ]
+  },
+  {
+   "type": "h3",
+   "text": "8.6 Installations and fixings (all profiles)"
+  },
+  {
+   "type": "p",
+   "text": "[ASSUMED A11] Pipes, wiring, radiators, gutters and fixings are not visible in 3DBAG. We add the same amount per m² gross floor area to every building:"
+  },
+  {
+   "type": "table",
+   "head": [
+    "Material",
+    "kg per m² BVO",
+    "Covers"
+   ],
+   "rows": [
+    [
+     "Structural steel (constructiestaal)",
+     "8.0",
+     "radiators, lintels, fixings"
+    ],
+    [
+     "Copper (koper)",
+     "1.5",
+     "water pipes, wiring"
+    ],
+    [
+     "Zinc / lead (zink / lood)",
+     "1.0",
+     "gutters, flashing"
+    ],
+    [
+     "Plastic (kunststof)",
+     "3.0",
+     "drains, cable sheathing"
+    ]
+   ]
+  },
+  {
+   "type": "h3",
+   "text": "8.7 Emission factors and reporting group"
+  },
+  {
+   "type": "p",
+   "text": "[ASSUMED A12] CO2 released to produce the material (production stage A1–A3). There is one factor per reported material group: every detailed material takes the factor of the group it is reported in, so the CO2 of a group is simply its mass × that factor. All steel together is 85,604 t × 1.55 = 132,686 t CO2e, and all concrete 1,376,665 t × 0.12 = 165,200 t CO2e. Copper has no factor of its own: it is an installation material, so it takes the Other factor 0.50, while still being reported as its own group. These are coarse working values – the same set the earlier estimate used (section 17); for official Dutch reporting they should be replaced with Nationale Milieudatabase (National Environmental Database) values."
+  },
+  {
+   "type": "table",
+   "head": [
+    "Material group",
+    "kg CO2e per kg",
+    "What the factor covers"
+   ],
+   "rows": [
+    [
+     "Concrete (beton)",
+     "0.12",
+     "Ready-mixed structural concrete, generic EU average. Detailed materials: concrete, concrete roof tiles."
+    ],
+    [
+     "Brick / masonry (baksteen)",
+     "0.21",
+     "Fired clay brick including mortar. Detailed materials: clay brick, calcium silicate brick."
+    ],
+    [
+     "Wood (hout)",
+     "0.40",
+     "Production only. EXCLUDES biogenic carbon storage – counting it would make timber net-negative. Detailed material: timber."
+    ],
+    [
+     "Steel (staal)",
+     "1.55",
+     "Structural steel and reinforcement, world-average recycled content. Detailed materials: reinforcement steel, structural steel, steel sheet."
+    ],
+    [
+     "Glass (glas)",
+     "0.90",
+     "Float glass. Detailed material: glass."
+    ],
+    [
+     "Other (overig)",
+     "0.50",
+     "Coarse blended catch-all for insulation, gypsum, ceramics, plastics and installations. Detailed materials: mineral wool, gypsum blocks, ceramic roof tiles, bitumen roofing, plastic, aluminium, zinc / lead – and copper, which is reported as its own group but is an installation material."
+    ]
+   ]
+  },
+  {
+   "type": "p",
+   "text": "Each detailed material below takes the factor of its group, so the two tables always agree."
+  },
+  {
+   "type": "table",
+   "head": [
+    "Material",
+    "kg CO2e per kg",
+    "Reported as"
+   ],
+   "rows": [
+    [
+     "Concrete (beton)",
+     "0.120",
+     "Concrete (beton)"
+    ],
+    [
+     "Reinforcement steel (wapeningsstaal)",
+     "1.550",
+     "Steel (staal)"
+    ],
+    [
+     "Structural steel (constructiestaal)",
+     "1.550",
+     "Steel (staal)"
+    ],
+    [
+     "Steel sheet (staalplaat)",
+     "1.550",
+     "Steel (staal)"
+    ],
+    [
+     "Aluminium (aluminium)",
+     "0.500",
+     "Others (overig)"
+    ],
+    [
+     "Clay brick (baksteen)",
+     "0.210",
+     "Brick (baksteen)"
+    ],
+    [
+     "Calcium silicate brick (kalkzandsteen)",
+     "0.210",
+     "Brick (baksteen)"
+    ],
+    [
+     "Mineral wool (minerale wol)",
+     "0.500",
+     "Others (overig)"
+    ],
+    [
+     "Timber (hout)",
+     "0.400",
+     "Wood (hout)"
+    ],
+    [
+     "Glass (glas)",
+     "0.900",
+     "Glass (glas)"
+    ],
+    [
+     "Concrete roof tiles (betondakpannen)",
+     "0.120",
+     "Concrete (beton)"
+    ],
+    [
+     "Ceramic roof tiles (keramische dakpannen)",
+     "0.500",
+     "Others (overig)"
+    ],
+    [
+     "Bitumen roofing (bitumen)",
+     "0.500",
+     "Others (overig)"
+    ],
+    [
+     "Gypsum blocks (gipsblokken)",
+     "0.500",
+     "Others (overig)"
+    ],
+    [
+     "Copper (koper)",
+     "0.500",
+     "Copper (koper)"
+    ],
+    [
+     "Zinc / lead (zink / lood)",
+     "0.500",
+     "Others (overig)"
+    ],
+    [
+     "Plastic (kunststof)",
+     "0.500",
+     "Others (overig)"
+    ]
+   ]
+  },
+  {
+   "type": "h2",
+   "text": "9. Step 5 – Component quantities"
+  },
+  {
+   "type": "p",
+   "text": "Each building part has a quantity taken from the measured or derived values:"
+  },
+  {
+   "type": "table",
+   "head": [
+    "Building part",
+    "Quantity",
+    "Unit",
+    "Assumptions in the quantity"
+   ],
+   "rows": [
+    [
+     "Façade, closed part (gevel)",
+     "opp_buitenmuur × (1 − window ratio)",
+     "m²",
+     "A3"
+    ],
+    [
+     "Windows (ramen)",
+     "opp_buitenmuur × window ratio",
+     "m²",
+     "A3"
+    ],
+    [
+     "Party walls (scheidingsmuren)",
+     "opp_scheidingsmuur × 50%",
+     "m²",
+     "A4"
+    ],
+    [
+     "Ground floor (begane grondvloer)",
+     "opp_grond",
+     "m²",
+     "none"
+    ],
+    [
+     "Upper floors (verdiepingsvloeren)",
+     "BVO − opp_grond",
+     "m²",
+     "A2, A16"
+    ],
+    [
+     "Sloped roof (schuin dak)",
+     "opp_dak_schuin",
+     "m²",
+     "none"
+    ],
+    [
+     "Flat roof (plat dak)",
+     "opp_dak_plat",
+     "m²",
+     "none"
+    ],
+    [
+     "Foundation beams (funderingsbalken)",
+     "façade length + 50% × party wall length",
+     "m",
+     "A1, A4, A14"
+    ],
+    [
+     "Load-bearing frame (draagconstructie)",
+     "BVO",
+     "m²",
+     "A2"
+    ],
+    [
+     "Internal walls (binnenwanden)",
+     "min(GO, BVO) × internal wall ratio",
+     "m²",
+     "A5, A15"
+    ],
+    [
+     "Installations and fixings (installaties)",
+     "BVO",
+     "m²",
+     "A2"
+    ]
+   ]
+  },
+  {
+   "type": "p",
+   "text": "The kg per unit for every building part is always [ASSUMED A9] (A11 for installations)."
+  },
+  {
+   "type": "p",
+   "text": "Window area = A_facade × window share; closed façade = A_facade − window area."
+  },
+  {
+   "type": "h2",
+   "text": "10. Step 6 – Material mass"
+  },
+  {
+   "type": "p",
+   "text": "mass (kg) = quantity × kg per unit of each layer"
+  },
+  {
+   "type": "p",
+   "text": "The masses of the same material are added over all building parts. Then the 17 detailed materials are grouped into the 7 reported materials:"
+  },
+  {
+   "type": "table",
+   "head": [
+    "Reported material",
+    "Includes"
+   ],
+   "rows": [
+    [
+     "Steel (staal)",
+     "Reinforcement steel, Structural steel, Steel sheet"
+    ],
+    [
+     "Wood (hout)",
+     "Timber"
+    ],
+    [
+     "Brick (baksteen)",
+     "Clay brick, Calcium silicate brick"
+    ],
+    [
+     "Concrete (beton)",
+     "Concrete, Concrete roof tiles"
+    ],
+    [
+     "Glass (glas)",
+     "Glass"
+    ],
+    [
+     "Copper (koper)",
+     "Copper"
+    ],
+    [
+     "Others (overig)",
+     "Aluminium, Zinc / lead, Gypsum blocks, Ceramic roof tiles, Mineral wool, Bitumen roofing, Plastic"
+    ]
+   ]
+  },
+  {
+   "type": "h2",
+   "text": "11. Step 7 – CO2"
+  },
+  {
+   "type": "p",
+   "text": "CO2e (kg) = mass (kg) × emission factor (kg CO2e / kg)"
+  },
+  {
+   "type": "p",
+   "text": "CO2 is calculated per detailed material, then added up per reported material and in total. Because every material in a group carries the same factor, the CO2 of a group equals its mass × the group factor (8.7). The output stores mass and CO2 per detailed material in both kg and tonnes."
+  },
+  {
+   "type": "h2",
+   "text": "12. Worked example – one building"
+  },
+  {
+   "type": "p",
+   "text": "Building 0995100000714625, 8224HW Lelystad, built 1979, material_profile_id EEN_1970_2000 → profile RES_1970_2000."
+  },
+  {
+   "type": "h3",
+   "text": "12.1 Measured"
+  },
+  {
+   "type": "table",
+   "head": [
+    "Field",
+    "Value",
+    "Type"
+   ],
+   "rows": [
+    [
+     "opp_grond (footprint)",
+     "61.3 m²",
+     "MEASURED"
+    ],
+    [
+     "opp_buitenmuur (external wall)",
+     "100.75 m²",
+     "MEASURED"
+    ],
+    [
+     "opp_scheidingsmuur (party wall)",
+     "101.3 m²",
+     "MEASURED"
+    ],
+    [
+     "opp_dak_plat (flat roof)",
+     "31.75 m²",
+     "MEASURED"
+    ],
+    [
+     "opp_dak_schuin (sloped roof)",
+     "52.8 m²",
+     "MEASURED"
+    ],
+    [
+     "volume_lod22 (volume)",
+     "418.299 m³",
+     "MEASURED"
+    ],
+    [
+     "bouwlagen (storeys)",
+     "3",
+     "MEASURED"
+    ],
+    [
+     "GO (usable floor area)",
+     "136 m²",
+     "MEASURED"
+    ]
+   ]
+  },
+  {
+   "type": "h3",
+   "text": "12.2 Derived"
+  },
+  {
+   "type": "li",
+   "text": "Perimeter P = 36.069 m; outline area 61.232 m² vs opp_grond 61.3 m² (−0.1%, no correction). DERIVED"
+  },
+  {
+   "type": "li",
+   "text": "H_max = 4.718 − (−3.467) = 8.185 m; H_mean = 418.299 ÷ 61.3 = 6.824 m. DERIVED"
+  },
+  {
+   "type": "li",
+   "text": "Roof pitch: cos = (61.3 − 31.75) ÷ 52.8 = 0.5597 → 56.0°. DERIVED"
+  },
+  {
+   "type": "li",
+   "text": "L_facade = 36.069 × 100.75 ÷ 202.05 = 17.985 m; L_party = 18.084 m. [ASSUMED A1]"
+  },
+  {
+   "type": "li",
+   "text": "BVO = max(61.3 , 418.299 ÷ 2.8) = 149.393 m²; upper floors = 149.393 − 61.3 = 88.093 m². Storey height 2.8 m [ASSUMED A2]"
+  },
+  {
+   "type": "li",
+   "text": "GO ÷ BVO = 136 ÷ 149.393 = 0.91 (in range). DERIVED"
+  },
+  {
+   "type": "li",
+   "text": "Window area = 100.75 × 0.25 = 25.188 m²; closed façade = 75.562 m². Window share 25% [ASSUMED A3]"
+  },
+  {
+   "type": "li",
+   "text": "Foundation length = 17.985 + 0.5 × 18.084 = 27.027 m. [ASSUMED A1, A4]"
+  },
+  {
+   "type": "li",
+   "text": "Internal walls = min(136, 149.393) × 0.5 = 68.0 m². [ASSUMED A5, A15]"
+  },
+  {
+   "type": "h3",
+   "text": "12.3 Mass per building part"
+  },
+  {
+   "type": "p",
+   "text": "Quantity comes from 12.1–12.2; the kg per unit is [ASSUMED A9] (profile RES_1970_2000 in 8.5) and [ASSUMED A11] for installations."
+  },
+  {
+   "type": "table",
+   "head": [
+    "Building part",
+    "Material",
+    "Quantity × kg per unit",
+    "Mass (kg)"
+   ],
+   "rows": [
+    [
+     "Façade, closed part (gevel)",
+     "Clay brick (baksteen)",
+     "75.56 × 180.0",
+     "13,601.2"
+    ],
+    [
+     "Façade, closed part (gevel)",
+     "Mineral wool (minerale wol)",
+     "75.56 × 1.5",
+     "113.3"
+    ],
+    [
+     "Façade, closed part (gevel)",
+     "Calcium silicate brick (kalkzandsteen)",
+     "75.56 × 185.0",
+     "13,979.0"
+    ],
+    [
+     "Windows (ramen)",
+     "Glass (glas)",
+     "25.19 × 20.0",
+     "503.8"
+    ],
+    [
+     "Windows (ramen)",
+     "Timber (hout)",
+     "25.19 × 12.0",
+     "302.3"
+    ],
+    [
+     "Party walls (scheidingsmuren)",
+     "Concrete (beton)",
+     "50.65 × 480.0",
+     "24,312.0"
+    ],
+    [
+     "Party walls (scheidingsmuren)",
+     "Reinforcement steel (wapeningsstaal)",
+     "50.65 × 16.0",
+     "810.4"
+    ],
+    [
+     "Ground floor (begane grondvloer)",
+     "Concrete (beton)",
+     "61.30 × 480.0",
+     "29,424.0"
+    ],
+    [
+     "Ground floor (begane grondvloer)",
+     "Reinforcement steel (wapeningsstaal)",
+     "61.30 × 16.0",
+     "980.8"
+    ],
+    [
+     "Upper floors (verdiepingsvloeren)",
+     "Concrete (beton)",
+     "88.09 × 480.0",
+     "42,284.6"
+    ],
+    [
+     "Upper floors (verdiepingsvloeren)",
+     "Reinforcement steel (wapeningsstaal)",
+     "88.09 × 16.0",
+     "1,409.5"
+    ],
+    [
+     "Sloped roof (schuin dak)",
+     "Timber (hout)",
+     "52.80 × 20.0",
+     "1,056.0"
+    ],
+    [
+     "Sloped roof (schuin dak)",
+     "Concrete roof tiles (betondakpannen)",
+     "52.80 × 42.0",
+     "2,217.6"
+    ],
+    [
+     "Sloped roof (schuin dak)",
+     "Mineral wool (minerale wol)",
+     "52.80 × 1.8",
+     "95.0"
+    ],
+    [
+     "Flat roof (plat dak)",
+     "Timber (hout)",
+     "31.75 × 20.0",
+     "635.0"
+    ],
+    [
+     "Flat roof (plat dak)",
+     "Bitumen roofing (bitumen)",
+     "31.75 × 8.0",
+     "254.0"
+    ],
+    [
+     "Flat roof (plat dak)",
+     "Mineral wool (minerale wol)",
+     "31.75 × 1.8",
+     "57.1"
+    ],
+    [
+     "Foundation beams (funderingsbalken)",
+     "Concrete (beton)",
+     "27.03 × 480.0",
+     "12,973.0"
+    ],
+    [
+     "Foundation beams (funderingsbalken)",
+     "Reinforcement steel (wapeningsstaal)",
+     "27.03 × 16.0",
+     "432.4"
+    ],
+    [
+     "Internal walls (binnenwanden)",
+     "Gypsum blocks (gipsblokken)",
+     "68.00 × 70.0",
+     "4,760.0"
+    ],
+    [
+     "Installations and fixings (installaties)",
+     "Structural steel (constructiestaal)",
+     "149.39 × 8.0",
+     "1,195.1"
+    ],
+    [
+     "Installations and fixings (installaties)",
+     "Copper (koper)",
+     "149.39 × 1.5",
+     "224.1"
+    ],
+    [
+     "Installations and fixings (installaties)",
+     "Zinc / lead (zink / lood)",
+     "149.39 × 1.0",
+     "149.4"
+    ],
+    [
+     "Installations and fixings (installaties)",
+     "Plastic (kunststof)",
+     "149.39 × 3.0",
+     "448.2"
+    ]
+   ]
+  },
+  {
+   "type": "h3",
+   "text": "12.4 Mass and CO2 per detailed material"
+  },
+  {
+   "type": "p",
+   "text": "Emission factors are [ASSUMED A12] (8.7)."
+  },
+  {
+   "type": "table",
+   "head": [
+    "Material",
+    "Mass (kg)",
+    "× Factor",
+    "= CO2e (kg)"
+   ],
+   "rows": [
+    [
+     "Concrete (beton)",
+     "108,993.5",
+     "0.120",
+     "13,079.2"
+    ],
+    [
+     "Calcium silicate brick (kalkzandsteen)",
+     "13,979.1",
+     "0.210",
+     "2,935.6"
+    ],
+    [
+     "Clay brick (baksteen)",
+     "13,601.2",
+     "0.210",
+     "2,856.3"
+    ],
+    [
+     "Gypsum blocks (gipsblokken)",
+     "4,760.0",
+     "0.500",
+     "2,380.0"
+    ],
+    [
+     "Reinforcement steel (wapeningsstaal)",
+     "3,633.1",
+     "1.550",
+     "5,631.3"
+    ],
+    [
+     "Concrete roof tiles (betondakpannen)",
+     "2,217.6",
+     "0.120",
+     "266.1"
+    ],
+    [
+     "Timber (hout)",
+     "1,993.2",
+     "0.400",
+     "797.3"
+    ],
+    [
+     "Structural steel (constructiestaal)",
+     "1,195.1",
+     "1.550",
+     "1,852.5"
+    ],
+    [
+     "Glass (glas)",
+     "503.8",
+     "0.900",
+     "453.4"
+    ],
+    [
+     "Plastic (kunststof)",
+     "448.2",
+     "0.500",
+     "224.1"
+    ],
+    [
+     "Mineral wool (minerale wol)",
+     "265.5",
+     "0.500",
+     "132.8"
+    ],
+    [
+     "Bitumen roofing (bitumen)",
+     "254.0",
+     "0.500",
+     "127.0"
+    ],
+    [
+     "Copper (koper)",
+     "224.1",
+     "0.500",
+     "112.0"
+    ],
+    [
+     "Zinc / lead (zink / lood)",
+     "149.4",
+     "0.500",
+     "74.7"
+    ],
+    [
+     "Total",
+     "152,217.9",
+     "",
+     "30,922.3"
+    ]
+   ]
+  },
+  {
+   "type": "h3",
+   "text": "12.5 Result in 7 materials"
+  },
+  {
+   "type": "table",
+   "head": [
+    "Material",
+    "Mass (tonnes)",
+    "CO2e (tonnes)"
+   ],
+   "rows": [
+    [
+     "Steel (staal)",
+     "4.828",
+     "7.484"
+    ],
+    [
+     "Wood (hout)",
+     "1.993",
+     "0.797"
+    ],
+    [
+     "Brick (baksteen)",
+     "27.580",
+     "5.792"
+    ],
+    [
+     "Concrete (beton)",
+     "111.211",
+     "13.345"
+    ],
+    [
+     "Glass (glas)",
+     "0.504",
+     "0.453"
+    ],
+    [
+     "Copper (koper)",
+     "0.224",
+     "0.112"
+    ],
+    [
+     "Others (overig)",
+     "5.877",
+     "2.939"
+    ],
+    [
+     "Total",
+     "152.218",
+     "30.922"
+    ]
+   ]
+  },
+  {
+   "type": "h2",
+   "text": "13. Data quality flags"
+  },
+  {
+   "type": "p",
+   "text": "Each building carries a list of flags. A flag does not stop the calculation; it tells how far to trust the result."
+  },
+  {
+   "type": "table",
+   "head": [
+    "Flag",
+    "Meaning",
+    "Buildings"
+   ],
+   "rows": [
+    [
+     "BOUWLAGEN_MISSING",
+     "3DBAG has no storey count; floor area rests only on volume ÷ assumed storey height.",
+     "323"
+    ],
+    [
+     "GO_BVO_OUT_OF_RANGE",
+     "Usable ÷ gross floor area is outside 0.6–1.0; usually a dwelling unit that spans several buildings.",
+     "377"
+    ],
+    [
+     "POLYGON_AREA_DIFFERS_FROM_OPP_GROND",
+     "Area of the outline differs more than 2% from opp_grond.",
+     "202"
+    ],
+    [
+     "PERIMETER_SCALED_TO_OPP_GROND",
+     "Difference above 10%: the perimeter was scaled by √(opp_grond ÷ outline area).",
+     "144"
+    ],
+    [
+     "ROOF_PITCH_NOT_COMPUTABLE",
+     "Roof areas do not give a valid pitch (information only; no effect on mass).",
+     "69"
+    ],
+    [
+     "H_DAK_MAX_MISSING",
+     "Highest roof point missing (information only; no effect on mass).",
+     "9"
+    ]
+   ]
+  },
+  {
+   "type": "p",
+   "text": "Most important: 323 buildings have no storey count and they hold 86% of the total mass. For a tall single-storey hall, volume ÷ storey height counts floors that do not exist, so these results are the least certain."
+  },
+  {
+   "type": "p",
+   "text": "468 buildings have no flags; together they hold 119,021 t and 26,558 t CO2e."
+  },
+  {
+   "type": "h2",
+   "text": "14. Results per profile"
+  },
+  {
+   "type": "table",
+   "head": [
+    "Profile",
+    "Buildings",
+    "Mass (t)",
+    "CO2e (t)",
+    "Median kg/m² BVO",
+    "Median kg CO2e/m² BVO"
+   ],
+   "rows": [
+    [
+     "RES_PRE_1945",
+     "241",
+     "36,877",
+     "9,804",
+     "623",
+     "163"
+    ],
+    [
+     "RES_1945_1970",
+     "174",
+     "40,872",
+     "8,495",
+     "906",
+     "188"
+    ],
+    [
+     "RES_1970_2000",
+     "180",
+     "45,911",
+     "9,472",
+     "1,022",
+     "207"
+    ],
+    [
+     "RES_POST_2000",
+     "31",
+     "10,639",
+     "2,229",
+     "926",
+     "192"
+    ],
+    [
+     "IND_PRE_1970",
+     "113",
+     "203,795",
+     "49,171",
+     "930",
+     "228"
+    ],
+    [
+     "IND_POST_1970",
+     "103",
+     "229,765",
+     "66,150",
+     "660",
+     "193"
+    ],
+    [
+     "NONRES_PRE_1945",
+     "63",
+     "42,626",
+     "12,538",
+     "473",
+     "130"
+    ],
+    [
+     "NONRES_1945_1970",
+     "64",
+     "349,103",
+     "68,810",
+     "960",
+     "193"
+    ],
+    [
+     "NONRES_1970_2000",
+     "76",
+     "504,443",
+     "99,683",
+     "1,023",
+     "203"
+    ],
+    [
+     "NONRES_POST_2000",
+     "37",
+     "336,579",
+     "67,184",
+     "989",
+     "198"
+    ],
+    [
+     "Total",
+     "1,082",
+     "1,800,610",
+     "393,535",
+     "",
+     ""
+    ]
+   ]
+  },
+  {
+   "type": "p",
+   "text": "The five heaviest buildings (check these first):"
+  },
+  {
+   "type": "table",
+   "head": [
+    "pand_id",
+    "Profile",
+    "Footprint (m²)",
+    "Volume (m³)",
+    "Mass (t)"
+   ],
+   "rows": [
+    [
+     "0268100000013015",
+     "NONRES_1945_1970",
+     "31,105",
+     "1,123,743",
+     "231,083"
+    ],
+    [
+     "0307100000534872",
+     "NONRES_POST_2000",
+     "29,438",
+     "471,099",
+     "106,964"
+    ],
+    [
+     "0268100000044885",
+     "NONRES_1970_2000",
+     "27,170",
+     "312,925",
+     "77,042"
+    ],
+    [
+     "0983100000008537",
+     "NONRES_1970_2000",
+     "34,136",
+     "300,090",
+     "75,959"
+    ],
+    [
+     "0917100000000476",
+     "NONRES_1970_2000",
+     "9,081",
+     "232,032",
+     "52,039"
+    ]
+   ]
+  },
+  {
+   "type": "h2",
+   "text": "15. Database output"
+  },
+  {
+   "type": "p",
+   "text": "The results are stored in PostgreSQL database datafuse, table public.material_estimation_geometry (one row per building, 1,082 rows). Re-running dataset/import_geometry_co2.py rebuilds the table completely."
+  },
+  {
+   "type": "table",
+   "head": [
+    "Column group",
+    "Columns"
+   ],
+   "rows": [
+    [
+     "Identification",
+     "notice_id, pand_id, address, house_number, postal_code, city, bouwjaar, typegebouw, cohort, material_profile_id, assumption_profile"
+    ],
+    [
+     "Measured",
+     "opp_grond_m2, opp_buitenmuur_m2, opp_scheidingsmuur_m2, opp_dak_plat_m2, opp_dak_schuin_m2, volume_lod22_m3, bouwlagen, go_m2"
+    ],
+    [
+     "Derived",
+     "perimeter_m, height_max_m, height_mean_m, roof_pitch_deg, facade_length_m, party_wall_length_m, storey_height_m, storey_equivalents, bvo_m2, go_bvo_ratio, window_area_m2, foundation_beam_length_m, internal_wall_m2"
+    ],
+    [
+     "Materials",
+     "steel, wood, brick, concrete, glass, copper, other – each as <name>_tonnes and <name>_co2_tonnes"
+    ],
+    [
+     "Totals",
+     "total_material_mass_tonnes, total_co2_tonnes, total_co2_kg, mass_kg_per_m2_bvo, co2e_kg_per_m2_bvo"
+    ],
+    [
+     "Quality",
+     "flags (list)"
+    ],
+    [
+     "Detail (JSON)",
+     "components_kg (mass per building part), co2_by_material (mass in kg and tonnes, factor, and CO2 in kg and tonnes per detailed material)"
+    ]
+   ]
+  },
+  {
+   "type": "p",
+   "text": "Example query in pgAdmin:"
+  },
+  {
+   "type": "p",
+   "text": "SELECT pand_id, city, steel_tonnes, concrete_tonnes, total_co2_tonnes FROM material_estimation_geometry ORDER BY total_co2_tonnes DESC;"
+  },
+  {
+   "type": "h2",
+   "text": "16. Limits"
+  },
+  {
+   "type": "li",
+   "text": "The build-up is a typical construction per profile, not the actual construction of each building. It can be improved per building with permits, drawings or a site visit."
+  },
+  {
+   "type": "li",
+   "text": "Floors and party wall thickness drive most of the mass: concrete is the largest material."
+  },
+  {
+   "type": "li",
+   "text": "Buildings without a storey count (BOUWLAGEN_MISSING) are the least certain."
+  },
+  {
+   "type": "li",
+   "text": "Foundation piles are not included: at demolition they normally stay in the ground."
+  },
+  {
+   "type": "li",
+   "text": "Emission factors are one coarse value per reported material group (8.7); replace with Nationale Milieudatabase values for official reporting."
+  },
+  {
+   "type": "li",
+   "text": "Some notices were matched to a building in a different town than the notice title; the match itself should be checked separately."
+  },
+  {
+   "type": "h2",
+   "text": "17. Comparison with the previous method"
+  },
+  {
+   "type": "p",
+   "text": "The earlier estimate (material_estimation_1081_co2.json, table co2_emission) multiplied the usable floor area (GO) by a fixed kg per m² for each material_profile_id. It did not use the 3DBAG geometry. Both columns below cover the same 1,081 notice buildings; Jan Provostlaan 16 is not in the earlier file."
+  },
+  {
+   "type": "table",
+   "head": [
+    "",
+    "Previous method",
+    "This method",
+    "Difference"
+   ],
+   "rows": [
+    [
+     "Total mass (t)",
+     "4,335,020",
+     "1,800,432",
+     "-58%"
+    ],
+    [
+     "Total CO2e (t)",
+     "1,874,580",
+     "393,500",
+     "-79%"
+    ]
+   ]
+  },
+  {
+   "type": "li",
+   "text": "The previous profiles gave about 2,650 kg per m² for a 1970–2000 house; this method gives about 1,000 kg per m² gross floor area, which fits a Dutch terraced house."
+  },
+  {
+   "type": "li",
+   "text": "The previous CO2 used 0.5 kg CO2e per kg for sand, gravel and mortar ('overige constructie mineralen'), which made that one group the largest CO2 source."
+  },
+  {
+   "type": "li",
+   "text": "This method is based on each building's own measured size, so a large building gets more material and a small one less. Both methods now use the same emission factors (8.7), so the whole CO2 difference comes from the material quantities. Both columns cover the same 1,081 notice buildings, so this method reads 1,800,432 t and 393,500 t CO2e here, without Jan Provostlaan 16."
+  },
+  {
+   "type": "h2",
+   "text": "18. How to reproduce"
+  },
+  {
+   "type": "p",
+   "text": "All steps run from the project folder C:\\datafuse-ai\\dataset:"
+  },
+  {
+   "type": "li",
+   "text": "python geometry_material_co2.py – the single-building worked example (prints every step)."
+  },
+  {
+   "type": "li",
+   "text": "python build_input_1082.py – keeps the 1,081 selected notices, adds Jan Provostlaan 16 (needs internet for PDOK and 3DBAG) and writes 3dbag_input_1082.json."
+  },
+  {
+   "type": "li",
+   "text": "python geometry_material_co2_batch.py – calculates all 1,082 buildings and writes the JSON and CSV output."
+  },
+  {
+   "type": "li",
+   "text": "python import_geometry_co2.py – rebuilds the table material_estimation_geometry in database datafuse."
+  },
+  {
+   "type": "p",
+   "text": "To change an assumption, edit its value at the top of geometry_material_co2_batch.py (PROFILES, INSTALLATIONS, EMISSION_FACTOR, PARTY_WALL_ALLOCATION) and run steps 3 and 4 again."
+  },
+  {
+   "type": "h2",
+   "text": "19. Change log"
+  },
+  {
+   "type": "table",
+   "head": [
+    "Date",
+    "Change",
+    "Effect"
+   ],
+   "rows": [
+    [
+     "22 September 2026",
+     "First version: 1,081 demolition buildings from 3DBAG geometry.",
+     "1,800,432 t material, 447,543 t CO2e"
+    ],
+    [
+     "22 September 2026",
+     "Jan Provostlaan 16 added as building 1,082; the input file became 3dbag_input_1082.json (sections 2.1, 2.2).",
+     "+177 t material, +37 t CO2e"
+    ],
+    [
+     "23 September 2026",
+     "Emission factors simplified to one value per reported material group (section 8.7); mass, geometry and build-up unchanged. Mass and CO2 per detailed material are now also stored in tonnes.",
+     "1,800,610 t material, 393,535 t CO2e (-12% CO2)"
+    ]
+   ]
+  }
+ ]
+}

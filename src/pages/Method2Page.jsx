@@ -1,5 +1,6 @@
 import { useEffect } from "react";
-import { useSearchParams } from "react-router";
+import { Link, useSearchParams } from "react-router";
+import { BookIcon } from "../components/Icons";
 import Method2 from "../components/Method2";
 import { PassportSkeleton } from "../components/Passport";
 import SearchPanel from "../components/SearchPanel";
@@ -46,6 +47,13 @@ export default function Method2Page({ method2 }) {
         }
         lede="Search by address for the 3DBAG geometry estimate: surfaces, volume, materials and CO₂ per building."
       />
+
+      <p className="method2-docs-link">
+        <Link className="button button--ghost" to="/method-2/docs">
+          <BookIcon />
+          How Method 2 is calculated
+        </Link>
+      </p>
 
       {loading && <PassportSkeleton />}
 
