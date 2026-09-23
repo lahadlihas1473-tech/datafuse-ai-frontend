@@ -2641,10 +2641,6 @@
    "text": "Emission factors are one coarse value per reported material group (8.7); replace with Nationale Milieudatabase values for official reporting."
   },
   {
-   "type": "li",
-   "text": "Some notices were matched to a building in a different town than the notice title; the match itself should be checked separately."
-  },
-  {
    "type": "h2",
    "text": "17. Comparison with the previous method"
   },
