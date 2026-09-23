@@ -1,0 +1,2131 @@
+{
+ "source": "Material_CO2_Estimation_Method_1082_Buildings.docx",
+ "sections": [
+  "1. Summary",
+  "2. Input data",
+  "3. Method in 5 steps",
+  "4. Step 1 - Gross floor area from BAG",
+  "5. Step 2 - Building type and cohort",
+  "6. Step 3 - B2 material intensities",
+  "7. Step 4 - Material quantity",
+  "8. Step 5 - Embodied CO2",
+  "9. Our own assumptions",
+  "10. Worked example - one building",
+  "11. Validation",
+  "12. Results",
+  "13. Database output",
+  "14. Limits",
+  "15. Comparison with Method 2",
+  "16. How to reproduce",
+  "17. Change log"
+ ],
+ "blocks": [
+  {
+   "type": "title",
+   "text": "Material & CO2 Estimation for 1,082 Buildings - Method 1 (BAG x B2 material profile)"
+  },
+  {
+   "type": "p",
+   "text": "23 September 2026"
+  },
+  {
+   "type": "h2",
+   "text": "1. Summary"
+  },
+  {
+   "type": "p",
+   "text": "This document explains how Method 1 calculates material mass and CO2 for 1,082 buildings: 1,081 demolition buildings plus one added building, Jan Provostlaan 16 in Bilthoven. Method 1 needs one measured number per building - the gross floor area (GO) from BAG - and multiplies it by the material intensities of Tabel B2 for the building's type and age. The result is 4,335,383 tonnes of material and 1,874,724 tonnes CO2e, reported in 13 materials."
+  },
+  {
+   "type": "table",
+   "head": [
+    "Material",
+    "Mass (tonnes)",
+    "CO2e (tonnes)",
+    "Buildings with 0"
+   ],
+   "rows": [
+    [
+     "Staal (Steel)",
+     "283,646",
+     "439,651",
+     "0"
+    ],
+    [
+     "Koper (Copper)",
+     "6,010",
+     "9,314",
+     "0"
+    ],
+    [
+     "Aluminium (Aluminium)",
+     "8,925",
+     "13,833",
+     "0"
+    ],
+    [
+     "Overig metaal (Other metal)",
+     "298,541",
+     "462,734",
+     "106"
+    ],
+    [
+     "Hout (Wood)",
+     "90,217",
+     "36,087",
+     "0"
+    ],
+    [
+     "Beton (Concrete)",
+     "1,734,853",
+     "208,182",
+     "0"
+    ],
+    [
+     "Baksteen (Brick)",
+     "898,095",
+     "188,600",
+     "27"
+    ],
+    [
+     "Overige constructie mineralen (Other construction minerals)",
+     "386,034",
+     "193,017",
+     "0"
+    ],
+    [
+     "Glas (Glass)",
+     "21,935",
+     "19,742",
+     "0"
+    ],
+    [
+     "Keramiek (Ceramics)",
+     "11,986",
+     "5,993",
+     "143"
+    ],
+    [
+     "Plastic (Plastics)",
+     "1,380",
+     "690",
+     "179"
+    ],
+    [
+     "Isolatie (Insulation)",
+     "6,010",
+     "3,005",
+     "456"
+    ],
+    [
+     "Overig (Other)",
+     "587,752",
+     "293,876",
+     "36"
+    ],
+    [
+     "Total",
+     "4,335,383",
+     "1,874,724",
+     ""
+    ]
+   ]
+  },
+  {
+   "type": "p",
+   "text": "Every number is one of three kinds:"
+  },
+  {
+   "type": "li",
+   "text": "MEASURED - read directly from a BAG field (gross floor area, building type, year built)."
+  },
+  {
+   "type": "li",
+   "text": "DERIVED - calculated only from measured numbers (mass = area x intensity, CO2 = mass x factor)."
+  },
+  {
+   "type": "li",
+   "text": "ASSUMED - our own chosen value: the B2 profile per building type and age, and the emission factors."
+  },
+  {
+   "type": "p",
+   "text": "Method 1 uses no geometry: two buildings with the same floor area, type and age get the same material estimate, whatever their shape. Method 2 is the geometry-based estimate and is described in its own document; section 15 compares the two."
+  },
+  {
+   "type": "h2",
+   "text": "2. Input data"
+  },
+  {
+   "type": "h3",
+   "text": "2.1 Files and tables"
+  },
+  {
+   "type": "table",
+   "head": [
+    "File or table",
+    "Role",
+    "Records"
+   ],
+   "rows": [
+    [
+     "dataset/archive/B2.json",
+     "Material intensities per building type and cohort (Tabel B2)",
+     "28 profiles"
+    ],
+    [
+     "BAG (PDOK) - bag:pand and verblijfsobject",
+     "Gross floor area, year built, address, pand geometry",
+     "-"
+    ],
+    [
+     "dataset/archive/2data.py",
+     "Worked example for one building (B2 lookup, quantity, CO2)",
+     "-"
+    ],
+    [
+     "dataset/archive/import_jan_provostlaan_16.py",
+     "Loads the added building into the table",
+     "1"
+    ],
+    [
+     "public.material_estimation_final",
+     "Output: one row per building, 13 materials with factor and CO2",
+     "1,082"
+    ],
+    [
+     "/material-estimation/search, /addresses, /notices",
+     "API endpoints that read this table",
+     "-"
+    ]
+   ]
+  },
+  {
+   "type": "h3",
+   "text": "2.2 Why 1,082 buildings"
+  },
+  {
+   "type": "p",
+   "text": "The demolition dataset holds 1,187 notices; counting unique pand_id gives 1,081 buildings, so each building is counted once. Jan Provostlaan 16 (pand_id 0310100000664117) has no demolition notice and was added by hand, which makes 1,082. Its row has no notice_id but does have a pand_id, and it is the same building the Method 2 document uses as its added building."
+  },
+  {
+   "type": "h3",
+   "text": "2.3 Fields used"
+  },
+  {
+   "type": "table",
+   "head": [
+    "Field",
+    "Meaning",
+    "Source",
+    "Used for"
+   ],
+   "rows": [
+    [
+     "verblijfsobject.oppervlakte",
+     "Usable floor area of each dwelling unit (m2)",
+     "BAG",
+     "GO, the basis of the whole calculation"
+    ],
+    [
+     "pandidentificatie",
+     "Building identification (pand_id)",
+     "BAG",
+     "Key of the row"
+    ],
+    [
+     "oorspronkelijk bouwjaar",
+     "Year built",
+     "BAG",
+     "Construction cohort"
+    ],
+    [
+     "gebruiksdoel",
+     "Use of the building",
+     "BAG",
+     "Building type (typegebouw)"
+    ],
+    [
+     "openbare_ruimte, huisnummer, postcode, woonplaats",
+     "Address",
+     "BAG",
+     "Search and display"
+    ],
+    [
+     "material_profile_id",
+     "Building type + cohort, e.g. EEN_1970_2000",
+     "Derived",
+     "Choice of B2 profile"
+    ]
+   ]
+  },
+  {
+   "type": "h3",
+   "text": "2.4 Units and conventions"
+  },
+  {
+   "type": "table",
+   "head": [
+    "Item",
+    "Convention"
+   ],
+   "rows": [
+    [
+     "Areas",
+     "m2 (square metres)"
+    ],
+    [
+     "Material intensity",
+     "kg per m2 of GO"
+    ],
+    [
+     "Mass",
+     "kg in the calculation, tonnes (1 t = 1,000 kg) in the results"
+    ],
+    [
+     "CO2e",
+     "CO2 equivalent: all greenhouse gases as the same warming effect as CO2"
+    ],
+    [
+     "A1-A3",
+     "Production stages of EN 15804: raw material supply, transport to factory, manufacturing. Transport to site, demolition and waste processing are not included."
+    ],
+    [
+     "GO",
+     "gebruiksoppervlakte - usable floor area inside the walls, from BAG"
+    ],
+    [
+     "Rounding",
+     "The calculation keeps full precision; tables show rounded values, so hand checks can differ in the last digit."
+    ]
+   ]
+  },
+  {
+   "type": "h2",
+   "text": "3. Method in 5 steps"
+  },
+  {
+   "type": "li",
+   "text": "Read the gross floor area (GO) of the building from BAG (section 4)."
+  },
+  {
+   "type": "li",
+   "text": "Assign a building type and construction cohort, giving a material profile (section 5)."
+  },
+  {
+   "type": "li",
+   "text": "Look up the 13 material intensities of that profile in Tabel B2 (section 6)."
+  },
+  {
+   "type": "li",
+   "text": "Calculate each material mass: quantity = GO x intensity (section 7)."
+  },
+  {
+   "type": "li",
+   "text": "Calculate CO2 per material: CO2 = mass x emission factor, then add up (section 8)."
+  },
+  {
+   "type": "h2",
+   "text": "4. Step 1 - Gross floor area from BAG"
+  },
+  {
+   "type": "p",
+   "text": "GO is the only measured number per building. It is the sum of the usable floor area of every dwelling unit (verblijfsobject) in the pand."
+  },
+  {
+   "type": "table",
+   "head": [
+    "Where GO comes from",
+    "Buildings"
+   ],
+   "rows": [
+    [
+     "VBO_OPPERVLAKTE_SUM",
+     "1,081"
+    ],
+    [
+     "verblijfsobject.properties.oppervlakte",
+     "1"
+    ]
+   ]
+  },
+  {
+   "type": "table",
+   "head": [
+    "GO across the dataset",
+    "Value"
+   ],
+   "rows": [
+    [
+     "Total",
+     "2,122,380 m2"
+    ],
+    [
+     "Smallest building",
+     "8 m2"
+    ],
+    [
+     "Largest building",
+     "235,335 m2"
+    ],
+    [
+     "Average",
+     "1,962 m2"
+    ]
+   ]
+  },
+  {
+   "type": "h2",
+   "text": "5. Step 2 - Building type and cohort"
+  },
+  {
+   "type": "p",
+   "text": "The BAG use of the building is mapped to one of the seven B2 building types, and the year built to one of the four cohorts. Together they form the material_profile_id, for example EEN_1970_2000. [ASSUMED A1] - the mapping from use to B2 type is our own choice."
+  },
+  {
+   "type": "table",
+   "head": [
+    "typegebouw in the data",
+    "B2 building type",
+    "Profile prefix",
+    "Buildings"
+   ],
+   "rows": [
+    [
+     "eengezins (Residential)",
+     "eengezins",
+     "EEN",
+     "577"
+    ],
+    [
+     "industrie (Industrial)",
+     "industrie",
+     "IND",
+     "216"
+    ],
+    [
+     "overig (Assembly)",
+     "overig",
+     "OVR",
+     "73"
+    ],
+    [
+     "commercieel (Retail)",
+     "commercieel",
+     "COM",
+     "61"
+    ],
+    [
+     "appartementen (Residential)",
+     "appartementen",
+     "APP",
+     "46"
+    ],
+    [
+     "kantoor (Office)",
+     "kantoor",
+     "KANT",
+     "36"
+    ],
+    [
+     "overig (Healthcare)",
+     "overig",
+     "OVR",
+     "24"
+    ],
+    [
+     "overig (Other)",
+     "overig",
+     "OVR",
+     "21"
+    ],
+    [
+     "overig (Hotel)",
+     "overig",
+     "OVR",
+     "15"
+    ],
+    [
+     "overig (Sports)",
+     "overig",
+     "OVR",
+     "5"
+    ],
+    [
+     "overig (Education)",
+     "overig",
+     "OVR",
+     "5"
+    ],
+    [
+     "woonflat (Residential)",
+     "woonflat",
+     "WF",
+     "3"
+    ]
+   ]
+  },
+  {
+   "type": "table",
+   "head": [
+    "Cohort",
+    "Buildings"
+   ],
+   "rows": [
+    [
+     "<1945",
+     "364"
+    ],
+    [
+     "1970-2000",
+     "332"
+    ],
+    [
+     "1945-1970",
+     "291"
+    ],
+    [
+     ">2000",
+     "95"
+    ]
+   ]
+  },
+  {
+   "type": "p",
+   "text": "25 of the 28 possible profiles occur in the dataset."
+  },
+  {
+   "type": "h2",
+   "text": "6. Step 3 - B2 material intensities"
+  },
+  {
+   "type": "p",
+   "text": "Materiaalintensiteiten in kg/m² (GO) uit Heeren & Fishman (2019), geaggregeerd naar 7 gebouwtypen, 4 bouwcohorten en 13 materialen/materiaalgroepen Unit: kg/m² GO. Source: Heeren & Fishman (2019), reproduced in Rapportage Voorraden in de Maatschappij 2020, Tabel B2. [ASSUMED A2] - the intensities are averages for a building of that type and age, not measurements of the individual building."
+  },
+  {
+   "type": "h3",
+   "text": "6.1 eengezins"
+  },
+  {
+   "type": "table",
+   "head": [
+    "Material (kg/m2 GO)",
+    "<1945",
+    "1945-1970",
+    "1970-2000",
+    ">2000"
+   ],
+   "rows": [
+    [
+     "Staal",
+     "7.62",
+     "41.72",
+     "41.08",
+     "30.45"
+    ],
+    [
+     "Koper",
+     "12.86",
+     "8.11",
+     "3.35",
+     "1.24"
+    ],
+    [
+     "Aluminium",
+     "2.86",
+     "2.86",
+     "2.44",
+     "2.57"
+    ],
+    [
+     "Overig metaal",
+     "22.00",
+     "22.00",
+     "29.71",
+     "28.76"
+    ],
+    [
+     "Hout",
+     "192.38",
+     "124.29",
+     "81.73",
+     "199.48"
+    ],
+    [
+     "Beton",
+     "248.29",
+     "423.95",
+     "593.39",
+     "695.29"
+    ],
+    [
+     "Baksteen",
+     "26.67",
+     "333.96",
+     "287.27",
+     "0.00"
+    ],
+    [
+     "Overige constructie mineralen",
+     "1,767.71",
+     "1,751.35",
+     "1,401.80",
+     "301.16"
+    ],
+    [
+     "Glas",
+     "3.33",
+     "3.99",
+     "3.48",
+     "3.54"
+    ],
+    [
+     "Keramiek",
+     "63.54",
+     "63.54",
+     "63.81",
+     "104.97"
+    ],
+    [
+     "Plastic",
+     "5.06",
+     "5.06",
+     "5.06",
+     "12.20"
+    ],
+    [
+     "Isolatie",
+     "26.86",
+     "44.48",
+     "82.53",
+     "80.03"
+    ],
+    [
+     "Overig",
+     "35.05",
+     "35.05",
+     "55.73",
+     "34.40"
+    ],
+    [
+     "Totaal",
+     "2,414.21",
+     "2,860.36",
+     "2,651.37",
+     "1,494.10"
+    ]
+   ]
+  },
+  {
+   "type": "h3",
+   "text": "6.2 appartementen"
+  },
+  {
+   "type": "table",
+   "head": [
+    "Material (kg/m2 GO)",
+    "<1945",
+    "1945-1970",
+    "1970-2000",
+    ">2000"
+   ],
+   "rows": [
+    [
+     "Staal",
+     "61.21",
+     "127.04",
+     "199.37",
+     "259.91"
+    ],
+    [
+     "Koper",
+     "0.34",
+     "0.34",
+     "0.34",
+     "0.34"
+    ],
+    [
+     "Aluminium",
+     "2.11",
+     "2.11",
+     "2.11",
+     "2.11"
+    ],
+    [
+     "Overig metaal",
+     "28.15",
+     "43.41",
+     "85.21",
+     "48.04"
+    ],
+    [
+     "Hout",
+     "108.61",
+     "37.48",
+     "18.79",
+     "43.19"
+    ],
+    [
+     "Beton",
+     "279.95",
+     "703.04",
+     "844.60",
+     "666.48"
+    ],
+    [
+     "Baksteen",
+     "468.41",
+     "230.01",
+     "200.28",
+     "204.91"
+    ],
+    [
+     "Overige constructie mineralen",
+     "647.87",
+     "428.41",
+     "311.91",
+     "349.95"
+    ],
+    [
+     "Glas",
+     "4.12",
+     "3.80",
+     "3.41",
+     "4.47"
+    ],
+    [
+     "Keramiek",
+     "55.13",
+     "55.13",
+     "55.13",
+     "55.13"
+    ],
+    [
+     "Plastic",
+     "2.67",
+     "2.67",
+     "2.65",
+     "2.62"
+    ],
+    [
+     "Isolatie",
+     "6.71",
+     "21.45",
+     "46.95",
+     "73.01"
+    ],
+    [
+     "Overig",
+     "143.64",
+     "68.37",
+     "46.24",
+     "61.75"
+    ],
+    [
+     "Totaal",
+     "1,808.93",
+     "1,723.26",
+     "1,816.97",
+     "1,771.91"
+    ]
+   ]
+  },
+  {
+   "type": "h3",
+   "text": "6.3 woonflat"
+  },
+  {
+   "type": "table",
+   "head": [
+    "Material (kg/m2 GO)",
+    "<1945",
+    "1945-1970",
+    "1970-2000",
+    ">2000"
+   ],
+   "rows": [
+    [
+     "Staal",
+     "73.63",
+     "112.64",
+     "152.53",
+     "172.52"
+    ],
+    [
+     "Koper",
+     "0.01",
+     "0.01",
+     "0.01",
+     "0.01"
+    ],
+    [
+     "Aluminium",
+     "2.42",
+     "2.42",
+     "2.42",
+     "2.42"
+    ],
+    [
+     "Overig metaal",
+     "107.25",
+     "107.25",
+     "107.25",
+     "24.56"
+    ],
+    [
+     "Hout",
+     "60.07",
+     "19.89",
+     "14.43",
+     "33.83"
+    ],
+    [
+     "Beton",
+     "261.54",
+     "617.03",
+     "853.93",
+     "714.44"
+    ],
+    [
+     "Baksteen",
+     "808.79",
+     "335.71",
+     "60.44",
+     "60.44"
+    ],
+    [
+     "Overige constructie mineralen",
+     "616.04",
+     "307.25",
+     "312.59",
+     "338.54"
+    ],
+    [
+     "Glas",
+     "3.66",
+     "3.30",
+     "3.74",
+     "2.01"
+    ],
+    [
+     "Keramiek",
+     "20.68",
+     "20.68",
+     "20.68",
+     "20.68"
+    ],
+    [
+     "Plastic",
+     "2.46",
+     "2.46",
+     "2.18",
+     "1.36"
+    ],
+    [
+     "Isolatie",
+     "11.12",
+     "14.42",
+     "26.29",
+     "59.47"
+    ],
+    [
+     "Overig",
+     "18.46",
+     "18.46",
+     "18.46",
+     "18.46"
+    ],
+    [
+     "Totaal",
+     "1,986.11",
+     "1,561.50",
+     "1,574.93",
+     "1,448.72"
+    ]
+   ]
+  },
+  {
+   "type": "h3",
+   "text": "6.4 kantoor"
+  },
+  {
+   "type": "table",
+   "head": [
+    "Material (kg/m2 GO)",
+    "<1945",
+    "1945-1970",
+    "1970-2000",
+    ">2000"
+   ],
+   "rows": [
+    [
+     "Staal",
+     "188.59",
+     "188.59",
+     "188.59",
+     "188.59"
+    ],
+    [
+     "Koper",
+     "4.26",
+     "4.26",
+     "4.26",
+     "4.26"
+    ],
+    [
+     "Aluminium",
+     "2.76",
+     "2.76",
+     "2.76",
+     "2.76"
+    ],
+    [
+     "Overig metaal",
+     "0.00",
+     "0.00",
+     "0.00",
+     "0.00"
+    ],
+    [
+     "Hout",
+     "4.39",
+     "4.39",
+     "4.39",
+     "4.39"
+    ],
+    [
+     "Beton",
+     "1,536.01",
+     "1,536.01",
+     "1,536.01",
+     "1,536.01"
+    ],
+    [
+     "Baksteen",
+     "341.09",
+     "341.09",
+     "341.09",
+     "341.09"
+    ],
+    [
+     "Overige constructie mineralen",
+     "18.07",
+     "18.07",
+     "18.07",
+     "18.07"
+    ],
+    [
+     "Glas",
+     "8.28",
+     "8.28",
+     "8.28",
+     "8.28"
+    ],
+    [
+     "Keramiek",
+     "22.91",
+     "22.91",
+     "22.91",
+     "22.91"
+    ],
+    [
+     "Plastic",
+     "0.00",
+     "0.00",
+     "0.00",
+     "0.00"
+    ],
+    [
+     "Isolatie",
+     "0.00",
+     "0.00",
+     "0.00",
+     "0.00"
+    ],
+    [
+     "Overig",
+     "0.00",
+     "0.00",
+     "0.00",
+     "0.00"
+    ],
+    [
+     "Totaal",
+     "2,126.37",
+     "2,126.37",
+     "2,126.37",
+     "2,126.37"
+    ]
+   ]
+  },
+  {
+   "type": "h3",
+   "text": "6.5 commercieel"
+  },
+  {
+   "type": "table",
+   "head": [
+    "Material (kg/m2 GO)",
+    "<1945",
+    "1945-1970",
+    "1970-2000",
+    ">2000"
+   ],
+   "rows": [
+    [
+     "Staal",
+     "19.79",
+     "43.69",
+     "40.12",
+     "93.82"
+    ],
+    [
+     "Koper",
+     "0.42",
+     "0.32",
+     "0.51",
+     "3.19"
+    ],
+    [
+     "Aluminium",
+     "0.37",
+     "0.54",
+     "1.27",
+     "4.69"
+    ],
+    [
+     "Overig metaal",
+     "0.33",
+     "0.01",
+     "0.00",
+     "216.33"
+    ],
+    [
+     "Hout",
+     "24.28",
+     "20.65",
+     "18.41",
+     "17.47"
+    ],
+    [
+     "Beton",
+     "417.73",
+     "1,027.07",
+     "1,453.12",
+     "836.48"
+    ],
+    [
+     "Baksteen",
+     "1,106.03",
+     "555.72",
+     "23.70",
+     "92.90"
+    ],
+    [
+     "Overige constructie mineralen",
+     "357.62",
+     "273.25",
+     "74.00",
+     "170.29"
+    ],
+    [
+     "Glas",
+     "1.91",
+     "2.25",
+     "3.25",
+     "5.10"
+    ],
+    [
+     "Keramiek",
+     "2.81",
+     "2.61",
+     "2.57",
+     "4.31"
+    ],
+    [
+     "Plastic",
+     "3.15",
+     "3.83",
+     "5.34",
+     "21.83"
+    ],
+    [
+     "Isolatie",
+     "0.00",
+     "0.00",
+     "0.00",
+     "0.00"
+    ],
+    [
+     "Overig",
+     "6.29",
+     "6.29",
+     "6.29",
+     "6.29"
+    ],
+    [
+     "Totaal",
+     "1,940.73",
+     "1,936.21",
+     "1,628.58",
+     "1,472.69"
+    ]
+   ]
+  },
+  {
+   "type": "h3",
+   "text": "6.6 industrie"
+  },
+  {
+   "type": "table",
+   "head": [
+    "Material (kg/m2 GO)",
+    "<1945",
+    "1945-1970",
+    "1970-2000",
+    ">2000"
+   ],
+   "rows": [
+    [
+     "Staal",
+     "29.62",
+     "284.41",
+     "150.79",
+     "377.24"
+    ],
+    [
+     "Koper",
+     "0.02",
+     "0.01",
+     "0.01",
+     "0.01"
+    ],
+    [
+     "Aluminium",
+     "0.09",
+     "0.78",
+     "1.05",
+     "0.83"
+    ],
+    [
+     "Overig metaal",
+     "0.00",
+     "67.02",
+     "134.03",
+     "201.05"
+    ],
+    [
+     "Hout",
+     "42.09",
+     "14.75",
+     "11.52",
+     "15.18"
+    ],
+    [
+     "Beton",
+     "126.82",
+     "599.77",
+     "519.37",
+     "589.64"
+    ],
+    [
+     "Baksteen",
+     "761.99",
+     "538.20",
+     "314.45",
+     "90.70"
+    ],
+    [
+     "Overige constructie mineralen",
+     "426.13",
+     "323.10",
+     "343.23",
+     "322.93"
+    ],
+    [
+     "Glas",
+     "2.87",
+     "1.41",
+     "1.05",
+     "3.25"
+    ],
+    [
+     "Keramiek",
+     "0.24",
+     "1.05",
+     "1.05",
+     "1.05"
+    ],
+    [
+     "Plastic",
+     "0.24",
+     "0.24",
+     "0.24",
+     "0.24"
+    ],
+    [
+     "Isolatie",
+     "0.00",
+     "0.00",
+     "0.00",
+     "0.00"
+    ],
+    [
+     "Overig",
+     "15.71",
+     "15.71",
+     "15.71",
+     "15.71"
+    ],
+    [
+     "Totaal",
+     "1,405.82",
+     "1,846.45",
+     "1,492.48",
+     "1,617.83"
+    ]
+   ]
+  },
+  {
+   "type": "h3",
+   "text": "6.7 overig"
+  },
+  {
+   "type": "table",
+   "head": [
+    "Material (kg/m2 GO)",
+    "<1945",
+    "1945-1970",
+    "1970-2000",
+    ">2000"
+   ],
+   "rows": [
+    [
+     "Staal",
+     "106.70",
+     "106.70",
+     "106.70",
+     "106.70"
+    ],
+    [
+     "Koper",
+     "3.56",
+     "3.56",
+     "3.56",
+     "3.56"
+    ],
+    [
+     "Aluminium",
+     "6.07",
+     "6.07",
+     "6.07",
+     "6.07"
+    ],
+    [
+     "Overig metaal",
+     "185.69",
+     "185.69",
+     "185.69",
+     "185.69"
+    ],
+    [
+     "Hout",
+     "53.05",
+     "53.05",
+     "53.05",
+     "39.88"
+    ],
+    [
+     "Beton",
+     "869.81",
+     "869.81",
+     "869.81",
+     "973.70"
+    ],
+    [
+     "Baksteen",
+     "462.48",
+     "462.48",
+     "462.48",
+     "462.48"
+    ],
+    [
+     "Overige constructie mineralen",
+     "6.63",
+     "6.63",
+     "6.63",
+     "6.63"
+    ],
+    [
+     "Glas",
+     "15.18",
+     "15.18",
+     "15.18",
+     "15.18"
+    ],
+    [
+     "Keramiek",
+     "0.00",
+     "0.00",
+     "0.00",
+     "0.00"
+    ],
+    [
+     "Plastic",
+     "0.00",
+     "0.00",
+     "0.00",
+     "0.00"
+    ],
+    [
+     "Isolatie",
+     "0.00",
+     "0.00",
+     "0.00",
+     "0.00"
+    ],
+    [
+     "Overig",
+     "450.61",
+     "450.61",
+     "450.61",
+     "450.61"
+    ],
+    [
+     "Totaal",
+     "2,159.79",
+     "2,159.79",
+     "2,159.79",
+     "2,250.51"
+    ]
+   ]
+  },
+  {
+   "type": "h2",
+   "text": "7. Step 4 - Material quantity"
+  },
+  {
+   "type": "p",
+   "text": "Mi = GO x Ii and M_total = the sum of all Mi, where GO is the gross floor area (m2), Ii the intensity of material i (kg/m2 GO) and Mi the estimated mass (kg)."
+  },
+  {
+   "type": "p",
+   "text": "Over all 1,082 buildings this gives 4,335,383 tonnes, 2,043 kg per m2 of GO on average."
+  },
+  {
+   "type": "h2",
+   "text": "8. Step 5 - Embodied CO2"
+  },
+  {
+   "type": "p",
+   "text": "CO2i = Mi x EFi and CO2_total = the sum of all CO2i. [ASSUMED A3] - the emission factors are coarse working values for the production stage (A1-A3); for official Dutch reporting they should be replaced with Nationale Milieudatabase values."
+  },
+  {
+   "type": "table",
+   "head": [
+    "Material group",
+    "kg CO2e per kg",
+    "What the factor covers"
+   ],
+   "rows": [
+    [
+     "Concrete (beton)",
+     "0.12",
+     "Ready-mixed structural concrete, generic EU average"
+    ],
+    [
+     "Brick / masonry (baksteen)",
+     "0.21",
+     "Fired clay brick including mortar"
+    ],
+    [
+     "Wood (hout)",
+     "0.40",
+     "Production only; EXCLUDES biogenic carbon storage, counting it would make timber net-negative"
+    ],
+    [
+     "Steel (staal)",
+     "1.55",
+     "Structural steel and reinforcement, world-average recycled content"
+    ],
+    [
+     "Glass (glas)",
+     "0.90",
+     "Float glass"
+    ],
+    [
+     "Other (overig)",
+     "0.50",
+     "Coarse blended catch-all for insulation, gypsum, ceramics, plastics and installations"
+    ]
+   ]
+  },
+  {
+   "type": "p",
+   "text": "The factor actually stored per material in the table:"
+  },
+  {
+   "type": "table",
+   "head": [
+    "Material",
+    "Factor(s) used",
+    "Buildings"
+   ],
+   "rows": [
+    [
+     "Staal (Steel)",
+     "1.55",
+     "1,082"
+    ],
+    [
+     "Koper (Copper)",
+     "1.55 / 0.50",
+     "1,081 / 1"
+    ],
+    [
+     "Aluminium (Aluminium)",
+     "1.55 / 0.50",
+     "1,081 / 1"
+    ],
+    [
+     "Overig metaal (Other metal)",
+     "1.55 / 0.50",
+     "1,081 / 1"
+    ],
+    [
+     "Hout (Wood)",
+     "0.40",
+     "1,082"
+    ],
+    [
+     "Beton (Concrete)",
+     "0.12",
+     "1,082"
+    ],
+    [
+     "Baksteen (Brick)",
+     "0.21",
+     "1,082"
+    ],
+    [
+     "Overige constructie mineralen (Other construction minerals)",
+     "0.50",
+     "1,082"
+    ],
+    [
+     "Glas (Glass)",
+     "0.90",
+     "1,082"
+    ],
+    [
+     "Keramiek (Ceramics)",
+     "0.50",
+     "1,082"
+    ],
+    [
+     "Plastic (Plastics)",
+     "0.50",
+     "1,082"
+    ],
+    [
+     "Isolatie (Insulation)",
+     "0.50",
+     "1,082"
+    ],
+    [
+     "Overig (Other)",
+     "0.50",
+     "1,082"
+    ]
+   ]
+  },
+  {
+   "type": "p",
+   "text": "[FLAG] Copper, aluminium and other metal are inconsistent: the 1,081 notice buildings carry 1.55 (they were treated as metals), while the added building carries 0.50 (the Other factor). Recalculating those three materials at 0.50 for every building would lower the total by about 292,000 tonnes CO2e. The numbers in this document are the ones stored in the table, not a corrected version."
+  },
+  {
+   "type": "h2",
+   "text": "9. Our own assumptions"
+  },
+  {
+   "type": "table",
+   "head": [
+    "ID",
+    "Assumption",
+    "Value used",
+    "Why it is needed"
+   ],
+   "rows": [
+    [
+     "A1",
+     "BAG use of the building maps to a B2 building type",
+     "7 types (section 5)",
+     "B2 knows 7 types, BAG has many uses"
+    ],
+    [
+     "A2",
+     "Material intensities per type and cohort",
+     "Tabel B2, 28 profiles (section 6)",
+     "The actual construction of each building is unknown"
+    ],
+    [
+     "A3",
+     "Emission factors",
+     "6 group values (section 8)",
+     "CO2 is not measured; it depends on how materials were made"
+    ],
+    [
+     "A4",
+     "GO is the basis of the estimate",
+     "verblijfsobject areas summed per pand",
+     "BAG has no gross floor area; GO is the measured area it does have"
+    ],
+    [
+     "A5",
+     "Every dwelling unit counts once",
+     "sum of oppervlakte per pand",
+     "A unit can span buildings; here it is counted with its pand"
+    ],
+    [
+     "A6",
+     "Shape, height and number of storeys are ignored",
+     "-",
+     "Method 1 uses floor area only; Method 2 adds the geometry"
+    ],
+    [
+     "A7",
+     "Foundation piles excluded",
+     "0",
+     "Piles normally stay in the ground at demolition"
+    ],
+    [
+     "A8",
+     "One row per building",
+     "1,082 buildings",
+     "Avoids counting a building twice"
+    ]
+   ]
+  },
+  {
+   "type": "h2",
+   "text": "10. Worked example - one building"
+  },
+  {
+   "type": "p",
+   "text": "Jan Provostlaan 16, 3723RD Bilthoven - pand_id 0310100000664117, built 1988, eengezins, cohort 1970-2000, so material_profile_id EEN_1970_2000. GO = 137.0 m2 [MEASURED]."
+  },
+  {
+   "type": "table",
+   "head": [
+    "Material",
+    "Intensity (kg/m2)",
+    "Quantity (kg)",
+    "Tonnes",
+    "Factor",
+    "CO2e (tonnes)"
+   ],
+   "rows": [
+    [
+     "Staal (Steel)",
+     "41.08",
+     "5,628.00",
+     "5.628",
+     "1.55",
+     "8.723"
+    ],
+    [
+     "Koper (Copper)",
+     "3.35",
+     "459.00",
+     "0.459",
+     "0.50",
+     "0.229"
+    ],
+    [
+     "Aluminium (Aluminium)",
+     "2.44",
+     "334.00",
+     "0.334",
+     "0.50",
+     "0.167"
+    ],
+    [
+     "Overig metaal (Other metal)",
+     "29.71",
+     "4,070.00",
+     "4.070",
+     "0.50",
+     "2.035"
+    ],
+    [
+     "Hout (Wood)",
+     "81.73",
+     "11,197.00",
+     "11.197",
+     "0.40",
+     "4.479"
+    ],
+    [
+     "Beton (Concrete)",
+     "593.39",
+     "81,294.00",
+     "81.294",
+     "0.12",
+     "9.755"
+    ],
+    [
+     "Baksteen (Brick)",
+     "287.27",
+     "39,356.00",
+     "39.356",
+     "0.21",
+     "8.265"
+    ],
+    [
+     "Overige constructie mineralen (Other construction minerals)",
+     "1,401.80",
+     "192,047.00",
+     "192.047",
+     "0.50",
+     "96.023"
+    ],
+    [
+     "Glas (Glass)",
+     "3.48",
+     "477.00",
+     "0.477",
+     "0.90",
+     "0.429"
+    ],
+    [
+     "Keramiek (Ceramics)",
+     "63.81",
+     "8,742.00",
+     "8.742",
+     "0.50",
+     "4.371"
+    ],
+    [
+     "Plastic (Plastics)",
+     "5.06",
+     "693.00",
+     "0.693",
+     "0.50",
+     "0.347"
+    ],
+    [
+     "Isolatie (Insulation)",
+     "82.53",
+     "11,307.00",
+     "11.307",
+     "0.50",
+     "5.653"
+    ],
+    [
+     "Overig (Other)",
+     "55.73",
+     "7,635.00",
+     "7.635",
+     "0.50",
+     "3.818"
+    ],
+    [
+     "Total",
+     "2,651.37",
+     "363,239.00",
+     "363.239",
+     "",
+     "144.295"
+    ]
+   ]
+  },
+  {
+   "type": "p",
+   "text": "Check: 137.0 m2 x 2,651.37 kg/m2 = 363,237.69 kg, against 363,239.00 kg calculated - a difference of 1.31 kg from rounding the intensities."
+  },
+  {
+   "type": "h2",
+   "text": "11. Validation"
+  },
+  {
+   "type": "p",
+   "text": "Every building is checked against GO x the B2 total intensity of its profile. 1,082 buildings were checked; 159 differ by more than 0.01 tonne, the largest difference being 2.35 tonnes, which is 0.00134% of that building's mass. The differences come from rounding in the intensity values; no value is adjusted to force a match."
+  },
+  {
+   "type": "h2",
+   "text": "12. Results"
+  },
+  {
+   "type": "h3",
+   "text": "12.1 Per material profile"
+  },
+  {
+   "type": "table",
+   "head": [
+    "Profile",
+    "Buildings",
+    "GO (m2)",
+    "Mass (t)",
+    "CO2e (t)",
+    "Median kg/m2 GO",
+    "Median kg CO2e/m2 GO"
+   ],
+   "rows": [
+    [
+     "EEN_PRE_1945",
+     "212",
+     "43,339",
+     "104,630",
+     "49,178",
+     "2,414",
+     "1,135"
+    ],
+    [
+     "EEN_1970_2000",
+     "172",
+     "28,065",
+     "74,411",
+     "30,600",
+     "2,651",
+     "1,091"
+    ],
+    [
+     "EEN_1945_1970",
+     "166",
+     "28,007",
+     "80,110",
+     "34,724",
+     "2,860",
+     "1,240"
+    ],
+    [
+     "IND_1970_2000",
+     "76",
+     "185,087",
+     "276,242",
+     "140,137",
+     "1,492",
+     "757"
+    ],
+    [
+     "IND_PRE_1945",
+     "60",
+     "68,111",
+     "95,752",
+     "31,460",
+     "1,406",
+     "462"
+    ],
+    [
+     "OVR_1970_2000",
+     "54",
+     "513,642",
+     "1,109,354",
+     "479,295",
+     "2,160",
+     "933"
+    ],
+    [
+     "IND_1945_1970",
+     "53",
+     "176,014",
+     "325,001",
+     "159,848",
+     "1,846",
+     "908"
+    ],
+    [
+     "OVR_PRE_1945",
+     "33",
+     "110,266",
+     "238,150",
+     "102,893",
+     "2,160",
+     "933"
+    ],
+    [
+     "OVR_1945_1970",
+     "30",
+     "225,176",
+     "486,331",
+     "210,119",
+     "2,160",
+     "933"
+    ],
+    [
+     "EEN_POST_2000",
+     "27",
+     "6,881",
+     "10,281",
+     "3,650",
+     "1,494",
+     "530"
+    ],
+    [
+     "IND_POST_2000",
+     "27",
+     "93,936",
+     "151,972",
+     "109,569",
+     "1,618",
+     "1,166"
+    ],
+    [
+     "APP_PRE_1945",
+     "26",
+     "13,079",
+     "23,659",
+     "9,802",
+     "1,809",
+     "749"
+    ],
+    [
+     "OVR_POST_2000",
+     "26",
+     "420,632",
+     "946,632",
+     "395,533",
+     "2,250",
+     "940"
+    ],
+    [
+     "COM_1945_1970",
+     "23",
+     "21,297",
+     "41,236",
+     "9,845",
+     "1,936",
+     "462"
+    ],
+    [
+     "COM_PRE_1945",
+     "21",
+     "12,890",
+     "25,016",
+     "6,589",
+     "1,941",
+     "511"
+    ],
+    [
+     "KANT_1970_2000",
+     "12",
+     "62,856",
+     "133,654",
+     "37,012",
+     "2,126",
+     "589"
+    ],
+    [
+     "KANT_1945_1970",
+     "11",
+     "28,266",
+     "60,104",
+     "16,644",
+     "2,126",
+     "589"
+    ],
+    [
+     "COM_1970_2000",
+     "10",
+     "26,058",
+     "42,438",
+     "7,783",
+     "1,629",
+     "299"
+    ],
+    [
+     "KANT_PRE_1945",
+     "9",
+     "18,826",
+     "40,031",
+     "11,086",
+     "2,126",
+     "589"
+    ],
+    [
+     "APP_1945_1970",
+     "8",
+     "2,566",
+     "4,422",
+     "1,814",
+     "1,723",
+     "707"
+    ],
+    [
+     "APP_1970_2000",
+     "8",
+     "7,015",
+     "12,746",
+     "5,825",
+     "1,817",
+     "830"
+    ],
+    [
+     "COM_POST_2000",
+     "7",
+     "15,304",
+     "22,538",
+     "11,107",
+     "1,473",
+     "726"
+    ],
+    [
+     "APP_POST_2000",
+     "4",
+     "3,409",
+     "6,040",
+     "3,057",
+     "1,772",
+     "897"
+    ],
+    [
+     "KANT_POST_2000",
+     "4",
+     "10,537",
+     "22,405",
+     "6,205",
+     "2,126",
+     "589"
+    ],
+    [
+     "WF_PRE_1945",
+     "3",
+     "1,121",
+     "2,226",
+     "950",
+     "1,986",
+     "847"
+    ],
+    [
+     "Total",
+     "1,082",
+     "2,122,380",
+     "4,335,383",
+     "1,874,724",
+     "",
+     ""
+    ]
+   ]
+  },
+  {
+   "type": "h3",
+   "text": "12.2 Five heaviest buildings"
+  },
+  {
+   "type": "table",
+   "head": [
+    "pand_id",
+    "City",
+    "Profile",
+    "GO (m2)",
+    "Mass (t)",
+    "CO2e (t)"
+   ],
+   "rows": [
+    [
+     "0307100000534872",
+     "Amersfoort",
+     "OVR_POST_2000",
+     "235,335",
+     "529,621",
+     "221,293"
+    ],
+    [
+     "0917100000000476",
+     "Heerlen",
+     "OVR_1970_2000",
+     "208,590",
+     "450,509",
+     "194,642"
+    ],
+    [
+     "0268100000013015",
+     "Nijmegen",
+     "OVR_1945_1970",
+     "117,787",
+     "254,394",
+     "109,911"
+    ],
+    [
+     "0299100000398364",
+     "Zevenaar",
+     "OVR_1970_2000",
+     "82,050",
+     "177,210",
+     "76,563"
+    ],
+    [
+     "0917100000053098",
+     "Heerlen",
+     "OVR_POST_2000",
+     "51,345",
+     "115,552",
+     "48,281"
+    ]
+   ]
+  },
+  {
+   "type": "h2",
+   "text": "13. Database output"
+  },
+  {
+   "type": "p",
+   "text": "The results are stored in PostgreSQL database datafuse, table public.material_estimation_final (one row per building, 1,082 rows)."
+  },
+  {
+   "type": "table",
+   "head": [
+    "Column group",
+    "Columns"
+   ],
+   "rows": [
+    [
+     "Identification",
+     "notice_id, pand_id, title, publication_date, address, house_number, postal_code, municipality, city, latitude, longitude"
+    ],
+    [
+     "Building",
+     "bouwjaar, pand_status, pand_gebruiksdoel, vbo_id, aantal_verblijfsobjecten, geometry, geometry_area_m2"
+    ],
+    [
+     "Classification",
+     "typegebouw, cohort, material_profile_id, go_m2, go_source"
+    ],
+    [
+     "Per material (13x)",
+     "<material>_tonnes, <material>_co2_factor, <material>_co2_tonnes"
+    ],
+    [
+     "Totals",
+     "total_material_mass_tonnes, total_co2_tonnes, total_co2_kg"
+    ],
+    [
+     "Provenance",
+     "location_source, match_status, pand_id_verified, geometry_valid, final_classification, created_at"
+    ]
+   ]
+  },
+  {
+   "type": "p",
+   "text": "Example query in pgAdmin: SELECT pand_id, city, beton_tonnes, total_co2_tonnes FROM material_estimation_final ORDER BY total_co2_tonnes DESC;"
+  },
+  {
+   "type": "h2",
+   "text": "14. Limits"
+  },
+  {
+   "type": "li",
+   "text": "The estimate scales with floor area only. A tall hall and a low hall with the same GO get the same materials."
+  },
+  {
+   "type": "li",
+   "text": "B2 intensities are national averages per type and cohort, not the construction of the individual building."
+  },
+  {
+   "type": "li",
+   "text": "The type mapping is coarse: assembly, healthcare, hotel, sports and education all become 'overig'."
+  },
+  {
+   "type": "li",
+   "text": "Overige constructie mineralen dominates the mass (sand, gravel, mortar) and carries a 0.50 factor, which makes it the largest single CO2 source."
+  },
+  {
+   "type": "li",
+   "text": "Copper, aluminium and other metal do not use the same factor in every row (section 8)."
+  },
+  {
+   "type": "li",
+   "text": "Emission factors are coarse working values; replace with Nationale Milieudatabase values for official reporting."
+  },
+  {
+   "type": "h2",
+   "text": "15. Comparison with Method 2"
+  },
+  {
+   "type": "p",
+   "text": "Method 2 measures each building's surfaces and volume in 3DBAG and applies a construction build-up per building part. Both cover the same 1,082 buildings."
+  },
+  {
+   "type": "table",
+   "head": [
+    "",
+    "Method 1 (this document)",
+    "Method 2"
+   ],
+   "rows": [
+    [
+     "Basis",
+     "Floor area (GO) x B2 intensity",
+     "3DBAG geometry x construction build-up"
+    ],
+    [
+     "Measured input",
+     "GO, building type, year built",
+     "Footprint, wall and roof areas, volume, plus GO"
+    ],
+    [
+     "Materials reported",
+     "13",
+     "7"
+    ],
+    [
+     "Total mass (t)",
+     "4,335,383",
+     "1,800,610"
+    ],
+    [
+     "Total CO2e (t)",
+     "1,874,724",
+     "393,535"
+    ],
+    [
+     "Mass per m2 GO",
+     "2,043 kg",
+     "about 1,000 kg per m2 BVO for a 1970-2000 house"
+    ]
+   ]
+  },
+  {
+   "type": "p",
+   "text": "Method 1 gives about 2.4 times the mass of Method 2. The difference sits almost entirely in 'Overige constructie mineralen', which B2 counts at 1,400 kg/m2 for a 1970-2000 house and Method 2 does not model as a separate group at all."
+  },
+  {
+   "type": "h2",
+   "text": "16. How to reproduce"
+  },
+  {
+   "type": "li",
+   "text": "BAG lookup and classification produce the pand_id, GO, typegebouw and cohort per building."
+  },
+  {
+   "type": "li",
+   "text": "dataset/archive/2data.py - the single-building worked example: B2 lookup, quantities and CO2 (prints every step)."
+  },
+  {
+   "type": "li",
+   "text": "dataset/archive/import_jan_provostlaan_16.py - loads the added building into material_estimation_final."
+  },
+  {
+   "type": "li",
+   "text": "To change an assumption, edit the intensities in dataset/archive/B2.json or the factors in the loader, then reload the table."
+  },
+  {
+   "type": "h2",
+   "text": "17. Change log"
+  },
+  {
+   "type": "table",
+   "head": [
+    "Date",
+    "Change",
+    "Effect"
+   ],
+   "rows": [
+    [
+     "23 September 2026",
+     "Method 1 documented for all 1,082 buildings from the stored table.",
+     "4,335,383 t material, 1,874,724 t CO2e"
+    ]
+   ]
+  }
+ ]
+}

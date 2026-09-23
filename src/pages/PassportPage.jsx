@@ -1,5 +1,7 @@
 import { useEffect } from "react";
+import { Link } from "react-router";
 import Capabilities from "../components/Capabilities";
+import { BookIcon } from "../components/Icons";
 import Passport, { PassportSkeleton } from "../components/Passport";
 import SearchPanel from "../components/SearchPanel";
 
@@ -33,6 +35,13 @@ export default function PassportPage({ passport }) {
         onRemoveRecent={removeRecentSearch}
         compact={hasContent}
       />
+
+      <p className="docs-link">
+        <Link className="button button--ghost" to="/method-1/docs">
+          <BookIcon />
+          How Method 1 is calculated
+        </Link>
+      </p>
 
       {loading && <PassportSkeleton />}
 

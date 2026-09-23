@@ -5,6 +5,7 @@ import Header from "./components/Header";
 import { useMethod2Search } from "./hooks/useMethod2Search";
 import { usePassportSearch } from "./hooks/usePassportSearch";
 import AddressesPage from "./pages/AddressesPage";
+import Method1DocsPage from "./pages/Method1DocsPage";
 import Method2DocsPage from "./pages/Method2DocsPage";
 import Method2Page from "./pages/Method2Page";
 import NoticesPage from "./pages/NoticesPage";
@@ -41,6 +42,7 @@ function App() {
             path="/method-2"
             element={<Method2Page method2={method2} />}
           />
+          <Route path="/method-1/docs" element={<Method1DocsPage />} />
           <Route path="/method-2/docs" element={<Method2DocsPage />} />
           <Route path="/notices" element={<NoticesPage />} />
           <Route path="/addresses" element={<AddressesPage />} />

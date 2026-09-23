@@ -48,7 +48,7 @@ export default function Method2Page({ method2 }) {
         lede="Search by address for the 3DBAG geometry estimate: surfaces, volume, materials and CO₂ per building."
       />
 
-      <p className="method2-docs-link">
+      <p className="docs-link">
         <Link className="button button--ghost" to="/method-2/docs">
           <BookIcon />
           How Method 2 is calculated

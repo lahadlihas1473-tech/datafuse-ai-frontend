@@ -2205,17 +2205,17 @@
 
 /* ---------- Method 2 documentation ---------- */
 
-.method2-docs-link {
+.docs-link {
   margin: 0 0 24px;
 }
 
-.method2-docs-link .button {
+.docs-link .button {
   gap: 8px;
   padding: 8px 16px;
   font-size: 13px;
 }
 
-.method2-docs-link .icon {
+.docs-link .icon {
   width: 16px;
   height: 16px;
 }
