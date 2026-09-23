@@ -16,8 +16,7 @@
   "13. Database output",
   "14. Limits",
   "15. Comparison with Method 2",
-  "16. How to reproduce",
-  "17. Change log"
+  "16. Change log"
  ],
  "blocks": [
   {
@@ -2038,27 +2037,7 @@
   },
   {
    "type": "h2",
-   "text": "16. How to reproduce"
-  },
-  {
-   "type": "li",
-   "text": "BAG lookup and classification produce the pand_id, GO, typegebouw and cohort per building."
-  },
-  {
-   "type": "li",
-   "text": "dataset/archive/2data.py - the single-building worked example: B2 lookup, quantities and CO2 (prints every step)."
-  },
-  {
-   "type": "li",
-   "text": "dataset/archive/import_jan_provostlaan_16.py - loads the added building into material_estimation_final."
-  },
-  {
-   "type": "li",
-   "text": "To change an assumption, edit the intensities in dataset/archive/B2.json or the factors in the loader, then reload the table."
-  },
-  {
-   "type": "h2",
-   "text": "17. Change log"
+   "text": "16. Change log"
   },
   {
    "type": "table",

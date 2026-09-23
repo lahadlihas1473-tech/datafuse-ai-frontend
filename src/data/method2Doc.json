@@ -18,8 +18,7 @@
   "15. Database output",
   "16. Limits",
   "17. Comparison with the previous method",
-  "18. How to reproduce",
-  "19. Change log"
+  "18. Change log"
  ],
  "blocks": [
   {
@@ -2627,35 +2626,7 @@
   },
   {
    "type": "h2",
-   "text": "18. How to reproduce"
-  },
-  {
-   "type": "p",
-   "text": "All steps run from the project folder C:\\datafuse-ai\\dataset:"
-  },
-  {
-   "type": "li",
-   "text": "python geometry_material_co2.py – the single-building worked example (prints every step)."
-  },
-  {
-   "type": "li",
-   "text": "python build_input_1082.py – keeps the 1,081 selected notices, adds Jan Provostlaan 16 (needs internet for PDOK and 3DBAG) and writes 3dbag_input_1082.json."
-  },
-  {
-   "type": "li",
-   "text": "python geometry_material_co2_batch.py – calculates all 1,082 buildings and writes the JSON and CSV output."
-  },
-  {
-   "type": "li",
-   "text": "python import_geometry_co2.py – rebuilds the table material_estimation_geometry in database datafuse."
-  },
-  {
-   "type": "p",
-   "text": "To change an assumption, edit its value at the top of geometry_material_co2_batch.py (PROFILES, INSTALLATIONS, EMISSION_FACTOR, PARTY_WALL_ALLOCATION) and run steps 3 and 4 again."
-  },
-  {
-   "type": "h2",
-   "text": "19. Change log"
+   "text": "18. Change log"
   },
   {
    "type": "table",
