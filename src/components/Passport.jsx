@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import { Link } from "react-router";
 import {
   formatNumber,
   formatPercent,
@@ -21,6 +22,7 @@ import {
   GaugeIcon,
   LayersIcon,
   PinIcon,
+  RulerIcon,
   WeightIcon,
 } from "./Icons";
 
@@ -108,6 +110,15 @@ export default function Passport({ result }) {
         <div className="passport__tags">
           <span className="eyebrow">Building passport</span>
           <span className="tag">Estimate</span>
+
+          {/* Same address, measured from 3DBAG geometry */}
+          <Link
+            className="button button--ghost method2-link"
+            to={`/method-2?address=${encodeURIComponent(result.address ?? "")}`}
+          >
+            <RulerIcon />
+            Method 2
+          </Link>
         </div>
 
         <h2 className={street.length > 40 ? "passport__title--long" : undefined}>

@@ -1,5 +1,11 @@
-// Set per environment: .env.development locally, Vercel env vars in production
-export const API_URL = (import.meta.env.API_URL ?? "").replace(/\/+$/, "");
+// Set per environment: .env.development locally, .env.production (or the
+// Vercel env vars) for the deployed site. VITE_API_URL is the name Vercel
+// uses; API_URL is kept so existing local .env files keep working.
+export const API_URL = (
+  import.meta.env.VITE_API_URL ??
+  import.meta.env.API_URL ??
+  ""
+).replace(/\/+$/, "");
 
 export const buildQuery = (params) => {
   const query = new URLSearchParams();

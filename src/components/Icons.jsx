@@ -60,6 +60,14 @@ export const NoticeIcon = (props) => (
   </Icon>
 );
 
+// Method 2: measured geometry (footprint, height, volume)
+export const RulerIcon = (props) => (
+  <Icon {...props}>
+    <path d="M4 14.5 14.5 4l5.5 5.5L9.5 20 4 14.5Z" />
+    <path d="M8 10.5l1.8 1.8M11 7.5l1.8 1.8M14.5 11.5l1.8 1.8" />
+  </Icon>
+);
+
 export const ChevronIcon = ({ direction = "right", ...props }) => (
   <Icon {...props}>
     <path d={direction === "left" ? "m14.5 6-6 6 6 6" : "m9.5 6 6 6-6 6"} />

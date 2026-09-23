@@ -13,9 +13,16 @@ export default function SearchPanel({
   onSearch,
   loading,
   error,
-  recentSearches,
+  recentSearches = [],
   onRemoveRecent,
   compact,
+  eyebrow = "Circular building intelligence",
+  title = (
+    <>
+      Every building, <em>weighed</em> and accounted for.
+    </>
+  ),
+  lede = "Search by address to view material estimation and CO₂ emissions.",
 }) {
   const inputRef = useRef(null);
 
@@ -33,16 +40,11 @@ export default function SearchPanel({
 
   return (
     <section className={`hero${compact ? " hero--compact" : ""}`}>
-      <span className="eyebrow">Circular building intelligence</span>
+      <span className="eyebrow">{eyebrow}</span>
 
-      <h1 className="hero__title">
-        Every building, <em>weighed</em> and accounted for.
-      </h1>
+      <h1 className="hero__title">{title}</h1>
 
-      <p className="hero__lede">
-        Search by address to view material estimation and CO₂
-        emissions.
-      </p>
+      <p className="hero__lede">{lede}</p>
 
       <form
         className={`search${loading ? " search--loading" : ""}`}

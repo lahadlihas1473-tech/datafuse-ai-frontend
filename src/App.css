@@ -2123,3 +2123,81 @@
     grid-column: auto;
   }
 }
+
+
+/* ---------- Method 2 ---------- */
+
+.passport__tags {
+  flex-wrap: wrap;
+}
+
+.method2-link {
+  gap: 8px;
+  padding: 6px 14px;
+  font-size: 13px;
+}
+
+.method2-link .icon {
+  width: 16px;
+  height: 16px;
+}
+
+.facts {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+  gap: 1px;
+  margin: 0;
+  padding: 0;
+  background: var(--line);
+  border: 1px solid var(--line);
+  border-radius: var(--r-md);
+  overflow: hidden;
+}
+
+.fact {
+  padding: 14px 16px;
+  background: var(--surface-2);
+}
+
+.fact__label {
+  color: var(--ink-3);
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  font-weight: 500;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.fact__value {
+  margin: 6px 0 0;
+  color: var(--ink);
+  font-size: 15px;
+  font-variant-numeric: tabular-nums;
+}
+
+.method2__table {
+  min-width: 520px;
+}
+
+.method2__table tfoot th,
+.method2__table tfoot td {
+  border-bottom: 0;
+  background: var(--surface-3);
+  font-weight: 600;
+}
+
+.method2__flags {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  margin-top: 16px;
+}
+
+.method2__flags-label {
+  color: var(--ink-3);
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}

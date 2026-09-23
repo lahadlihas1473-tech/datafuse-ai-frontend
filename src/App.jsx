@@ -2,8 +2,10 @@ import { useEffect } from "react";
 import { Route, Routes, useLocation } from "react-router";
 import "./App.css";
 import Header from "./components/Header";
+import { useMethod2Search } from "./hooks/useMethod2Search";
 import { usePassportSearch } from "./hooks/usePassportSearch";
 import AddressesPage from "./pages/AddressesPage";
+import Method2Page from "./pages/Method2Page";
 import NoticesPage from "./pages/NoticesPage";
 import NotFoundPage from "./pages/NotFoundPage";
 import PassportPage from "./pages/PassportPage";
@@ -22,6 +24,7 @@ function ScrollToTop() {
 function App() {
   // Held here so the last passport survives switching pages
   const passport = usePassportSearch();
+  const method2 = useMethod2Search();
 
   return (
     <div className="app">
@@ -33,6 +36,10 @@ function App() {
       <main className="container main">
         <Routes>
           <Route path="/" element={<PassportPage passport={passport} />} />
+          <Route
+            path="/method-2"
+            element={<Method2Page method2={method2} />}
+          />
           <Route path="/notices" element={<NoticesPage />} />
           <Route path="/addresses" element={<AddressesPage />} />
           <Route path="*" element={<NotFoundPage />} />
