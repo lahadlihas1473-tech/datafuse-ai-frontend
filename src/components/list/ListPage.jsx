@@ -20,6 +20,7 @@ function SectionLabel({ children, count }) {
 export default function ListPage({
   eyebrow,
   title,
+  meta,
   description,
   endpoint,
   noun,
@@ -86,6 +87,7 @@ export default function ListPage({
       <header className="page-head">
         <span className="eyebrow">{eyebrow}</span>
         <h1 className="page-head__title">{title}</h1>
+        {meta && <p className="page-head__meta">{meta}</p>}
         <p className="page-head__lede">{description}</p>
       </header>
 

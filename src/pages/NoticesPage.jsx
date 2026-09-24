@@ -16,6 +16,36 @@ const formatDate = (value) => {
       });
 };
 
+// Period the demolition notices were extracted for (START_DATE / END_DATE
+// of the extraction pipeline)
+const EXTRACTION_START = "2025-07-01";
+const EXTRACTION_END = "2026-07-20";
+
+// "2025-07-01" → "01 Jul 2025"
+const formatPeriodDate = (value) =>
+  new Date(`${value}T00:00:00Z`).toLocaleDateString("en-GB", {
+    day: "2-digit",
+    month: "short",
+    year: "numeric",
+    timeZone: "UTC",
+  });
+
+function ExtractionPeriod() {
+  return (
+    <>
+      <NoticeIcon />
+      <span className="page-head__meta-label">Notice extraction period</span>
+      <span className="page-head__meta-value">
+        <time dateTime={EXTRACTION_START}>
+          {formatPeriodDate(EXTRACTION_START)}
+        </time>
+        {" — "}
+        <time dateTime={EXTRACTION_END}>{formatPeriodDate(EXTRACTION_END)}</time>
+      </span>
+    </>
+  );
+}
+
 // Notice ID, Title and Publication date. One building (Jan Provostlaan 16)
 // has no notice, so it is listed by its pand ID instead.
 function NoticeRow({ notice, search }) {
@@ -62,6 +92,7 @@ export default function NoticesPage() {
     <ListPage
       eyebrow="Demolition notices"
       title="Notices"
+      meta={<ExtractionPeriod />}
       description="Every building with an estimate, newest notice first. Search a city to see its buildings first, followed by other matches."
       endpoint="/notices"
       noun={{ singular: "notice", plural: "notices" }}
