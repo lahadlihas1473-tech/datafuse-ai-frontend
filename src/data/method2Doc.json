@@ -173,7 +173,7 @@
   },
   {
    "type": "p",
-   "text": "Where the assumptions are: every assumption has an ID. A1-A19 belong to the material and CO2 calculation (register in section 8.1); C1-C12 belong to the WOZ estimate (section 22). In the text an assumed value is marked [ASSUMED Ax]."
+   "text": "Where the assumptions are: every assumption has an ID. A1-A19 belong to the material and CO2 calculation (register in section 8.1); B1-B12 belong to the WOZ estimate (section 22). In the text an assumed value is marked [ASSUMED Ax]."
   },
   {
    "type": "p",
@@ -2520,73 +2520,73 @@
    ],
    "rows": [
     [
-     "C1",
+     "B1",
      "The buurt (neighbourhood) average WOZ, corrected for its dwelling mix, measures the location",
      "CBS 86165NED (2025)",
      "No per-building price is available; the buurt is the finest official level"
     ],
     [
-     "C2",
+     "B2",
      "Buurt figures of 2025 move with the gemeente (municipality) to 2026",
      "Gemeente WOZ growth",
      "CBS has no buurt figures for 2026 yet"
     ],
     [
-     "C3",
+     "B3",
      "The national sale-price ratio of a dwelling type holds in every buurt",
      "CBS 85791NED (2025)",
      "WOZ per dwelling type is not published"
     ],
     [
-     "C4",
+     "B4",
      "Typical floor area per dwelling type = average gas / gas per m2",
      "CBS 85140NED (2025)",
      "Floor area per dwelling type is not published directly"
     ],
     [
-     "C5",
+     "B5",
      "The party-wall share of the 3DBAG outline gives the dwelling type",
      "< 0.05 detached, >= 0.45 terraced",
      "BAG does not register the dwelling type"
     ],
     [
-     "C6",
+     "B6",
      "Dwelling value grows less than proportionally with floor area",
      "elasticity 0.9 (smaller) / 0.7 (larger)",
      "Larger dwellings are worth less per m2"
     ],
     [
-     "C7",
+     "B7",
      "A residential unit over 400 m2 is not a single dwelling",
      "Valued per m2",
      "Care homes and student housing are often one unit"
     ],
     [
-     "C8",
+     "B8",
      "Other units: the gebruiksdoel (use) type factors of Method 1",
      "11 factors, 0.25 - 1.00",
      "CBS gives the price level for dwellings only"
     ],
     [
-     "C9",
+     "B9",
      "Larger non-residential units are worth less per m2",
      "elasticity -0.1, reference 500 m2",
      "Large halls and complexes sell for less per m2"
     ],
     [
-     "C10",
+     "B10",
      "BAG floor area is used unless it is more than 2 x the 3DBAG BVO",
      "Capped at 2 x BVO",
      "Units of another building can be registered on this one"
     ],
     [
-     "C11",
+     "B11",
      "Age changes the value per m2",
      "7 bands, as Method 1",
      "Newer buildings are usually valued higher"
     ],
     [
-     "C12",
+     "B12",
      "The building is valued as it stands, in use; land is included through the price level",
      "No sloop (demolition) discount",
      "WOZ includes land; the CBS averages do too"
@@ -3464,7 +3464,7 @@
   },
   {
    "type": "li",
-   "text": "The size elasticities, the 400 m2 dwelling limit and the 2 x BVO cap are our own choices (C6, C7, C10)."
+   "text": "The size elasticities, the 400 m2 dwelling limit and the 2 x BVO cap are our own choices (B6, B7, B10)."
   },
   {
    "type": "h2",
