@@ -1,6 +1,13 @@
-import { formatAmount, formatNumber, formatPercent, isNumber } from "../lib/format";
+import {
+  formatAmount,
+  formatEuro,
+  formatNumber,
+  formatPercent,
+  isNumber,
+} from "../lib/format";
 import { GROUPS, TOTAL_LABEL } from "../lib/materials";
 import CompositionChart from "./CompositionChart";
+import WozMethod2 from "./WozMethod2";
 import {
   BuildingIcon,
   CloudIcon,
@@ -155,6 +162,7 @@ export default function Method2({ record }) {
 
   const presentCount = rows.filter((row) => row.tonnes > 0).length;
   const flags = record.flags ?? [];
+  const woz = record.estimated_woz;
 
   return (
     <article className="passport method2">
@@ -393,6 +401,21 @@ export default function Method2({ record }) {
           </div>
         )}
       </Panel>
+
+      {woz && (
+        <Panel
+          index={6}
+          title="WOZ Estimation (Method 2)"
+          description="Estimated WOZ value from the building's buurt (neighbourhood), its dwelling type measured in 3DBAG and each verblijfsobject (unit) valued on its own."
+          meta={woz.reference_year ? `WOZ year ${woz.reference_year}` : undefined}
+        >
+          <p className="woz-headline">
+            <span className="woz-headline__label">{woz.label}</span>
+            <span className="woz-headline__value">{formatEuro(woz.value_eur)}</span>
+          </p>
+          <WozMethod2 woz={woz} />
+        </Panel>
+      )}
     </article>
   );
 }

@@ -2538,3 +2538,14 @@
     grid-template-columns: 1fr;
   }
 }
+
+/* Method 2 WOZ: formula in words, and the per-unit table */
+.woz-details__formula--stack {
+  flex-direction: column;
+  gap: 4px;
+  font-size: 12.5px;
+}
+
+.woz-units th[scope="row"] {
+  font-weight: 500;
+}
