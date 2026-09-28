@@ -5,6 +5,8 @@ import { formatEuro, formatNumber, isNumber } from "../lib/format";
 // /material-estimation/search).
 export default function WozDetails({ woz }) {
   const inputs = woz.inputs ?? {};
+  // GO used by the estimate, else the BAG floor area of the building
+  const goM2 = isNumber(woz.go_m2) ? woz.go_m2 : inputs.go_m2;
   const hasFactors =
     isNumber(woz.go_m2) &&
     isNumber(woz.base_eur_per_m2) &&
@@ -45,12 +47,7 @@ export default function WozDetails({ woz }) {
     {
       label: "Age factor",
       value: isNumber(woz.age_factor) ? formatNumber(woz.age_factor, 2) : null,
-      note: [
-        inputs.bouwjaar && `bouwjaar (year built) ${inputs.bouwjaar}`,
-        woz.age_band && `band ${woz.age_band}`,
-      ]
-        .filter(Boolean)
-        .join(" · "),
+      note: woz.age_band && `bouwjaar band ${woz.age_band}`,
     },
     {
       label: "Price of this building",
@@ -59,7 +56,17 @@ export default function WozDetails({ woz }) {
     },
     {
       label: "GO (usable floor area)",
-      value: isNumber(woz.go_m2) ? `${formatNumber(woz.go_m2, 0)} m²` : null,
+      value: isNumber(goM2) ? `${formatNumber(goM2, 0)} m²` : null,
+      note: "BAG",
+    },
+    {
+      label: "Bouwjaar (year built)",
+      value: inputs.bouwjaar ? String(inputs.bouwjaar) : null,
+      note: "BAG",
+    },
+    {
+      label: "Gebruiksdoel (use)",
+      value: inputs.gebruiksdoel,
       note: "BAG",
     },
     {
@@ -70,6 +77,12 @@ export default function WozDetails({ woz }) {
 
   return (
     <div className="woz-details">
+      {!hasFactors && woz.formula && (
+        <p className="woz-details__formula">
+          <span>{woz.label} = GO (usable floor area) × base €/m² × type factor × age factor</span>
+        </p>
+      )}
+
       {hasFactors && (
         <p className="woz-details__formula">
           <span>{formatNumber(woz.go_m2, 0)} m²</span>
