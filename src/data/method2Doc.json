@@ -26,9 +26,8 @@
   "23. Worked example - one building from geometry to WOZ",
   "24. Data quality flags",
   "25. Results - Estimated WOZ Value per dwelling type",
-  "26. Database output",
-  "27. Limits",
-  "28. Comparison with the previous method"
+  "26. Limits",
+  "27. Comparison with the previous method"
  ],
  "blocks": [
   {
@@ -1409,7 +1408,7 @@
     [
      "Load-bearing frame (draagconstructie)",
      "Structural steel 15.0",
-     "26.0"
+     "15.0"
     ],
     [
      "Internal walls (binnenwanden)",
@@ -1777,7 +1776,7 @@
   },
   {
    "type": "p",
-   "text": "[ASSUMED A12] CO2 released to produce the material (production stage A1–A3). There is one factor per reported material group: every detailed material takes the factor of the group it is reported in, so the CO2 of a group is simply its mass × that factor. All steel together is 85,604 t × 1.55 = 132,686 t CO2e, and all concrete 1,376,665 t × 0.12 = 165,200 t CO2e. Copper has no factor of its own: it is an installation material, so it takes the Other factor 0.50, while still being reported as its own group. These are coarse working values – the same set the earlier estimate used (section 28); for official Dutch reporting they should be replaced with Nationale Milieudatabase (National Environmental Database) values."
+   "text": "[ASSUMED A12] CO2 released to produce the material (production stage A1–A3). There is one factor per reported material group: every detailed material takes the factor of the group it is reported in, so the CO2 of a group is simply its mass × that factor. All steel together is 85,604 t × 1.55 = 132,686 t CO2e, and all concrete 1,376,665 t × 0.12 = 165,200 t CO2e. Copper has no factor of its own: it is an installation material, so it takes the Other factor 0.50, while still being reported as its own group. These are coarse working values – the same set the earlier estimate used (section 27); for official Dutch reporting they should be replaced with Nationale Milieudatabase (National Environmental Database) values."
   },
   {
    "type": "table",
@@ -2997,7 +2996,7 @@
     [
      "Concrete (beton)",
      "138.621",
-     "27.635"
+     "26.635"
     ],
     [
      "Glass (glas)",
@@ -3199,68 +3198,11 @@
   },
   {
    "type": "h2",
-   "text": "26. Database output"
-  },
-  {
-   "type": "p",
-   "text": "The results are stored in PostgreSQL database datafuse, table public.material_estimation_geometry (one row per building, 1,082 rows). Re-running dataset/import_geometry_co2.py rebuilds the table completely."
-  },
-  {
-   "type": "table",
-   "head": [
-    "Column group",
-    "Columns"
-   ],
-   "rows": [
-    [
-     "Identification",
-     "notice_id, pand_id, address, house_number, postal_code, city, bouwjaar, typegebouw, cohort, material_profile_id, assumption_profile"
-    ],
-    [
-     "Measured",
-     "opp_grond_m2, opp_buitenmuur_m2, opp_scheidingsmuur_m2, opp_dak_plat_m2, opp_dak_schuin_m2, volume_lod22_m3, bouwlagen, go_m2"
-    ],
-    [
-     "Derived",
-     "perimeter_m, height_max_m, height_mean_m, roof_pitch_deg, facade_length_m, party_wall_length_m, storey_height_m, storey_equivalents, bvo_m2, go_bvo_ratio, window_area_m2, foundation_beam_length_m, internal_wall_m2"
-    ],
-    [
-     "Materials",
-     "steel, wood, brick, concrete, glass, copper, other – each as <name>_tonnes and <name>_co2_tonnes"
-    ],
-    [
-     "Totals",
-     "total_material_mass_tonnes, total_co2_tonnes, total_co2_kg, mass_kg_per_m2_bvo, co2e_kg_per_m2_bvo"
-    ],
-    [
-     "Quality",
-     "flags (list)"
-    ],
-    [
-     "Detail (JSON)",
-     "components_kg (mass per building part), co2_by_material (mass in kg and tonnes, factor, and CO2 in kg and tonnes per detailed material)"
-    ]
-   ]
-  },
-  {
-   "type": "p",
-   "text": "Example query in pgAdmin:"
-  },
-  {
-   "type": "p",
-   "text": "SELECT pand_id, city, steel_tonnes, concrete_tonnes, total_co2_tonnes FROM material_estimation_geometry ORDER BY total_co2_tonnes DESC;"
-  },
-  {
-   "type": "p",
-   "text": "The Estimated WOZ Value is stored in table public.method_2 (one row per building), in the est_woz_* columns: value, label, reference year, gemeente, buurt, location index, CBS averages, dwelling type, party-wall share, floor area and its source, number of units, dwelling and other value, age factor, value per m2, imputed inputs, and est_woz_assumptions (JSON with the calculation of every unit). Re-running dataset/estimate_woz_method2.py recalculates them."
-  },
-  {
-   "type": "h2",
-   "text": "27. Limits"
+   "text": "26. Limits"
   },
   {
    "type": "h3",
-   "text": "27.1 Material and CO2"
+   "text": "26.1 Material and CO2"
   },
   {
    "type": "li",
@@ -3284,7 +3226,7 @@
   },
   {
    "type": "h3",
-   "text": "27.2 Estimated WOZ Value"
+   "text": "26.2 Estimated WOZ Value"
   },
   {
    "type": "li",
@@ -3308,11 +3250,11 @@
   },
   {
    "type": "h2",
-   "text": "28. Comparison with the previous method"
+   "text": "27. Comparison with the previous method"
   },
   {
    "type": "h3",
-   "text": "28.1 Material and CO2"
+   "text": "27.1 Material and CO2"
   },
   {
    "type": "p",
@@ -3355,7 +3297,7 @@
   },
   {
    "type": "h3",
-   "text": "28.2 Estimated WOZ Value: Method 2 vs Method 1"
+   "text": "27.2 Estimated WOZ Value: Method 2 vs Method 1"
   },
   {
    "type": "table",
