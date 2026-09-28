@@ -1,14 +1,14 @@
 {
   "source": "Material_CO2_Estimation_Method1_B2_1082_Buildings.docx",
   "sections": [
-    "17. Estimated WOZ Value - Process",
-    "18. Estimated WOZ Value - Assumptions",
-    "19. Estimated WOZ Value - Example - Jan Provostlaan 16, Bilthoven"
+    "16. Estimated WOZ Value - Process",
+    "17. Estimated WOZ Value - Assumptions",
+    "18. Estimated WOZ Value - Example - Jan Provostlaan 16, Bilthoven"
   ],
   "blocks": [
     {
       "type": "h2",
-      "text": "17. Estimated WOZ Value - Process"
+      "text": "16. Estimated WOZ Value - Process"
     },
     {
       "type": "p",
@@ -24,7 +24,7 @@
     },
     {
       "type": "h3",
-      "text": "17.1 Step 1 - Find the gemeente (municipality)"
+      "text": "16.1 Step 1 - Find the gemeente (municipality)"
     },
     {
       "type": "li",
@@ -44,7 +44,7 @@
     },
     {
       "type": "h3",
-      "text": "17.2 Step 2 - Base price per m2"
+      "text": "16.2 Step 2 - Base price per m2"
     },
     {
       "type": "p",
@@ -72,7 +72,7 @@
     },
     {
       "type": "h3",
-      "text": "17.3 Step 3 - Building type factor"
+      "text": "16.3 Step 3 - Building type factor"
     },
     {
       "type": "p",
@@ -133,7 +133,7 @@
     },
     {
       "type": "h3",
-      "text": "17.4 Step 4 - Age factor"
+      "text": "16.4 Step 4 - Age factor"
     },
     {
       "type": "p",
@@ -178,7 +178,7 @@
     },
     {
       "type": "h3",
-      "text": "17.5 Step 5 - Floor area and final value"
+      "text": "16.5 Step 5 - Floor area and final value"
     },
     {
       "type": "p",
@@ -186,7 +186,7 @@
     },
     {
       "type": "h3",
-      "text": "17.6 Missing data"
+      "text": "16.6 Missing data"
     },
     {
       "type": "table",
@@ -215,7 +215,7 @@
     },
     {
       "type": "h2",
-      "text": "18. Estimated WOZ Value - Assumptions"
+      "text": "17. Estimated WOZ Value - Assumptions"
     },
     {
       "type": "table",
@@ -235,7 +235,7 @@
         [
           "B2",
           "Non-residential uses are valued relative to woningen (dwellings)",
-          "11 factors, 0.25 - 1.00 (section 17.3)",
+          "11 factors, 0.25 - 1.00 (section 16.3)",
           "CBS gives the price level for dwellings only"
         ],
         [
@@ -247,13 +247,13 @@
         [
           "B4",
           "Age changes the value per m2",
-          "7 bands, 0.88 - 1.10 (section 17.4)",
+          "7 bands, 0.88 - 1.10 (section 16.4)",
           "Newer buildings are usually valued higher"
         ],
         [
           "B5",
           "Missing inputs take the average of comparable buildings",
-          "Section 17.6",
+          "Section 16.6",
           "Every building must get an estimate"
         ],
         [
@@ -284,7 +284,7 @@
     },
     {
       "type": "h2",
-      "text": "19. Estimated WOZ Value - Example - Jan Provostlaan 16, Bilthoven"
+      "text": "18. Estimated WOZ Value - Example - Jan Provostlaan 16, Bilthoven"
     },
     {
       "type": "table",

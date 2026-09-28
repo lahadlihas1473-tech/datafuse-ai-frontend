@@ -15,8 +15,7 @@
   "12. Results",
   "13. Database output",
   "14. Limits",
-  "15. Comparison with Method 2",
-  "16. Change log"
+  "15. Comparison with Method 2"
  ],
  "blocks": [
   {
@@ -2034,25 +2033,6 @@
   {
    "type": "p",
    "text": "Method 1 gives about 2.4 times the mass of Method 2. The difference sits almost entirely in 'Overige constructie mineralen', which B2 counts at 1,400 kg/m2 for a 1970-2000 house and Method 2 does not model as a separate group at all."
-  },
-  {
-   "type": "h2",
-   "text": "16. Change log"
-  },
-  {
-   "type": "table",
-   "head": [
-    "Date",
-    "Change",
-    "Effect"
-   ],
-   "rows": [
-    [
-     "23 September 2026",
-     "Method 1 documented for all 1,082 buildings from the stored table.",
-     "4,335,383 t material, 1,874,724 t CO2e"
-    ]
-   ]
   }
  ]
 }
