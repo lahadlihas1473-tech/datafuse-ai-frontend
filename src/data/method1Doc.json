@@ -1,34 +1,45 @@
 {
- "source": "Material_CO2_Estimation_Method_1082_Buildings.docx",
+ "source": "Method1_Material_CO2_WOZ_1082_Buildings.docx",
  "sections": [
   "1. Summary",
   "2. Input data",
-  "3. Method in 5 steps",
+  "3. The process in 10 steps",
   "4. Step 1 - Gross floor area from BAG",
   "5. Step 2 - Building type and cohort",
   "6. Step 3 - B2 material intensities",
   "7. Step 4 - Material quantity",
   "8. Step 5 - Embodied CO2",
   "9. Our own assumptions",
-  "10. Worked example - one building",
-  "11. Validation",
-  "12. Results",
-  "13. Database output",
-  "14. Limits",
-  "15. Comparison with Method 2"
+  "10. Estimated WOZ Value - overview",
+  "11. Step 6 - Find the gemeente (municipality)",
+  "12. Step 7 - Base price per m2",
+  "13. Step 8 - Building type factor",
+  "14. Step 9 - Age factor",
+  "15. Step 10 - Floor area and final value",
+  "16. Missing data in the WOZ estimate",
+  "17. Our own assumptions for the WOZ estimate",
+  "18. Worked example - one building from floor area to WOZ",
+  "19. Validation",
+  "20. Results - Estimated WOZ Value per building type",
+  "21. Limits",
+  "22. Comparison with Method 2"
  ],
  "blocks": [
   {
    "type": "title",
-   "text": "Material & CO2 Estimation for 1,082 Buildings - Method 1 (BAG x B2 material profile)"
-  },
-  {
-   "type": "p",
-   "text": "23 September 2026"
+   "text": "Method 1 for 1,082 Buildings - From BAG Floor Area to Material, CO2 and Estimated WOZ Value"
   },
   {
    "type": "h2",
    "text": "1. Summary"
+  },
+  {
+   "type": "p",
+   "text": "This document describes Method 1 as one process: from the BAG floor area (GO) of each building, to its material mass, its embodied CO2 and its Estimated WOZ Value. Part A (steps 1-5, sections 4-9) calculates materials and CO2; part B (steps 6-10, sections 10-17) calculates the Estimated WOZ Value. Section 18 follows one building through every step."
+  },
+  {
+   "type": "h3",
+   "text": "1.1 Material and CO2"
   },
   {
    "type": "p",
@@ -130,6 +141,51 @@
    ]
   },
   {
+   "type": "h3",
+   "text": "1.2 Estimated WOZ Value"
+  },
+  {
+   "type": "p",
+   "text": "Every building has an Estimated WOZ Value for WOZ year 2026 (valuation date 1 January 2025). It is a model estimate, not an official WOZ value."
+  },
+  {
+   "type": "table",
+   "head": [
+    "Item",
+    "Value"
+   ],
+   "rows": [
+    [
+     "Buildings estimated",
+     "1,082 of 1,082"
+    ],
+    [
+     "Sum of all estimates",
+     "€ 4,200,304,000"
+    ],
+    [
+     "Median estimate",
+     "€ 598,500"
+    ],
+    [
+     "Smallest / largest",
+     "€ 6,000 / € 654,467,000"
+    ],
+    [
+     "Gemeenten (municipalities)",
+     "74"
+    ],
+    [
+     "Gemeente found from",
+     "PDOK (postal code): 1078 / BAG gemeentecode in pand_id: 4"
+    ]
+   ]
+  },
+  {
+   "type": "h3",
+   "text": "1.3 How to read this document"
+  },
+  {
    "type": "p",
    "text": "Every number is one of three kinds:"
   },
@@ -147,7 +203,11 @@
   },
   {
    "type": "p",
-   "text": "Method 1 uses no geometry: two buildings with the same floor area, type and age get the same material estimate, whatever their shape. Method 2 is the geometry-based estimate and is described in its own document; section 15 compares the two."
+   "text": "Method 1 uses no geometry: two buildings with the same floor area, type and age get the same material estimate, whatever their shape. Method 2 is the geometry-based estimate and is described in its own document; section 22 compares the two."
+  },
+  {
+   "type": "p",
+   "text": "Where the assumptions are: every assumption has an ID. A1-A8 belong to the material and CO2 calculation (section 9); B1-B9 belong to the WOZ estimate (section 17). Section 18 repeats the whole calculation step by step for one building, from the BAG floor area to the Estimated WOZ Value, so every figure can be checked by hand."
   },
   {
    "type": "h2",
@@ -246,8 +306,46 @@
    ]
   },
   {
+   "type": "h3",
+   "text": "2.3 Sources for the WOZ estimate"
+  },
+  {
+   "type": "table",
+   "head": [
+    "Source",
+    "What is used",
+    "Used in"
+   ],
+   "rows": [
+    [
+     "BAG",
+     "go_m2 (usable floor area), pand_gebruiksdoel (use), bouwjaar (year built), postal code",
+     "Steps 8, 9, 10"
+    ],
+    [
+     "PDOK Locatieserver",
+     "Current gemeentecode (municipality code) of the postal code",
+     "Step 6"
+    ],
+    [
+     "CBS 85036NED",
+     "Gemiddelde WOZ-waarde van woningen (average WOZ value of dwellings) per gemeente, 2026",
+     "Step 7"
+    ],
+    [
+     "CBS 82550NED",
+     "Gemiddelde oppervlakte (average floor area) of dwellings per gemeente, 1 January 2026",
+     "Step 7"
+    ]
+   ]
+  },
+  {
    "type": "h2",
-   "text": "3. Method in 5 steps"
+   "text": "3. The process in 10 steps"
+  },
+  {
+   "type": "p",
+   "text": "Part A - material and CO2"
   },
   {
    "type": "li",
@@ -268,6 +366,30 @@
   {
    "type": "li",
    "text": "Calculate CO2 per material: CO2 = mass x emission factor, then add up (section 8)."
+  },
+  {
+   "type": "p",
+   "text": "Part B - Estimated WOZ Value"
+  },
+  {
+   "type": "li",
+   "text": "Find the gemeente (municipality) of the building from its postal code (section 11)."
+  },
+  {
+   "type": "li",
+   "text": "Take the base price per m2 of that gemeente from CBS (section 12)."
+  },
+  {
+   "type": "li",
+   "text": "Apply the factor for the use of the building (section 13)."
+  },
+  {
+   "type": "li",
+   "text": "Apply the factor for the age of the building (section 14)."
+  },
+  {
+   "type": "li",
+   "text": "Multiply by the floor area (GO) and round (section 15)."
   },
   {
    "type": "h2",
@@ -721,7 +843,7 @@
      "Hout",
      "60.07",
      "19.89",
-     "14.43",
+     "21.43",
      "33.83"
     ],
     [
@@ -768,8 +890,8 @@
     ],
     [
      "Isolatie",
-     "11.12",
-     "14.42",
+     "19.12",
+     "21.42",
      "26.29",
      "59.47"
     ],
@@ -1062,9 +1184,9 @@
     [
      "Hout",
      "42.09",
-     "14.75",
-     "11.52",
-     "15.18"
+     "21.75",
+     "19.52",
+     "22.18"
     ],
     [
      "Beton",
@@ -1117,10 +1239,10 @@
     ],
     [
      "Overig",
-     "15.71",
-     "15.71",
-     "15.71",
-     "15.71"
+     "22.71",
+     "22.71",
+     "22.71",
+     "22.71"
     ],
     [
      "Totaal",
@@ -1203,10 +1325,10 @@
     ],
     [
      "Glas",
-     "15.18",
-     "15.18",
-     "15.18",
-     "15.18"
+     "22.18",
+     "22.18",
+     "22.18",
+     "22.18"
     ],
     [
      "Keramiek",
@@ -1453,7 +1575,287 @@
   },
   {
    "type": "h2",
-   "text": "10. Worked example - one building"
+   "text": "10. Estimated WOZ Value - overview"
+  },
+  {
+   "type": "p",
+   "text": "This part describes how the Estimated WOZ Value is calculated for the buildings in table material_estimation_final, the assumptions behind it, and one worked example. WOZ (Waardering Onroerende Zaken - valuation of real estate) is the Dutch property value used for local taxes."
+  },
+  {
+   "type": "p",
+   "text": "[IMPORTANT] Model estimate, not an official WOZ value. Official WOZ values are set by municipalities; this estimate is not issued by or taken from a municipality, Kadaster or the Waarderingskamer."
+  },
+  {
+   "type": "p",
+   "text": "Estimated WOZ Value = GO (gebruiksoppervlakte - usable floor area) x base EUR/m2 x type factor x age factor, rounded to the nearest € 1,000. All buildings use the same reference year: WOZ year 2026, valuation date (waardepeildatum) 2025-01-01."
+  },
+  {
+   "type": "h2",
+   "text": "11. Step 6 - Find the gemeente (municipality)"
+  },
+  {
+   "type": "li",
+   "text": "PDOK Locatieserver (location server): the postal code (postcode) of the building gives its current gemeentecode (municipality code)."
+  },
+  {
+   "type": "li",
+   "text": "If that fails: the first 4 digits of pand_id (building ID), which are the BAG gemeentecode (municipality code), if CBS still has that gemeente (municipality)."
+  },
+  {
+   "type": "li",
+   "text": "If both fail: the national CBS average (NL01 - the Netherlands)."
+  },
+  {
+   "type": "p",
+   "text": "The municipality column is not used: it comes from the notice text and holds village names and notice fragments that cannot be matched to CBS."
+  },
+  {
+   "type": "h2",
+   "text": "12. Step 7 - Base price per m2"
+  },
+  {
+   "type": "p",
+   "text": "Base EUR/m2 = CBS average WOZ value of dwellings (woningen) in the gemeente (municipality) / CBS average floor area of dwellings in the gemeente (municipality)."
+  },
+  {
+   "type": "table",
+   "head": [
+    "Source",
+    "What is used",
+    "Period"
+   ],
+   "rows": [
+    [
+     "CBS StatLine 85036NED",
+     "Gemiddelde WOZ-waarde van woningen (average WOZ value of dwellings) per gemeente (municipality), all ownership",
+     "2026"
+    ],
+    [
+     "CBS StatLine 82550NED",
+     "Gemiddelde oppervlakte (average floor area) of the woningvoorraad (dwelling stock) per gemeente (municipality), all types and building years",
+     "1 January 2026"
+    ]
+   ]
+  },
+  {
+   "type": "h2",
+   "text": "13. Step 8 - Building type factor"
+  },
+  {
+   "type": "p",
+   "text": "The factor of the BAG gebruiksdoel (use of the building). A building with several uses gets the mean of their factors, each use counted once."
+  },
+  {
+   "type": "table",
+   "head": [
+    "BAG gebruiksdoel (use)",
+    "Factor"
+   ],
+   "rows": [
+    [
+     "woonfunctie (residential)",
+     "1.00"
+    ],
+    [
+     "winkelfunctie (retail)",
+     "0.90"
+    ],
+    [
+     "kantoorfunctie (office)",
+     "0.75"
+    ],
+    [
+     "logiesfunctie (lodging / hotel)",
+     "0.75"
+    ],
+    [
+     "gezondheidszorgfunctie (healthcare)",
+     "0.70"
+    ],
+    [
+     "bijeenkomstfunctie (assembly)",
+     "0.60"
+    ],
+    [
+     "celfunctie (detention)",
+     "0.60"
+    ],
+    [
+     "onderwijsfunctie (education)",
+     "0.55"
+    ],
+    [
+     "sportfunctie (sports)",
+     "0.45"
+    ],
+    [
+     "industriefunctie (industrial)",
+     "0.35"
+    ],
+    [
+     "overige gebruiksfunctie (other use)",
+     "0.25"
+    ]
+   ]
+  },
+  {
+   "type": "h2",
+   "text": "14. Step 9 - Age factor"
+  },
+  {
+   "type": "p",
+   "text": "The factor of the band that contains the bouwjaar (year built)."
+  },
+  {
+   "type": "table",
+   "head": [
+    "Bouwjaar (year built) band",
+    "Factor"
+   ],
+   "rows": [
+    [
+     "before 1906",
+     "1.00"
+    ],
+    [
+     "1906-1944",
+     "1.00"
+    ],
+    [
+     "1945-1964",
+     "0.90"
+    ],
+    [
+     "1965-1974",
+     "0.88"
+    ],
+    [
+     "1975-1994",
+     "0.93"
+    ],
+    [
+     "1995-2014",
+     "1.03"
+    ],
+    [
+     "2015-2026",
+     "1.10"
+    ]
+   ]
+  },
+  {
+   "type": "h2",
+   "text": "15. Step 10 - Floor area and final value"
+  },
+  {
+   "type": "p",
+   "text": "EUR/m2 of the building = base EUR/m2 x type factor x age factor. The estimate is the GO (gebruiksoppervlakte - usable floor area from BAG, go_m2) x EUR/m2 of the building, rounded."
+  },
+  {
+   "type": "h2",
+   "text": "16. Missing data in the WOZ estimate"
+  },
+  {
+   "type": "table",
+   "head": [
+    "Missing input",
+    "Replaced by (first group that has data)"
+   ],
+   "rows": [
+    [
+     "Gemeente (municipality)",
+     "National CBS average (NL01 - the Netherlands)"
+    ],
+    [
+     "Gebruiksdoel (use)",
+     "Use from typegebouw (building type); else mean type factor of the gemeente (municipality); else of all buildings"
+    ],
+    [
+     "Bouwjaar (year built)",
+     "Mean age factor of the same gemeente (municipality) and building type; else the gemeente; else all buildings"
+    ],
+    [
+     "GO (usable floor area)",
+     "Mean GO of the same gemeente (municipality) and building type; else the building type in the whole dataset"
+    ]
+   ]
+  },
+  {
+   "type": "h2",
+   "text": "17. Our own assumptions for the WOZ estimate"
+  },
+  {
+   "type": "table",
+   "head": [
+    "ID",
+    "Assumption",
+    "Value used",
+    "Why it is needed"
+   ],
+   "rows": [
+    [
+     "B1",
+     "Location price = CBS average WOZ of woningen (dwellings) / average dwelling floor area",
+     "Per gemeente (municipality), 2026",
+     "No per-building price is available; the gemeente (municipality) is the finest official level used"
+    ],
+    [
+     "B2",
+     "Non-residential uses are valued relative to woningen (dwellings)",
+     "11 factors, 0.25 - 1.00 (section 13)",
+     "CBS gives the price level for dwellings only"
+    ],
+    [
+     "B3",
+     "Mixed-use buildings: equal weight per gebruiksdoel (use)",
+     "Mean of the factors",
+     "The floor area per use is not in this table"
+    ],
+    [
+     "B4",
+     "Age changes the value per m2",
+     "7 bands, 0.88 - 1.10 (section 14)",
+     "Newer buildings are usually valued higher"
+    ],
+    [
+     "B5",
+     "Missing inputs take the average of comparable buildings",
+     "Section 16",
+     "Every building must get an estimate"
+    ],
+    [
+     "B6",
+     "GO (usable floor area) is the area the price applies to",
+     "go_m2 from BAG",
+     "CBS floor area is also gebruiksoppervlakte (usable floor area)"
+    ],
+    [
+     "B7",
+     "The building is valued as it stands, in use",
+     "No sloop (demolition) discount",
+     "The sloopmelding (demolition notice) status says nothing about value"
+    ],
+    [
+     "B8",
+     "Land is included through the price level",
+     "Not separate",
+     "WOZ includes land; the CBS averages do too"
+    ],
+    [
+     "B9",
+     "Rounding",
+     "€ 1,000",
+     "Shows the estimate is approximate"
+    ]
+   ]
+  },
+  {
+   "type": "h2",
+   "text": "18. Worked example - one building from floor area to WOZ"
+  },
+  {
+   "type": "h3",
+   "text": "18.1 Material and CO2"
   },
   {
    "type": "p",
@@ -1506,7 +1908,7 @@
      "Hout (Wood)",
      "81.73",
      "11,197.00",
-     "11.197",
+     "19.197",
      "0.40",
      "4.479"
     ],
@@ -1562,7 +1964,7 @@
      "Isolatie (Insulation)",
      "82.53",
      "11,307.00",
-     "11.307",
+     "19.307",
      "0.50",
      "5.653"
     ],
@@ -1589,8 +1991,61 @@
    "text": "Check: 137.0 m2 x 2,651.37 kg/m2 = 363,237.69 kg, against 363,239.00 kg calculated - a difference of 1.31 kg from rounding the intensities."
   },
   {
+   "type": "h3",
+   "text": "18.2 Estimated WOZ Value"
+  },
+  {
+   "type": "table",
+   "head": [
+    "Step",
+    "Value"
+   ],
+   "rows": [
+    [
+     "pand_id (building ID)",
+     "0310100000664117"
+    ],
+    [
+     "Postcode (postal code) -> gemeente (municipality)",
+     "3723RD -> De Bilt (0310)"
+    ],
+    [
+     "CBS avg WOZ of woningen (dwellings)",
+     "€ 674,000"
+    ],
+    [
+     "CBS avg floor area of dwellings",
+     "131 m2"
+    ],
+    [
+     "Base EUR/m2",
+     "€ 674,000 / 131 = 5,145.04"
+    ],
+    [
+     "Gebruiksdoel (use) -> type factor",
+     "woonfunctie (residential) -> 1.00"
+    ],
+    [
+     "Bouwjaar (year built) -> age factor",
+     "1988 (1975-1994) -> 0.93"
+    ],
+    [
+     "EUR/m2 of the building",
+     "5,145.04 x 1.00 x 0.93 = 4,784.89"
+    ],
+    [
+     "GO (usable floor area)",
+     "137 m2"
+    ],
+    [
+     "Estimated WOZ Value",
+     "137 x 4,784.89 = 655,530 -> € 656,000"
+    ]
+   ]
+  },
+  {
    "type": "h2",
-   "text": "11. Validation"
+   "text": "19. Validation"
   },
   {
    "type": "p",
@@ -1598,365 +2053,104 @@
   },
   {
    "type": "h2",
-   "text": "12. Results"
-  },
-  {
-   "type": "h3",
-   "text": "12.1 Per material profile"
+   "text": "20. Results - Estimated WOZ Value per building type"
   },
   {
    "type": "table",
    "head": [
-    "Profile",
+    "typegebouw (building type)",
     "Buildings",
-    "GO (m2)",
-    "Mass (t)",
-    "CO2e (t)",
-    "Median kg/m2 GO",
-    "Median kg CO2e/m2 GO"
+    "Sum of estimates",
+    "Median estimate"
    ],
    "rows": [
     [
-     "EEN_PRE_1945",
-     "212",
-     "43,339",
-     "104,630",
-     "49,178",
-     "2,414",
-     "1,135"
+     "eengezins (Residential)",
+     "577",
+     "€ 324,298,000",
+     "€ 474,000"
     ],
     [
-     "EEN_1970_2000",
-     "172",
-     "28,065",
-     "74,411",
-     "30,600",
-     "2,651",
-     "1,091"
+     "industrie (Industrial)",
+     "216",
+     "€ 658,623,000",
+     "€ 821,500"
     ],
     [
-     "EEN_1945_1970",
-     "166",
-     "28,007",
-     "80,110",
-     "34,724",
-     "2,860",
-     "1,240"
+     "overig (Assembly)",
+     "73",
+     "€ 1,842,428,000",
+     "€ 3,632,000"
     ],
     [
-     "IND_1970_2000",
-     "76",
-     "185,087",
-     "276,242",
-     "140,137",
-     "1,492",
-     "757"
+     "commercieel (Retail)",
+     "61",
+     "€ 203,726,000",
+     "€ 1,615,000"
     ],
     [
-     "IND_PRE_1945",
-     "60",
-     "68,111",
-     "95,752",
-     "31,460",
-     "1,406",
-     "462"
+     "appartementen (Residential)",
+     "46",
+     "€ 87,257,000",
+     "€ 1,306,500"
     ],
     [
-     "OVR_1970_2000",
-     "54",
-     "513,642",
-     "1,109,354",
-     "479,295",
-     "2,160",
-     "933"
+     "kantoor (Office)",
+     "36",
+     "€ 277,923,000",
+     "€ 2,907,500"
     ],
     [
-     "IND_1945_1970",
-     "53",
-     "176,014",
-     "325,001",
-     "159,848",
-     "1,846",
-     "908"
+     "overig (Healthcare)",
+     "24",
+     "€ 688,928,000",
+     "€ 16,995,000"
     ],
     [
-     "OVR_PRE_1945",
-     "33",
-     "110,266",
-     "238,150",
-     "102,893",
-     "2,160",
-     "933"
-    ],
-    [
-     "OVR_1945_1970",
-     "30",
-     "225,176",
-     "486,331",
-     "210,119",
-     "2,160",
-     "933"
-    ],
-    [
-     "EEN_POST_2000",
-     "27",
-     "6,881",
-     "10,281",
-     "3,650",
-     "1,494",
-     "530"
-    ],
-    [
-     "IND_POST_2000",
-     "27",
-     "93,936",
-     "151,972",
-     "109,569",
-     "1,618",
-     "1,166"
-    ],
-    [
-     "APP_PRE_1945",
-     "26",
-     "13,079",
-     "23,659",
-     "9,802",
-     "1,809",
-     "749"
-    ],
-    [
-     "OVR_POST_2000",
-     "26",
-     "420,632",
-     "946,632",
-     "395,533",
-     "2,250",
-     "940"
-    ],
-    [
-     "COM_1945_1970",
-     "23",
-     "21,297",
-     "41,236",
-     "9,845",
-     "1,936",
-     "462"
-    ],
-    [
-     "COM_PRE_1945",
+     "overig (Other)",
      "21",
-     "12,890",
-     "25,016",
-     "6,589",
-     "1,941",
-     "511"
+     "€ 72,724,000",
+     "€ 466,000"
     ],
     [
-     "KANT_1970_2000",
-     "12",
-     "62,856",
-     "133,654",
-     "37,012",
-     "2,126",
-     "589"
+     "overig (Hotel)",
+     "15",
+     "€ 15,349,000",
+     "€ 310,000"
     ],
     [
-     "KANT_1945_1970",
-     "11",
-     "28,266",
-     "60,104",
-     "16,644",
-     "2,126",
-     "589"
+     "overig (Sports)",
+     "5",
+     "€ 20,217,000",
+     "€ 1,285,000"
     ],
     [
-     "COM_1970_2000",
-     "10",
-     "26,058",
-     "42,438",
-     "7,783",
-     "1,629",
-     "299"
+     "overig (Education)",
+     "5",
+     "€ 6,058,000",
+     "€ 1,397,000"
     ],
     [
-     "KANT_PRE_1945",
-     "9",
-     "18,826",
-     "40,031",
-     "11,086",
-     "2,126",
-     "589"
-    ],
-    [
-     "APP_1945_1970",
-     "8",
-     "2,566",
-     "4,422",
-     "1,814",
-     "1,723",
-     "707"
-    ],
-    [
-     "APP_1970_2000",
-     "8",
-     "7,015",
-     "12,746",
-     "5,825",
-     "1,817",
-     "830"
-    ],
-    [
-     "COM_POST_2000",
-     "7",
-     "15,304",
-     "22,538",
-     "11,107",
-     "1,473",
-     "726"
-    ],
-    [
-     "APP_POST_2000",
-     "4",
-     "3,409",
-     "6,040",
-     "3,057",
-     "1,772",
-     "897"
-    ],
-    [
-     "KANT_POST_2000",
-     "4",
-     "10,537",
-     "22,405",
-     "6,205",
-     "2,126",
-     "589"
-    ],
-    [
-     "WF_PRE_1945",
+     "woonflat (Residential)",
      "3",
-     "1,121",
-     "2,226",
-     "950",
-     "1,986",
-     "847"
+     "€ 2,773,000",
+     "€ 852,000"
     ],
     [
      "Total",
      "1,082",
-     "2,122,380",
-     "4,335,383",
-     "1,874,724",
-     "",
-     ""
+     "€ 4,200,304,000",
+     "€ 598,500"
     ]
    ]
+  },
+  {
+   "type": "h2",
+   "text": "21. Limits"
   },
   {
    "type": "h3",
-   "text": "12.2 Five heaviest buildings"
-  },
-  {
-   "type": "table",
-   "head": [
-    "pand_id",
-    "City",
-    "Profile",
-    "GO (m2)",
-    "Mass (t)",
-    "CO2e (t)"
-   ],
-   "rows": [
-    [
-     "0307100000534872",
-     "Amersfoort",
-     "OVR_POST_2000",
-     "235,335",
-     "529,621",
-     "221,293"
-    ],
-    [
-     "0917100000000476",
-     "Heerlen",
-     "OVR_1970_2000",
-     "208,590",
-     "450,509",
-     "194,642"
-    ],
-    [
-     "0268100000013015",
-     "Nijmegen",
-     "OVR_1945_1970",
-     "117,787",
-     "254,394",
-     "109,911"
-    ],
-    [
-     "0299100000398364",
-     "Zevenaar",
-     "OVR_1970_2000",
-     "82,050",
-     "177,210",
-     "76,563"
-    ],
-    [
-     "0917100000053098",
-     "Heerlen",
-     "OVR_POST_2000",
-     "51,345",
-     "115,552",
-     "48,281"
-    ]
-   ]
-  },
-  {
-   "type": "h2",
-   "text": "13. Database output"
-  },
-  {
-   "type": "p",
-   "text": "The results are stored in PostgreSQL database datafuse, table public.material_estimation_final (one row per building, 1,082 rows)."
-  },
-  {
-   "type": "table",
-   "head": [
-    "Column group",
-    "Columns"
-   ],
-   "rows": [
-    [
-     "Identification",
-     "notice_id, pand_id, title, publication_date, address, house_number, postal_code, municipality, city, latitude, longitude"
-    ],
-    [
-     "Building",
-     "bouwjaar, pand_status, pand_gebruiksdoel, vbo_id, aantal_verblijfsobjecten, geometry, geometry_area_m2"
-    ],
-    [
-     "Classification",
-     "typegebouw, cohort, material_profile_id, go_m2, go_source"
-    ],
-    [
-     "Per material (13x)",
-     "<material>_tonnes, <material>_co2_factor, <material>_co2_tonnes"
-    ],
-    [
-     "Totals",
-     "total_material_mass_tonnes, total_co2_tonnes, total_co2_kg"
-    ],
-    [
-     "Provenance",
-     "location_source, match_status, pand_id_verified, geometry_valid, final_classification, created_at"
-    ]
-   ]
-  },
-  {
-   "type": "p",
-   "text": "Example query in pgAdmin: SELECT pand_id, city, beton_tonnes, total_co2_tonnes FROM material_estimation_final ORDER BY total_co2_tonnes DESC;"
-  },
-  {
-   "type": "h2",
-   "text": "14. Limits"
+   "text": "21.1 Material and CO2"
   },
   {
    "type": "li",
@@ -1983,8 +2177,36 @@
    "text": "Emission factors are coarse working values; replace with Nationale Milieudatabase values for official reporting."
   },
   {
+   "type": "h3",
+   "text": "21.2 Estimated WOZ Value"
+  },
+  {
+   "type": "li",
+   "text": "It is a model estimate, not an official WOZ value; no official WOZ value was used to check it."
+  },
+  {
+   "type": "li",
+   "text": "The location is only as fine as the gemeente (municipality): differences between neighbourhoods are not included."
+  },
+  {
+   "type": "li",
+   "text": "The type and age factors are our own assumptions (B2, B4), not published values."
+  },
+  {
+   "type": "li",
+   "text": "Mixed-use buildings weigh each use equally (B3), which overvalues a building with a small dwelling and a large shed or storage part."
+  },
+  {
+   "type": "li",
+   "text": "Condition, finish, plot size, monument status and energy label are not included."
+  },
+  {
    "type": "h2",
-   "text": "15. Comparison with Method 2"
+   "text": "22. Comparison with Method 2"
+  },
+  {
+   "type": "h3",
+   "text": "22.1 Material and CO2"
   },
   {
    "type": "p",
@@ -2033,6 +2255,44 @@
   {
    "type": "p",
    "text": "Method 1 gives about 2.4 times the mass of Method 2. The difference sits almost entirely in 'Overige constructie mineralen', which B2 counts at 1,400 kg/m2 for a 1970-2000 house and Method 2 does not model as a separate group at all."
+  },
+  {
+   "type": "h3",
+   "text": "22.2 Estimated WOZ Value"
+  },
+  {
+   "type": "table",
+   "head": [
+    "",
+    "Method 1 (this document)",
+    "Method 2"
+   ],
+   "rows": [
+    [
+     "Basis",
+     "BAG floor area x gemeente price per m2 x type x age",
+     "Each unit: buurt value of its dwelling type x size x age, or price per m2 for other units"
+    ],
+    [
+     "Sum of estimates",
+     "€ 4,200,304,000",
+     "€ 3,672,533,000"
+    ],
+    [
+     "Median estimate",
+     "€ 598,500",
+     "€ 584,500"
+    ],
+    [
+     "Jan Provostlaan 16",
+     "€ 656,000",
+     "€ 550,000"
+    ]
+   ]
+  },
+  {
+   "type": "p",
+   "text": "Method 2 uses the buurt (neighbourhood) instead of the gemeente, the dwelling type from 3DBAG, a size effect and a separate value for each unit of a mixed-use building."
   }
  ]
 }
