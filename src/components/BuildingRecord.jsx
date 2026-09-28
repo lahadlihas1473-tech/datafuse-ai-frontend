@@ -100,7 +100,6 @@ export default function BuildingRecord({ estimate, geometry, matches, query }) {
 
   const yearBuilt = geometry?.bouwjaar ?? inputs1.bouwjaar;
   const link = (path) => `${path}?address=${encodeURIComponent(query)}`;
-  const flags = geometry?.flags ?? [];
 
   return (
     <article className="record-view" aria-label={`Building passport for ${title}`}>
@@ -330,18 +329,6 @@ export default function BuildingRecord({ estimate, geometry, matches, query }) {
                   : []),
               ]}
             />
-            {flags.length > 0 && (
-              <div className="flags">
-                <span className="flags__label">Data quality flags (3DBAG)</span>
-                <ul className="flags__list">
-                  {flags.map((flag) => (
-                    <li className="tag tag--warn" key={flag}>
-                      {flag}
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            )}
           </Section>
         </aside>
       </div>

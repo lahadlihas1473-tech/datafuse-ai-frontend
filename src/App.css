@@ -904,26 +904,6 @@ mark {
   font-size: 12px;
 }
 
-.flags {
-  margin-top: 14px;
-}
-
-.flags__label {
-  display: block;
-  margin-bottom: 6px;
-  color: var(--ink-3);
-  font-size: 12.5px;
-}
-
-.flags__list {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 6px;
-  margin: 0;
-  padding: 0;
-  list-style: none;
-}
-
 /* ---------- Tables ---------- */
 
 .table-wrap {

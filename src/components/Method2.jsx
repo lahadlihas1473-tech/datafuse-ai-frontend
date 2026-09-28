@@ -64,7 +64,6 @@ export default function Method2({ record }) {
   );
 
   const presentCount = rows.filter((row) => row.tonnes > 0).length;
-  const flags = record.flags ?? [];
   const woz = record.estimated_woz;
 
   return (
@@ -268,21 +267,6 @@ export default function Method2({ record }) {
           ]}
         />
       </Section>
-
-      {flags.length > 0 && (
-        <Section
-          title="Data quality flags"
-          description="Checks on the 3DBAG input; a flag does not stop the calculation but tells how far to trust it."
-        >
-          <ul className="flags__list">
-            {flags.map((flag) => (
-              <li className="tag tag--warn" key={flag}>
-                {flag}
-              </li>
-            ))}
-          </ul>
-        </Section>
-      )}
 
       {woz && (
         <Section
