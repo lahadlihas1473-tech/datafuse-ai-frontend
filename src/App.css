@@ -131,18 +131,29 @@ mark {
   font-size: 13px;
 }
 
-/* One button: moon in the light theme, sun in the dark theme */
+/* One button: moon in the light theme, sun in the dark theme. Fixed on
+   screen and draggable; its position is set inline by ThemeToggle.jsx. */
 .theme-toggle {
+  position: fixed;
+  z-index: 50;
   display: grid;
   place-items: center;
   width: 34px;
   height: 34px;
-  margin-left: auto;
   border: 1px solid var(--line-2);
   border-radius: var(--r-md);
   background: var(--surface);
+  box-shadow: var(--shadow-sm);
   color: var(--ink-2);
   cursor: pointer;
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.theme-toggle--dragging {
+  box-shadow: var(--shadow-pop);
+  cursor: grabbing;
 }
 
 .theme-toggle .icon {
