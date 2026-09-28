@@ -28,7 +28,7 @@ const USE_EN = {
 const withEnglish = (term, names) =>
   term ? `${term}${names[term] ? ` (${names[term]})` : ""}` : null;
 
-const useLabel = (uses = "") =>
+const formatUses = (uses = "") =>
   uses
     .split(",")
     .map((use) => withEnglish(use.trim(), USE_EN))
@@ -204,7 +204,7 @@ export default function WozMethod2({ woz }) {
             <tbody>
               {unitGroups.map((group) => (
                 <tr key={`${group.use}|${group.valuedAs}`}>
-                  <th scope="row">{useLabel(group.use)}</th>
+                  <th scope="row">{formatUses(group.use)}</th>
                   <td>{group.valuedAs}</td>
                   <td className="num">{group.count}</td>
                   <td className="num">{formatNumber(group.area, 0)} m²</td>

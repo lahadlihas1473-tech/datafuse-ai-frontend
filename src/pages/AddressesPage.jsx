@@ -1,47 +1,28 @@
-import { PinIcon } from "../components/Icons";
 import Highlight from "../components/list/Highlight";
 import ListPage from "../components/list/ListPage";
 
 const FIELDS = [
-  { key: "address", label: "Address", className: "address-field--street" },
-  { key: "house_number", label: "House no." },
-  { key: "postal_code", label: "Postal code" },
-  { key: "city", label: "City" },
+  { key: "address", label: "Address", className: "cell--street" },
+  { key: "house_number", label: "House no.", className: "cell--house" },
+  { key: "postal_code", label: "Postal code", className: "cell--postal" },
+  { key: "city", label: "City", className: "cell--city" },
 ];
 
 // Address, House number, Postal code and City — nothing else
 function AddressRow({ address, search }) {
-  return (
-    <>
-      <span className="record__icon record__icon--pin" aria-hidden="true">
-        <PinIcon />
+  return FIELDS.map(({ key, label, className }) => (
+    <div className={`cell ${className}`} key={key}>
+      <span className="cell__label">{label}</span>
+      <span className={`cell__value${key === "postal_code" ? " mono" : ""}`}>
+        {address[key] ? <Highlight text={address[key]} term={search} /> : "—"}
       </span>
-
-      <dl className="address-fields">
-        {FIELDS.map(({ key, label, className }) => (
-          <div
-            key={key}
-            className={`address-field${className ? ` ${className}` : ""}`}
-          >
-            <dt className="record__label">{label}</dt>
-            <dd>
-              {address[key] ? (
-                <Highlight text={address[key]} term={search} />
-              ) : (
-                "—"
-              )}
-            </dd>
-          </div>
-        ))}
-      </dl>
-    </>
-  );
+    </div>
+  ));
 }
 
 export default function AddressesPage() {
   return (
     <ListPage
-      eyebrow="Building locations"
       title="Addresses"
       description="Every unique address across all notices — each listed once, even when several notices share it. Search a city to see its addresses first."
       endpoint="/addresses"
@@ -53,18 +34,12 @@ export default function AddressesPage() {
           .join("|")
           .toLowerCase()
       }
+      variant="addresses"
+      columns={FIELDS.map(({ label, className }) => ({ label, className }))}
       renderItem={(address, search) => (
         <AddressRow address={address} search={search} />
       )}
-      skeletonRow={
-        <>
-          <span className="skeleton skeleton--icon" />
-          <div className="record__main">
-            <span className="skeleton skeleton--label" />
-            <span className="skeleton skeleton--text" />
-          </div>
-        </>
-      }
+      skeletonRow={<span className="skeleton skeleton--text" />}
     />
   );
 }

@@ -1,6 +1,7 @@
 import { useEffect } from "react";
 import { Link } from "react-router";
 import { ArrowIcon } from "./Icons";
+import { Note, PageHeader } from "./ui";
 
 // Anchor id for a numbered heading: "4. Step 1 – …" → "section-4"
 const sectionId = (heading) => {
@@ -11,6 +12,17 @@ const sectionId = (heading) => {
 // Numbers and short codes line up better in the mono face
 const isValueCell = (value) =>
   /^[\d.,%+\-–±<>\s]*$/.test(value) || /^[A-Z][A-Z0-9_]{2,}$/.test(value);
+
+// Paragraphs the documents mark as a note: "[IMPORTANT] …", "[FLAG] …"
+const NOTE_MARKS = {
+  "[IMPORTANT]": { kind: "info", label: "Important" },
+  "[FLAG]": { kind: "warn", label: "Flag" },
+};
+
+const noteOf = (text = "") => {
+  const mark = Object.keys(NOTE_MARKS).find((key) => text.startsWith(`${key} `));
+  return mark ? { ...NOTE_MARKS[mark], text: text.slice(mark.length + 1) } : null;
+};
 
 function Table({ head, rows }) {
   return (
@@ -81,67 +93,85 @@ export default function DocPage({ doc, eyebrow, lede, backTo, backLabel, backIco
 
   return (
     <article className="doc">
-      <header className="page-head">
-        <span className="eyebrow">{eyebrow}</span>
-        <h1 className="page-head__title">{title}</h1>
-        <p className="page-head__lede">{lede}</p>
+      <PageHeader
+        kicker={eyebrow}
+        title={title}
+        description={lede}
+        actions={
+          <Link className="button button--secondary" to={backTo}>
+            <BackIcon />
+            {backLabel}
+          </Link>
+        }
+      />
 
-        <Link className="button button--ghost doc__back" to={backTo}>
-          <BackIcon />
-          {backLabel}
-        </Link>
-      </header>
+      <div className="doc__layout">
+        <nav className="doc__toc" aria-label="Contents">
+          <span className="doc__toc-title">Contents</span>
+          <ol>
+            {doc.sections.map((section) => (
+              <li key={section}>
+                <a href={`#${sectionId(section)}`}>
+                  <span className="doc__toc-number">{section.match(/^\d+/)?.[0]}</span>
+                  <span>{section.replace(/^\d+\.\s*/, "")}</span>
+                </a>
+              </li>
+            ))}
+          </ol>
+        </nav>
 
-      <nav className="doc__toc" aria-label="Sections">
-        <span className="doc__toc-title">Contents</span>
-        <ol>
-          {doc.sections.map((section) => (
-            <li key={section}>
-              <a href={`#${sectionId(section)}`}>
-                {section.replace(/^\d+\.\s*/, "")}
-                <ArrowIcon />
-              </a>
-            </li>
-          ))}
-        </ol>
-      </nav>
+        <div className="doc__body">
+          {blocks.map((block, index) => {
+            switch (block.type) {
+              case "title":
+                return null;
 
-      <div className="doc__body">
-        {blocks.map((block, index) => {
-          switch (block.type) {
-            case "title":
-              return null;
+              case "h2":
+                return (
+                  <h2 key={index} id={sectionId(block.text) ?? undefined}>
+                    {block.text}
+                  </h2>
+                );
 
-            case "h2":
-              return (
-                <h2 key={index} id={sectionId(block.text) ?? undefined}>
-                  {block.text}
-                </h2>
-              );
+              case "h3":
+                return (
+                  <h3 key={index} id={sectionId(block.text) ?? undefined}>
+                    {block.text}
+                  </h3>
+                );
 
-            case "h3":
-              return (
-                <h3 key={index} id={sectionId(block.text) ?? undefined}>
-                  {block.text}
-                </h3>
-              );
+              case "list":
+                return (
+                  <ul key={index} className="doc__list">
+                    {block.items.map((item, itemIndex) => (
+                      <li key={itemIndex}>{item}</li>
+                    ))}
+                  </ul>
+                );
 
-            case "list":
-              return (
-                <ul key={index} className="doc__list">
-                  {block.items.map((item, itemIndex) => (
-                    <li key={itemIndex}>{item}</li>
-                  ))}
-                </ul>
-              );
+              case "table":
+                return <Table key={index} head={block.head} rows={block.rows} />;
 
-            case "table":
-              return <Table key={index} head={block.head} rows={block.rows} />;
+              default: {
+                const note = noteOf(block.text);
+                return note ? (
+                  <Note key={index} kind={note.kind} label={note.label}>
+                    {note.text}
+                  </Note>
+                ) : (
+                  <p key={index}>{block.text}</p>
+                );
+              }
+            }
+          })}
 
-            default:
-              return <p key={index}>{block.text}</p>;
-          }
-        })}
+          <p className="doc__end">
+            <a href="#top" onClick={(event) => { event.preventDefault(); window.scrollTo(0, 0); }}>
+              Back to top
+              <ArrowIcon />
+            </a>
+          </p>
+        </div>
       </div>
     </article>
   );

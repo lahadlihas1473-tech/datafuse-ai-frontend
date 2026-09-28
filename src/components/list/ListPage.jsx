@@ -1,6 +1,7 @@
 import { Fragment, useCallback, useEffect, useRef } from "react";
 import { useSearchParams } from "react-router";
 import { usePagedList } from "../../hooks/usePagedList";
+import { PageHeader } from "../ui";
 import ListSearch from "./ListSearch";
 import Pagination from "./Pagination";
 
@@ -18,7 +19,6 @@ function SectionLabel({ children, count }) {
 
 // Shared layout for the searchable, paginated Notices and Addresses pages
 export default function ListPage({
-  eyebrow,
   title,
   meta,
   description,
@@ -29,6 +29,8 @@ export default function ListPage({
   renderItem,
   getKey,
   skeletonRow,
+  columns = [],
+  variant,
 }) {
   const [searchParams, setSearchParams] = useSearchParams();
   const search = (searchParams.get("search") ?? "").trim();
@@ -84,12 +86,7 @@ export default function ListPage({
 
   return (
     <section className="list-page">
-      <header className="page-head">
-        <span className="eyebrow">{eyebrow}</span>
-        <h1 className="page-head__title">{title}</h1>
-        {meta && <p className="page-head__meta">{meta}</p>}
-        <p className="page-head__lede">{description}</p>
-      </header>
+      <PageHeader title={title} description={description} meta={meta} />
 
       <div className="list-toolbar" ref={listTop}>
         <ListSearch
@@ -169,7 +166,21 @@ export default function ListPage({
 
       {items.length > 0 && (
         <>
-          <ul className={`records${loading ? " records--stale" : ""}`}>
+          {/* Column names for the table layout; each row also labels its
+              own cells for screen readers and the stacked mobile layout */}
+          {columns.length > 0 && (
+            <div className={`records__head records__head--${variant}`} aria-hidden="true">
+              {columns.map(({ label, className }) => (
+                <span key={label} className={className}>
+                  {label}
+                </span>
+              ))}
+            </div>
+          )}
+
+          <ul
+            className={`records records--${variant}${columns.length ? " records--table" : ""}${loading ? " records--stale" : ""}`}
+          >
             {items.map((item, index) => {
               const position = offset + index;
 

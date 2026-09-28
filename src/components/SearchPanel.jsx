@@ -1,12 +1,9 @@
-import { useRef } from "react";
+import { useId, useRef } from "react";
 import { useSlashFocus } from "../hooks/useSlashFocus";
-import {
-  ArrowIcon,
-  ClockIcon,
-  CloseIcon,
-  SearchIcon,
-} from "./Icons";
+import { CloseIcon, SearchIcon } from "./Icons";
 
+// Address search used by the Passport, Method 1 and Method 2 pages.
+// Submits the typed address as it is; the pages decide what to request.
 export default function SearchPanel({
   address,
   onAddressChange,
@@ -15,16 +12,12 @@ export default function SearchPanel({
   error,
   recentSearches = [],
   onRemoveRecent,
-  compact,
-  eyebrow = "Circular building intelligence",
-  title = (
-    <>
-      Every building, <em>weighed</em> and accounted for.
-    </>
-  ),
-  lede = "Search by address to view material estimation and CO₂ emissions.",
+  label = "Building address",
+  hint = "Street and house number, optionally with postal code or city — e.g. Jan Provostlaan 16, Bilthoven",
 }) {
   const inputRef = useRef(null);
+  const inputId = useId();
+  const hintId = useId();
 
   useSlashFocus(inputRef);
 
@@ -39,93 +32,84 @@ export default function SearchPanel({
   };
 
   return (
-    <section className={`hero${compact ? " hero--compact" : ""}`}>
-      <span className="eyebrow">{eyebrow}</span>
+    <section className="search-panel" aria-label="Search">
+      <form className="search-form" role="search" onSubmit={handleSubmit}>
+        <label className="search-form__label" htmlFor={inputId}>
+          {label}
+        </label>
 
-      <h1 className="hero__title">{title}</h1>
+        <div className="search-form__row">
+          <div className={`search${loading ? " search--loading" : ""}`}>
+            <SearchIcon className="icon search__icon" />
 
-      <p className="hero__lede">{lede}</p>
+            <input
+              id={inputId}
+              ref={inputRef}
+              className="search__input"
+              type="text"
+              placeholder="Enter a building address"
+              aria-describedby={hintId}
+              autoComplete="off"
+              spellCheck="false"
+              value={address}
+              onChange={(event) => onAddressChange(event.target.value)}
+            />
 
-      <form
-        className={`search${loading ? " search--loading" : ""}`}
-        role="search"
-        onSubmit={handleSubmit}
-      >
-        <SearchIcon className="icon search__icon" />
+            {address && !loading ? (
+              <button
+                type="button"
+                className="search__clear"
+                aria-label="Clear address"
+                onClick={handleClear}
+              >
+                <CloseIcon />
+              </button>
+            ) : (
+              !address && (
+                <kbd className="search__kbd" title="Press / to focus the search">
+                  /
+                </kbd>
+              )
+            )}
+          </div>
 
-        <input
-          ref={inputRef}
-          className="search__input"
-          type="text"
-          placeholder="Enter building address…"
-          aria-label="Building address"
-          autoComplete="off"
-          spellCheck="false"
-          value={address}
-          onChange={(event) => onAddressChange(event.target.value)}
-        />
-
-        {address && !loading ? (
-          <button
-            type="button"
-            className="search__clear"
-            aria-label="Clear address"
-            onClick={handleClear}
-          >
-            <CloseIcon />
+          <button type="submit" className="button" disabled={loading}>
+            {loading ? (
+              <>
+                <span className="spinner" aria-hidden="true" />
+                Searching
+              </>
+            ) : (
+              "Search"
+            )}
           </button>
-        ) : (
-          !address && (
-            <kbd className="search__kbd" aria-hidden="true">
-              /
-            </kbd>
-          )
-        )}
+        </div>
 
-        <button
-          type="submit"
-          className="search__submit"
-          disabled={loading}
-        >
-          {loading ? (
-            <>
-              <span className="spinner" aria-hidden="true" />
-              Searching
-            </>
-          ) : (
-            <>
-              Search
-              <ArrowIcon />
-            </>
-          )}
-        </button>
-
-        <span className="search__progress" aria-hidden="true" />
+        <p className="search-form__hint" id={hintId}>
+          {hint}
+        </p>
       </form>
 
       {recentSearches.length > 0 && (
         <div className="recent">
-          <span className="recent__title">Recent</span>
+          <span className="recent__title">Recent searches</span>
 
           <ul className="recent__list">
             {recentSearches.map((searchedAddress) => (
-              <li className="chip" key={searchedAddress}>
+              <li className="recent__item" key={searchedAddress}>
                 <button
                   type="button"
-                  className="chip__main"
-                  title={searchedAddress}
+                  className="recent__link"
                   onClick={() => {
                     onAddressChange(searchedAddress);
                     onSearch(searchedAddress);
                   }}
                 >
-                  <ClockIcon />
-                  <span className="chip__text">{searchedAddress}</span>
+                  {searchedAddress}
                 </button>
-
                 <button
                   type="button"
-                  className="chip__remove"
+                  className="recent__remove"
                   aria-label={`Remove ${searchedAddress} from recent searches`}
                   onClick={() => onRemoveRecent(searchedAddress)}
                 >
@@ -139,10 +123,8 @@ export default function SearchPanel({
 
       {error && (
         <div className="alert" role="alert">
-          <span className="alert__mark" aria-hidden="true">
-            !
-          </span>
-          {error}
+          <strong className="alert__label">No result</strong>
+          <span>{error}</span>
         </div>
       )}
     </section>

@@ -1,11 +1,12 @@
 import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router";
 import {
+  formatEuro,
   formatNumber,
   formatPercent,
   isNumber,
-  formatEuro,
-  splitAddress,
+  parseAddress,
+  text,
 } from "../lib/format";
 import {
   buildGroups,
@@ -14,34 +15,10 @@ import {
   TOTAL_LABEL,
 } from "../lib/materials";
 import CompositionChart from "./CompositionChart";
+import { ArrowIcon, CheckIcon, CopyIcon } from "./Icons";
 import MaterialTable from "./MaterialTable";
+import { Fields, Section, Summary } from "./ui";
 import WozDetails from "./WozDetails";
-import {
-  BuildingIcon,
-  CheckIcon,
-  CloudIcon,
-  CopyIcon,
-  GaugeIcon,
-  LayersIcon,
-  PinIcon,
-  RulerIcon,
-  WeightIcon,
-} from "./Icons";
-
-function StatCard({ icon: CardIcon, label, accent, children, footer }) {
-  return (
-    <article className={`stat${accent ? " stat--accent" : ""}`}>
-      <header className="stat__head">
-        <span className="stat__label">{label}</span>
-        <span className="stat__icon">
-          <CardIcon />
-        </span>
-      </header>
-      <div className="stat__value">{children}</div>
-      <div className="stat__foot">{footer}</div>
-    </article>
-  );
-}
 
 function CopyButton({ value }) {
   const [copied, setCopied] = useState(false);
@@ -65,34 +42,23 @@ function CopyButton({ value }) {
       type="button"
       className={`copy${copied ? " copy--done" : ""}`}
       onClick={handleCopy}
+      aria-label={copied ? "Pand ID copied" : "Copy pand ID"}
     >
       {copied ? <CheckIcon /> : <CopyIcon />}
-      {copied ? "Copied" : "Copy ID"}
+      {copied ? "Copied" : "Copy"}
     </button>
   );
 }
 
-function Panel({ title, description, meta, children, index }) {
-  return (
-    <section className="panel reveal" style={{ "--i": index }}>
-      <header className="panel__head">
-        <div>
-          <h3>{title}</h3>
-          <p>{description}</p>
-        </div>
-        {meta && <span className="panel__meta">{meta}</span>}
-      </header>
-      {children}
-    </section>
-  );
-}
-
+// Method 1 result for one building (GET /material-estimation/search)
 export default function Passport({ result }) {
-  const [street, locality] = splitAddress(result.address);
+  const { street, postalCode, city, title } = parseAddress(result.address);
   const rows = buildRows(result.materials);
   const groups = buildGroups(rows);
   const total = result.materials?.total ?? {};
   const pandId = result.pand_id;
+  const woz = result.estimated_woz;
+  const inputs = woz?.inputs ?? {};
 
   const dominant = rows.reduce(
     (best, row) => (row.massShare > (best?.massShare ?? 0) ? row : best),
@@ -105,117 +71,100 @@ export default function Passport({ result }) {
       : null;
 
   const presentCount = rows.filter((row) => row.tonnes > 0).length;
-  const woz = result.estimated_woz;
 
   return (
-    <article className="passport">
-      <header className="passport__head reveal" style={{ "--i": 0 }}>
-        <div className="passport__tags">
-          <span className="eyebrow">Building passport</span>
-          <span className="tag">Estimate</span>
-
-          {/* Same address, measured from 3DBAG geometry */}
+    <article className="record-view" aria-label={`Method 1 result for ${title}`}>
+      <header className="record-head">
+        <div>
+          <p className="record-head__kicker">Method 1 · BAG × B2 material profile</p>
+          <h2 className="record-head__title">{title}</h2>
+          <p className="record-head__meta">
+            {[postalCode, city].filter(Boolean).join(" ")}
+            {pandId && (
+              <>
+                <span className="record-head__sep" aria-hidden="true">·</span>
+                Pand ID <span className="mono">{pandId}</span>
+                <CopyButton value={String(pandId)} />
+              </>
+            )}
+          </p>
+        </div>
+        <div className="record-head__actions">
           <Link
-            className="button button--ghost method2-link"
+            className="button button--secondary"
             to={`/method-2?address=${encodeURIComponent(result.address ?? "")}`}
           >
-            <RulerIcon />
-            Method 2
+            Method 2 for this address
+            <ArrowIcon />
           </Link>
         </div>
-
-        <h2 className={street.length > 40 ? "passport__title--long" : undefined}>
-          {street}
-        </h2>
-
-        {locality && (
-          <p className="passport__locality">
-            <PinIcon />
-            {locality}
-          </p>
-        )}
       </header>
 
-      <div className="stats reveal" style={{ "--i": 1 }}>
-        <StatCard
-          icon={BuildingIcon}
-          label="Pand ID"
-          footer={pandId ? <CopyButton value={String(pandId)} /> : "Not available"}
-        >
-          <span className="stat__mono">{pandId ?? "—"}</span>
-        </StatCard>
+      <Summary
+        items={[
+          {
+            label: `${total.label ?? TOTAL_LABEL} mass`,
+            value: formatNumber(total.tonnes),
+            unit: "t",
+            note: `${formatNumber(total.kg, 0)} kg`,
+          },
+          {
+            label: "Embodied carbon",
+            value: formatNumber(total.co2_tonnes),
+            unit: "tCO₂e",
+            note: `${formatNumber(total.co2_kg, 0)} kgCO₂e`,
+          },
+          {
+            label: "Carbon intensity",
+            value: formatNumber(carbonIntensity, 1),
+            unit: "kg/t",
+            note: "kg CO₂e per tonne of material",
+          },
+          {
+            label: "Dominant material",
+            value: dominant ? dominant.label : "—",
+            note: dominant ? `${formatPercent(dominant.massShare)} of total mass` : "No material data",
+          },
+        ]}
+      />
 
-        <StatCard
-          icon={WeightIcon}
-          label={`${total.label ?? TOTAL_LABEL} mass`}
-          footer={`${formatNumber(total.kg, 0)} kg`}
-        >
-          {formatNumber(total.tonnes)}
-          <span className="stat__unit">t</span>
-        </StatCard>
+      <Section title="Building information" meta="BAG">
+        <Fields
+          columns={3}
+          items={[
+            { label: "Address", value: text(street) },
+            { label: "Postal code", value: text(postalCode), mono: true },
+            { label: "City", value: text(city) },
+            { label: "Pand ID", value: text(pandId), mono: true },
+            ...(inputs.bouwjaar ? [{ label: "Year built", value: String(inputs.bouwjaar) }] : []),
+            ...(isNumber(inputs.go_m2)
+              ? [{ label: "Usable floor area (GO)", value: `${formatNumber(inputs.go_m2, 0)} m²` }]
+              : []),
+            ...(inputs.gebruiksdoel ? [{ label: "Use (gebruiksdoel)", value: inputs.gebruiksdoel }] : []),
+          ]}
+        />
+      </Section>
 
-        <StatCard
-          icon={CloudIcon}
-          label="Embodied carbon"
-          accent
-          footer={`${formatNumber(total.co2_kg, 0)} kgCO₂e`}
-        >
-          {formatNumber(total.co2_tonnes)}
-          <span className="stat__unit">tCO₂e</span>
-        </StatCard>
-
-        <StatCard
-          icon={GaugeIcon}
-          label="Carbon intensity"
-          footer="kg CO₂e per tonne of material"
-        >
-          {formatNumber(carbonIntensity, 1)}
-          <span className="stat__unit">kg/t</span>
-        </StatCard>
-
-        <StatCard
-          icon={LayersIcon}
-          label="Dominant material"
-          footer={
-            dominant
-              ? `${formatPercent(dominant.massShare)} of total mass`
-              : "No material data"
-          }
-        >
-          {dominant ? (
-            <span className="stat__text">
-              <i className="swatch" style={{ background: dominant.color }} />
-              {dominant.label}
-            </span>
-          ) : (
-            "—"
-          )}
-        </StatCard>
-      </div>
-
-      <Panel
-        index={2}
-        title="Composition"
-        description="Share of each material family by mass and by embodied carbon. Hover or focus a segment for details."
-        meta={`${groups.length} families`}
-      >
-        <CompositionChart groups={groups} total={total} />
-      </Panel>
-
-      <Panel
-        index={3}
-        title="Material breakdown"
-        description={`All ${MATERIALS.length} material categories — estimated mass and embodied carbon (CO₂e).`}
+      <Section
+        title="Material estimation"
+        description={`All ${MATERIALS.length} material categories — estimated mass and embodied carbon (CO₂e, A1–A3).`}
         meta={`${presentCount} of ${MATERIALS.length} present`}
       >
         <MaterialTable rows={rows} total={total} />
-      </Panel>
+      </Section>
+
+      <Section
+        title="Composition"
+        description="Share of each material family by mass and by embodied carbon. Hover or focus a segment for its values."
+        meta={`${groups.length} families`}
+      >
+        <CompositionChart groups={groups} total={total} />
+      </Section>
 
       {woz && (
-        <Panel
-          index={4}
-          title="WOZ Estimation (Method 1)"
-          description="Estimated WOZ value of this building: usable floor area × the CBS price per m² of its gemeente (municipality), adjusted for building type and age."
+        <Section
+          title="WOZ estimation (Method 1)"
+          description="Usable floor area × the CBS price per m² of the gemeente (municipality), adjusted for building type and age."
           meta={woz.reference_year ? `WOZ year ${woz.reference_year}` : undefined}
         >
           <p className="woz-headline">
@@ -223,30 +172,8 @@ export default function Passport({ result }) {
             <span className="woz-headline__value">{formatEuro(woz.value_eur)}</span>
           </p>
           <WozDetails woz={woz} />
-        </Panel>
+        </Section>
       )}
     </article>
-  );
-}
-
-export function PassportSkeleton() {
-  return (
-    <div className="passport passport--loading" aria-busy="true" aria-label="Loading building passport">
-      <div className="skeleton skeleton--eyebrow" />
-      <div className="skeleton skeleton--title" />
-      <div className="skeleton skeleton--line" />
-
-      <div className="stats">
-        {[0, 1, 2, 3, 4].map((item) => (
-          <div className="stat" key={item}>
-            <div className="skeleton skeleton--label" />
-            <div className="skeleton skeleton--value" />
-            <div className="skeleton skeleton--label" />
-          </div>
-        ))}
-      </div>
-
-      <div className="skeleton skeleton--panel" />
-    </div>
   );
 }

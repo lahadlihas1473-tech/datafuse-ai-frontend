@@ -133,9 +133,9 @@ export const SortIcon = ({ direction, ...props }) => (
 export function LogoMark() {
   return (
     <svg className="logo-mark" viewBox="0 0 32 32" aria-hidden="true">
-      <rect x="1" y="1" width="30" height="30" rx="9" />
-      <path d="M9 23V11l7-4 7 4v12" />
-      <path d="M13 23v-6h6v6" />
+      <rect width="32" height="32" rx="6" />
+      <path d="M9 24V12.5l7-4.5 7 4.5V24" />
+      <path d="M13.5 24v-6h5v6" />
     </svg>
   );
 }

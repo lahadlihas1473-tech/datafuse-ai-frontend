@@ -1,15 +1,16 @@
 import { isNumber } from "./format";
 
-// Material families, in fixed order (colours validated for the dark surface).
-// 13 materials are too many to colour individually, so charts group them.
+// Material families, in fixed order. Muted colours that stay apart on a
+// white surface. 13 materials are too many to colour individually, so
+// charts group them.
 export const GROUPS = [
-  { key: "minerals", label: "Beton & mineralen (Concrete & Minerals)", color: "#8b7fd6" },
-  { key: "masonry", label: "Baksteen & keramiek (Brick & Ceramics)", color: "#d0714f" },
-  { key: "metals", label: "Metalen (Metals)", color: "#3f9fd0" },
-  { key: "wood", label: "Hout (Wood)", color: "#b8892f" },
-  { key: "glass", label: "Glas (Glass)", color: "#2fa894" },
-  { key: "plastics", label: "Kunststof & isolatie (Plastics & Insulation)", color: "#b85fc0" },
-  { key: "other", label: "Overig (Other)", color: "#8a8d84" },
+  { key: "minerals", label: "Beton & mineralen (Concrete & Minerals)", color: "#71809f" },
+  { key: "masonry", label: "Baksteen & keramiek (Brick & Ceramics)", color: "#b3624a" },
+  { key: "metals", label: "Metalen (Metals)", color: "#3a7ca5" },
+  { key: "wood", label: "Hout (Wood)", color: "#a67c33" },
+  { key: "glass", label: "Glas (Glass)", color: "#3a948a" },
+  { key: "plastics", label: "Kunststof & isolatie (Plastics & Insulation)", color: "#8a67a3" },
+  { key: "other", label: "Overig (Other)", color: "#9aa2aa" },
 ];
 
 const GROUP_COLORS = Object.fromEntries(
@@ -95,3 +96,15 @@ export const buildGroups = (rows) =>
       co2Share: sumBy(members, "co2Share"),
     };
   });
+
+// The seven reported material groups of Method 2, as stored in
+// public.method_2 (<key>_tonnes and <key>_co2_tonnes)
+export const METHOD2_MATERIALS = [
+  { key: "concrete", label: "Beton (Concrete)", group: "minerals" },
+  { key: "brick", label: "Baksteen (Brick)", group: "masonry" },
+  { key: "steel", label: "Staal (Steel)", group: "metals" },
+  { key: "wood", label: "Hout (Wood)", group: "wood" },
+  { key: "glass", label: "Glas (Glass)", group: "glass" },
+  { key: "copper", label: "Koper (Copper)", group: "plastics" },
+  { key: "other", label: "Overig (Other)", group: "other" },
+].map((material) => ({ ...material, color: GROUP_COLORS[material.group] }));

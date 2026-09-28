@@ -1,104 +1,21 @@
+import { Link } from "react-router";
 import {
   formatAmount,
   formatEuro,
   formatNumber,
   formatPercent,
-  isNumber,
+  measure,
+  streetLine,
+  text,
+  toNumber,
 } from "../lib/format";
-import { GROUPS, TOTAL_LABEL } from "../lib/materials";
+import { METHOD2_MATERIALS as MATERIALS, TOTAL_LABEL } from "../lib/materials";
 import CompositionChart from "./CompositionChart";
+import { ArrowIcon } from "./Icons";
+import { Fields, Section, Summary } from "./ui";
 import WozMethod2 from "./WozMethod2";
-import {
-  BuildingIcon,
-  CloudIcon,
-  GaugeIcon,
-  LayersIcon,
-  RulerIcon,
-  WeightIcon,
-} from "./Icons";
 
-// Same palette as the passport, so a material keeps its colour in both views
-const COLOR = Object.fromEntries(
-  GROUPS.map((group) => [group.key, group.color])
-);
-
-// public.method_2 returns NUMERIC columns as strings
-const toNumber = (value) => {
-  const number = Number(value);
-  return isNumber(number) ? number : null;
-};
-
-const text = (value) => (value === null || value === "" ? "—" : value);
-
-const clean = (value) => String(value ?? "").trim();
-
-// The address column holds a street, but some rows carry the house number
-// and city as well. Add each part only when it is not already there.
-const streetLine = ({ address, house_number: houseNumber, city }) => {
-  const house = clean(houseNumber);
-  const town = clean(city);
-  let line = clean(address);
-
-  [`, ${town}`, ` ${town}`].forEach((suffix) => {
-    if (town && line.toLowerCase().endsWith(suffix.toLowerCase())) {
-      line = line.slice(0, -suffix.length).trim().replace(/,$/, "");
-    }
-  });
-
-  const endsWithHouse =
-    house && line.toLowerCase().endsWith(` ${house.toLowerCase()}`);
-
-  return house && !endsWithHouse ? `${line} ${house}`.trim() : line;
-};
-
-// Value with a unit, or an em dash when the column is empty
-const measure = (value, unit, digits = 2) => {
-  const number = toNumber(value);
-  return number === null ? "—" : `${formatNumber(number, digits)} ${unit}`;
-};
-
-// The seven reported material groups, as stored in public.method_2
-const MATERIALS = [
-  { key: "concrete", label: "Beton (Concrete)", color: COLOR.minerals },
-  { key: "brick", label: "Baksteen (Brick)", color: COLOR.masonry },
-  { key: "steel", label: "Staal (Steel)", color: COLOR.metals },
-  { key: "wood", label: "Hout (Wood)", color: COLOR.wood },
-  { key: "glass", label: "Glas (Glass)", color: COLOR.glass },
-  { key: "copper", label: "Koper (Copper)", color: COLOR.plastics },
-  { key: "other", label: "Overig (Other)", color: COLOR.other },
-];
-
-function StatCard({ icon: CardIcon, label, accent, children, footer }) {
-  return (
-    <article className={`stat${accent ? " stat--accent" : ""}`}>
-      <header className="stat__head">
-        <span className="stat__label">{label}</span>
-        <span className="stat__icon">
-          <CardIcon />
-        </span>
-      </header>
-      <div className="stat__value">{children}</div>
-      <div className="stat__foot">{footer}</div>
-    </article>
-  );
-}
-
-function Panel({ title, description, meta, children, index }) {
-  return (
-    <section className="panel reveal" style={{ "--i": index }}>
-      <header className="panel__head">
-        <div>
-          <h3>{title}</h3>
-          <p>{description}</p>
-        </div>
-        {meta && <span className="panel__meta">{meta}</span>}
-      </header>
-      {children}
-    </section>
-  );
-}
-
-// Same bar-in-a-cell as the passport's material table
+// Same bar-in-a-cell as the Method 1 material table
 function ShareCell({ value, color }) {
   return (
     <td className="col-share">
@@ -115,25 +32,11 @@ function ShareCell({ value, color }) {
   );
 }
 
-function Facts({ items }) {
-  return (
-    <dl className="facts">
-      {items.map(({ label, value }) => (
-        <div className="fact" key={label}>
-          <dt className="fact__label">{label}</dt>
-          <dd className="fact__value">{value}</dd>
-        </div>
-      ))}
-    </dl>
-  );
-}
-
+// Method 2 result for one building (GET /method-2/search)
 export default function Method2({ record }) {
   const street = streetLine(record);
-
-  const locality = [record.postal_code, record.city]
-    .filter(Boolean)
-    .join(" ");
+  const title = [street || record.name, record.city].filter(Boolean).join(", ");
+  const locality = [record.postal_code, record.city].filter(Boolean).join(" ");
 
   const totalMass = toNumber(record.total_material_mass_tonnes);
   const totalCo2 = toNumber(record.total_co2_tonnes);
@@ -165,182 +68,137 @@ export default function Method2({ record }) {
   const woz = record.estimated_woz;
 
   return (
-    <article className="passport method2">
-      <header className="passport__head reveal" style={{ "--i": 0 }}>
-        <div className="passport__tags">
-          <span className="eyebrow">Method 2</span>
-          <span className="tag">3DBAG geometry</span>
-          {record.assumption_profile && (
-            <span className="tag">{record.assumption_profile}</span>
-          )}
+    <article className="record-view method2" aria-label={`Method 2 result for ${title}`}>
+      <header className="record-head">
+        <div>
+          <p className="record-head__kicker">
+            Method 2 · 3DBAG geometry
+            {record.assumption_profile && (
+              <span className="tag">{record.assumption_profile}</span>
+            )}
+          </p>
+          <h2 className="record-head__title">{title}</h2>
+          <p className="record-head__meta">
+            {locality}
+            {record.pand_id && (
+              <>
+                <span className="record-head__sep" aria-hidden="true">·</span>
+                Pand ID <span className="mono">{record.pand_id}</span>
+              </>
+            )}
+          </p>
         </div>
-
-        <h2 className={street.length > 40 ? "passport__title--long" : undefined}>
-          {street || record.name}
-        </h2>
-
-        {locality && <p className="passport__locality">{locality}</p>}
+        <div className="record-head__actions">
+          <Link
+            className="button button--secondary"
+            to={`/method-1?address=${encodeURIComponent(street ? `${street}, ${record.city ?? ""}` : record.name ?? "")}`}
+          >
+            Method 1 for this address
+            <ArrowIcon />
+          </Link>
+        </div>
       </header>
 
-      <div className="stats reveal" style={{ "--i": 1 }}>
-        <StatCard
-          icon={BuildingIcon}
-          label="Pand ID"
-          footer={text(record.notice_id)}
-        >
-          <span className="stat__mono">{text(record.pand_id)}</span>
-        </StatCard>
+      <Summary
+        items={[
+          {
+            label: "Total material mass",
+            value: formatNumber(totalMass),
+            unit: "t",
+            note: measure(record.mass_kg_per_m2_bvo, "kg per m² BVO", 1),
+          },
+          {
+            label: "Embodied carbon",
+            value: formatNumber(totalCo2),
+            unit: "tCO₂e",
+            note: measure(record.co2e_kg_per_m2_bvo, "kgCO₂e per m² BVO", 1),
+          },
+          {
+            label: "Gross floor area (BVO)",
+            value: formatNumber(toNumber(record.bvo_m2), 0),
+            unit: "m²",
+            note: `Usable area (GO) ${measure(record.go_m2, "m²", 0)}`,
+          },
+          {
+            label: "Building height",
+            value: formatNumber(toNumber(record.height_max_m), 1),
+            unit: "m",
+            note: `Mean ${measure(record.height_mean_m, "m", 1)}`,
+          },
+          {
+            label: "Dominant material",
+            value: dominant ? dominant.label : "—",
+            note: dominant ? `${formatPercent(dominant.massShare)} of total mass` : "No material data",
+          },
+        ]}
+      />
 
-        <StatCard
-          icon={WeightIcon}
-          label="Total material mass"
-          footer={measure(record.mass_kg_per_m2_bvo, "kg per m² BVO", 1)}
+      <div className="record-grid">
+        <Section
+          title="Building information"
+          description="Type and age group from BAG, with the construction build-up chosen for them."
+          meta={text(record.material_profile_id)}
         >
-          {formatNumber(totalMass)}
-          <span className="stat__unit">t</span>
-        </StatCard>
+          <Fields
+            columns={2}
+            items={[
+              { label: "Pand ID", value: text(record.pand_id), mono: true },
+              { label: "Notice ID", value: text(record.notice_id), mono: true },
+              { label: "Year built", value: text(record.bouwjaar) },
+              { label: "Building type", value: text(record.typegebouw) },
+              { label: "Age cohort", value: text(record.cohort) },
+              { label: "Build-up profile", value: text(record.assumption_profile), mono: true },
+            ]}
+          />
+        </Section>
 
-        <StatCard
-          icon={CloudIcon}
-          label="Embodied carbon"
-          accent
-          footer={measure(record.co2e_kg_per_m2_bvo, "kgCO₂e per m² BVO", 1)}
+        <Section
+          title="3DBAG geometry"
+          description="Measured surfaces and volume of the building."
+          meta="LoD 2.2"
         >
-          {formatNumber(totalCo2)}
-          <span className="stat__unit">tCO₂e</span>
-        </StatCard>
-
-        <StatCard
-          icon={RulerIcon}
-          label="Gross floor area (BVO)"
-          footer={`Usable area (GO) ${measure(record.go_m2, "m²", 0)}`}
-        >
-          {formatNumber(toNumber(record.bvo_m2), 0)}
-          <span className="stat__unit">m²</span>
-        </StatCard>
-
-        <StatCard
-          icon={GaugeIcon}
-          label="Building height"
-          footer={`Mean ${measure(record.height_mean_m, "m", 1)}`}
-        >
-          {formatNumber(toNumber(record.height_max_m), 1)}
-          <span className="stat__unit">m</span>
-        </StatCard>
-
-        <StatCard
-          icon={LayersIcon}
-          label="Dominant material"
-          footer={
-            dominant
-              ? `${formatPercent(dominant.massShare)} of total mass`
-              : "No material data"
-          }
-        >
-          {dominant ? (
-            <span className="stat__text">
-              <i className="swatch" style={{ background: dominant.color }} />
-              {dominant.label}
-            </span>
-          ) : (
-            "—"
-          )}
-        </StatCard>
+          <Fields
+            columns={2}
+            items={[
+              { label: "Footprint", value: measure(record.opp_grond_m2, "m²") },
+              { label: "Volume", value: measure(record.volume_lod22_m3, "m³") },
+              { label: "External wall", value: measure(record.opp_buitenmuur_m2, "m²") },
+              { label: "Party wall", value: measure(record.opp_scheidingsmuur_m2, "m²") },
+              { label: "Flat roof", value: measure(record.opp_dak_plat_m2, "m²") },
+              { label: "Sloped roof", value: measure(record.opp_dak_schuin_m2, "m²") },
+            ]}
+          />
+        </Section>
       </div>
 
-      <Panel
-        index={2}
-        title="Building"
-        description="Type and age group from BAG, with the construction build-up chosen for them."
-        meta={text(record.material_profile_id)}
+      <Section
+        title="Measurements"
+        description="Heights, storeys, floor areas and the lengths and areas derived from the geometry."
       >
-        <Facts
+        <Fields
+          columns={4}
           items={[
-            { label: "Year built", value: text(record.bouwjaar) },
-            { label: "Building type", value: text(record.typegebouw) },
-            { label: "Age cohort", value: text(record.cohort) },
-            { label: "Build-up profile", value: text(record.assumption_profile) },
+            { label: "Height (max)", value: measure(record.height_max_m, "m", 1) },
+            { label: "Height (mean)", value: measure(record.height_mean_m, "m", 1) },
             { label: "Storeys (3DBAG)", value: text(record.bouwlagen) },
-            {
-              label: "Storey equivalents",
-              value: formatNumber(toNumber(record.storey_equivalents), 2),
-            },
-            {
-              label: "Storey height used",
-              value: measure(record.storey_height_m, "m", 2),
-            },
-            {
-              label: "GO ÷ BVO",
-              value: formatNumber(toNumber(record.go_bvo_ratio), 2),
-            },
-          ]}
-        />
-      </Panel>
-
-      <Panel
-        index={3}
-        title="Geometry (3DBAG)"
-        description="Measured surfaces and volume, and the lengths and areas derived from them."
-        meta="LoD 2.2"
-      >
-        <Facts
-          items={[
-            { label: "Footprint", value: measure(record.opp_grond_m2, "m²") },
-            {
-              label: "External wall",
-              value: measure(record.opp_buitenmuur_m2, "m²"),
-            },
-            {
-              label: "Party wall",
-              value: measure(record.opp_scheidingsmuur_m2, "m²"),
-            },
-            { label: "Flat roof", value: measure(record.opp_dak_plat_m2, "m²") },
-            {
-              label: "Sloped roof",
-              value: measure(record.opp_dak_schuin_m2, "m²"),
-            },
-            { label: "Volume", value: measure(record.volume_lod22_m3, "m³") },
+            { label: "Storey equivalents", value: formatNumber(toNumber(record.storey_equivalents), 2) },
+            { label: "Storey height used", value: measure(record.storey_height_m, "m", 2) },
+            { label: "Gross floor area (BVO)", value: measure(record.bvo_m2, "m²") },
+            { label: "Usable floor area (GO)", value: measure(record.go_m2, "m²") },
+            { label: "GO ÷ BVO", value: formatNumber(toNumber(record.go_bvo_ratio), 2) },
             { label: "Perimeter", value: measure(record.perimeter_m, "m") },
-            {
-              label: "Roof pitch",
-              value: measure(record.roof_pitch_deg, "°", 1),
-            },
-            {
-              label: "Façade length",
-              value: measure(record.facade_length_m, "m"),
-            },
-            {
-              label: "Party wall length",
-              value: measure(record.party_wall_length_m, "m"),
-            },
+            { label: "Roof pitch", value: measure(record.roof_pitch_deg, "°", 1) },
+            { label: "Façade length", value: measure(record.facade_length_m, "m") },
+            { label: "Party wall length", value: measure(record.party_wall_length_m, "m") },
             { label: "Window area", value: measure(record.window_area_m2, "m²") },
-            {
-              label: "Foundation beam",
-              value: measure(record.foundation_beam_length_m, "m"),
-            },
-            {
-              label: "Internal walls",
-              value: measure(record.internal_wall_m2, "m²"),
-            },
+            { label: "Foundation beam", value: measure(record.foundation_beam_length_m, "m") },
+            { label: "Internal walls", value: measure(record.internal_wall_m2, "m²") },
           ]}
         />
-      </Panel>
+      </Section>
 
-      <Panel
-        index={4}
-        title="Composition"
-        description="Share of each material by mass and by embodied carbon. Hover or focus a segment for details."
-        meta={`${MATERIALS.length} materials`}
-      >
-        <CompositionChart
-          groups={rows}
-          total={{ tonnes: totalMass, co2_tonnes: totalCo2 }}
-        />
-      </Panel>
-
-      <Panel
-        index={5}
-        title="Materials and CO₂"
+      <Section
+        title="Material estimation"
         description="Estimated mass and embodied carbon (A1–A3) per reported material group."
         meta={`${presentCount} of ${MATERIALS.length} present`}
       >
@@ -390,22 +248,45 @@ export default function Method2({ record }) {
           </table>
         </div>
 
-        {flags.length > 0 && (
-          <div className="method2__flags">
-            <span className="method2__flags-label">Data quality</span>
+        <div className="section__sub">
+          <h3 className="section__subtitle">Composition</h3>
+          <CompositionChart
+            groups={rows}
+            total={{ tonnes: totalMass, co2_tonnes: totalCo2 }}
+          />
+        </div>
+      </Section>
+
+      <Section title="CO₂ estimation">
+        <Fields
+          columns={4}
+          items={[
+            { label: "Embodied carbon (t)", value: measure(record.total_co2_tonnes, "tCO₂e") },
+            { label: "Embodied carbon (kg)", value: measure(record.total_co2_kg, "kgCO₂e", 0) },
+            { label: "CO₂e per m² BVO", value: measure(record.co2e_kg_per_m2_bvo, "kg", 1) },
+            { label: "Mass per m² BVO", value: measure(record.mass_kg_per_m2_bvo, "kg", 1) },
+          ]}
+        />
+      </Section>
+
+      {flags.length > 0 && (
+        <Section
+          title="Data quality flags"
+          description="Checks on the 3DBAG input; a flag does not stop the calculation but tells how far to trust it."
+        >
+          <ul className="flags__list">
             {flags.map((flag) => (
-              <span className="tag" key={flag}>
+              <li className="tag tag--warn" key={flag}>
                 {flag}
-              </span>
+              </li>
             ))}
-          </div>
-        )}
-      </Panel>
+          </ul>
+        </Section>
+      )}
 
       {woz && (
-        <Panel
-          index={6}
-          title="WOZ Estimation (Method 2)"
+        <Section
+          title="WOZ estimation (Method 2)"
           description="Estimated WOZ value from the building's buurt (neighbourhood), its dwelling type measured in 3DBAG and each verblijfsobject (unit) valued on its own."
           meta={woz.reference_year ? `WOZ year ${woz.reference_year}` : undefined}
         >
@@ -414,7 +295,7 @@ export default function Method2({ record }) {
             <span className="woz-headline__value">{formatEuro(woz.value_eur)}</span>
           </p>
           <WozMethod2 woz={woz} />
-        </Panel>
+        </Section>
       )}
     </article>
   );
