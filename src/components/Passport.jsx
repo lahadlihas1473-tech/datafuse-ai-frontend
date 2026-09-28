@@ -4,6 +4,7 @@ import {
   formatNumber,
   formatPercent,
   isNumber,
+  formatEuro,
   splitAddress,
 } from "../lib/format";
 import {
@@ -14,6 +15,7 @@ import {
 } from "../lib/materials";
 import CompositionChart from "./CompositionChart";
 import MaterialTable from "./MaterialTable";
+import WozDetails from "./WozDetails";
 import {
   BuildingIcon,
   CheckIcon,
@@ -103,6 +105,7 @@ export default function Passport({ result }) {
       : null;
 
   const presentCount = rows.filter((row) => row.tonnes > 0).length;
+  const woz = result.estimated_woz;
 
   return (
     <article className="passport">
@@ -207,6 +210,21 @@ export default function Passport({ result }) {
       >
         <MaterialTable rows={rows} total={total} />
       </Panel>
+
+      {woz && (
+        <Panel
+          index={4}
+          title="WOZ Estimation (Method 1)"
+          description="Estimated WOZ value of this building: usable floor area × the CBS price per m² of its gemeente (municipality), adjusted for building type and age."
+          meta={woz.reference_year ? `WOZ year ${woz.reference_year}` : undefined}
+        >
+          <p className="woz-headline">
+            <span className="woz-headline__label">{woz.label}</span>
+            <span className="woz-headline__value">{formatEuro(woz.value_eur)}</span>
+          </p>
+          <WozDetails woz={woz} />
+        </Panel>
+      )}
     </article>
   );
 }

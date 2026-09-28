@@ -15,10 +15,13 @@ export const formatAmount = (value) =>
     ? "< 0.01"
     : formatNumber(value);
 
-// Whole euros: 1415000 -> "€1,415,000"
-export const formatEuro = (value) =>
+// Euros: 1415000 -> "€1,415,000"; digits for prices, e.g. "€5,145.04"
+export const formatEuro = (value, digits = 0) =>
   isNumber(value)
-    ? `€${Math.round(value).toLocaleString("en-US")}`
+    ? `€${value.toLocaleString("en-US", {
+        minimumFractionDigits: digits,
+        maximumFractionDigits: digits,
+      })}`
     : "—";
 
 export const formatPercent = (value) =>
