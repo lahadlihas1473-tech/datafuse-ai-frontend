@@ -1,6 +1,7 @@
 import { PinIcon } from "../components/Icons";
 import Highlight from "../components/list/Highlight";
 import ListPage from "../components/list/ListPage";
+import { formatEuro } from "../lib/format";
 
 const FIELDS = [
   { key: "address", label: "Address", className: "address-field--street" },
@@ -9,7 +10,8 @@ const FIELDS = [
   { key: "city", label: "City" },
 ];
 
-// Address, House number, Postal code and City — nothing else
+// Address, House number, Postal code, City and the Method 1 Estimated WOZ
+// Value of the building (est_woz_value_eur, matched on pand_id)
 function AddressRow({ address, search }) {
   return (
     <>
@@ -33,6 +35,11 @@ function AddressRow({ address, search }) {
             </dd>
           </div>
         ))}
+
+        <div className="address-field address-field--woz">
+          <dt className="record__label">WOZ Estimation (Method 1)</dt>
+          <dd>{formatEuro(address.est_woz_value_eur)}</dd>
+        </div>
       </dl>
     </>
   );

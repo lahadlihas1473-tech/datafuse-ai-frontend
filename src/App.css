@@ -1618,7 +1618,8 @@
 .address-fields {
   display: grid;
   grid-template-columns:
-    minmax(0, 2.4fr) minmax(0, 0.8fr) minmax(0, 0.9fr) minmax(0, 1.2fr);
+    minmax(0, 2.2fr) minmax(0, 0.8fr) minmax(0, 0.9fr) minmax(0, 1.2fr)
+    minmax(0, 1.7fr);
   grid-column: 2 / -1;
   gap: 16px;
   margin: 0;
@@ -1633,6 +1634,14 @@
 .address-field:not(.address-field--street) dd {
   font-family: var(--font-mono);
   font-size: 13px;
+}
+
+.address-field--woz .record__label {
+  white-space: nowrap;
+}
+
+.address-field--woz dd {
+  font-weight: 600;
 }
 
 .record--skeleton {

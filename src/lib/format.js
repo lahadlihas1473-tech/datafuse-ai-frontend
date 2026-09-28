@@ -15,6 +15,12 @@ export const formatAmount = (value) =>
     ? "< 0.01"
     : formatNumber(value);
 
+// Whole euros: 1415000 -> "€1,415,000"
+export const formatEuro = (value) =>
+  isNumber(value)
+    ? `€${Math.round(value).toLocaleString("en-US")}`
+    : "—";
+
 export const formatPercent = (value) =>
   isNumber(value) ? `${(value * 100).toFixed(1)}%` : "—";
 
