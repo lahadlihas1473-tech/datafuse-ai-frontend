@@ -2,7 +2,7 @@ import { useId, useState } from "react";
 import { ChevronIcon, PinIcon } from "../components/Icons";
 import Highlight from "../components/list/Highlight";
 import ListPage from "../components/list/ListPage";
-import WozDetails from "../components/WozDetails";
+import WozMethod2 from "../components/WozMethod2";
 import { formatEuro } from "../lib/format";
 
 const FIELDS = [
@@ -12,8 +12,8 @@ const FIELDS = [
   { key: "city", label: "City" },
 ];
 
-// Address, House number, Postal code, City and the Method 1 Estimated WOZ
-// Value of the building (est_woz_value_eur, matched on pand_id)
+// Address, House number, Postal code, City and the Method 2 Estimated WOZ
+// Value of the building (method_2.est_woz_value_eur, matched on pand_id)
 function AddressRow({ address, search }) {
   const [showWoz, setShowWoz] = useState(false);
   const detailsId = useId();
@@ -43,7 +43,7 @@ function AddressRow({ address, search }) {
         ))}
 
         <div className="address-field address-field--woz">
-          <dt className="record__label">WOZ Estimation (Method 1)</dt>
+          <dt className="record__label">WOZ Estimation (Method 2)</dt>
           <dd>
             {formatEuro(address.est_woz_value_eur)}
             {woz && (
@@ -64,7 +64,7 @@ function AddressRow({ address, search }) {
 
       {woz && showWoz && (
         <div className="record__details" id={detailsId}>
-          <WozDetails woz={woz} />
+          <WozMethod2 woz={woz} />
         </div>
       )}
     </>
