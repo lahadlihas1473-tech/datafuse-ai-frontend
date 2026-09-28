@@ -1,0 +1,596 @@
+{
+  "source": "Material_CO2_Estimation_Method_1082_Buildings.docx",
+  "sections": [
+    "19. Estimated WOZ Value (Method 2) - Process",
+    "20. Estimated WOZ Value (Method 2) - Assumptions",
+    "21. Estimated WOZ Value (Method 2) - Example - Jan Provostlaan 16, Bilthoven"
+  ],
+  "blocks": [
+    {
+      "type": "h2",
+      "text": "19. Estimated WOZ Value (Method 2) - Process"
+    },
+    {
+      "type": "p",
+      "text": "This part describes how the Estimated WOZ Value (Method 2) is calculated for the 1,082 buildings in table method_2, the assumptions behind it, and one worked example. WOZ (Waardering Onroerende Zaken - valuation of real estate) is the Dutch property value used for local taxes."
+    },
+    {
+      "type": "p",
+      "text": "[IMPORTANT] Model estimate, not an official WOZ value. Official WOZ values are set by municipalities; this estimate is not issued by or taken from a municipality, Kadaster or the Waarderingskamer."
+    },
+    {
+      "type": "p",
+      "text": "Method 2 values every verblijfsobject (unit) of a building on its own and adds the values up. Dwellings and other units are valued in a different way. All buildings use the same reference year: WOZ year 2026, valuation date (waardepeildatum) 2025-01-01. The total is rounded to the nearest € 1,000."
+    },
+    {
+      "type": "table",
+      "head": [
+        "Unit",
+        "Formula"
+      ],
+      "rows": [
+        [
+          "Dwelling (woning)",
+          "buurt (neighbourhood) reference value of the dwelling type x size factor x age factor"
+        ],
+        [
+          "Other unit (shop, office, industry, ...)",
+          "floor area x gemeente (municipality) price per m2 x location index x type factor x size factor x age factor"
+        ]
+      ]
+    },
+    {
+      "type": "h3",
+      "text": "19.1 How Method 2 differs from Method 1"
+    },
+    {
+      "type": "table",
+      "head": [
+        "",
+        "Method 1",
+        "Method 2"
+      ],
+      "rows": [
+        [
+          "Unit of valuation",
+          "The whole pand (building)",
+          "Every verblijfsobject (unit) separately, with its own area and gebruiksdoel (use)"
+        ],
+        [
+          "Location",
+          "Gemeente (municipality)",
+          "Buurt (neighbourhood), corrected for the buurt's mix of dwelling types"
+        ],
+        [
+          "Dwelling type",
+          "Not used",
+          "Vrijstaand (detached), 2-onder-1-kap / hoek (semi-detached / end-of-terrace), tussenwoning (terraced) or appartement (apartment), from 3DBAG geometry"
+        ],
+        [
+          "Price level of a dwelling",
+          "CBS average WOZ per m2 of the gemeente",
+          "CBS average WOZ of the buurt x CBS sale-price ratio of the dwelling type"
+        ],
+        [
+          "Size",
+          "Value proportional to floor area",
+          "Value grows less than proportionally with floor area"
+        ],
+        [
+          "Mixed use",
+          "Equal weight per gebruiksdoel (use)",
+          "Each unit valued by its own use and area"
+        ],
+        [
+          "Floor area check",
+          "None",
+          "BAG floor area checked against the 3DBAG measured building"
+        ]
+      ]
+    },
+    {
+      "type": "h3",
+      "text": "19.2 Step 1 - Split the building into verblijfsobjecten (units)"
+    },
+    {
+      "type": "p",
+      "text": "The BAG verblijfsobjecten (units) of the pand (building) are read with their oppervlakte (floor area) and gebruiksdoel (use). The 1,082 buildings contain 3,907 units; their areas add up to the BAG gebruiksoppervlakte (usable floor area, GO) of each building."
+    },
+    {
+      "type": "li",
+      "text": "A unit with woonfunctie (residential use) of at most 400 m2 is valued as a dwelling."
+    },
+    {
+      "type": "li",
+      "text": "A residential unit over 400 m2 (for example a care home or student housing registered as one unit) and every other unit are valued per m2."
+    },
+    {
+      "type": "h3",
+      "text": "19.3 Step 2 - Check the floor area with 3DBAG"
+    },
+    {
+      "type": "p",
+      "text": "The BAG floor area is used, as it is the area WOZ valuations use. If it is more than 2 times the BVO (bruto vloeroppervlak - gross floor area) measured from the 3DBAG building, the units are scaled down to 2 x BVO: such a difference means units of another building are registered on this one."
+    },
+    {
+      "type": "h3",
+      "text": "19.4 Step 3 - Find the buurt (neighbourhood)"
+    },
+    {
+      "type": "li",
+      "text": "PDOK Locatieserver (location server): the postcode (postal code) and huisnummer (house number) give the buurtcode (neighbourhood code), wijkcode (district code) and gemeentecode (municipality code)."
+    },
+    {
+      "type": "li",
+      "text": "If the address is not found: the postal code alone; if that fails, the gemeente (municipality) found for Method 1."
+    },
+    {
+      "type": "li",
+      "text": "If CBS has no figures for the buurt: the wijk (district); else the gemeente (municipality)."
+    },
+    {
+      "type": "h3",
+      "text": "19.5 Step 4 - Location index"
+    },
+    {
+      "type": "p",
+      "text": "A buurt with many detached houses has a high average WOZ because of its dwellings, not only because of its location. The average is therefore corrected for the buurt's mix of dwelling types before it is compared with the gemeente (municipality)."
+    },
+    {
+      "type": "p",
+      "text": "mix ratio = sum over dwelling types of (share of the type in the area x price ratio of the type)"
+    },
+    {
+      "type": "p",
+      "text": "location index = (buurt avg WOZ / buurt mix ratio) / (gemeente avg WOZ / gemeente mix ratio), limited to 0.5 - 2."
+    },
+    {
+      "type": "table",
+      "head": [
+        "Source",
+        "What is used",
+        "Period"
+      ],
+      "rows": [
+        [
+          "CBS 86165NED",
+          "Kerncijfers wijken en buurten (key figures for districts and neighbourhoods): gemiddelde WOZ-waarde van woningen (average WOZ value of dwellings) and the percentage of each dwelling type, per buurt, wijk and gemeente",
+          "2025"
+        ],
+        [
+          "CBS 85036NED",
+          "Gemiddelde WOZ-waarde van woningen (average WOZ value of dwellings) per gemeente, to bring 2025 to 2026",
+          "2025, 2026"
+        ]
+      ]
+    },
+    {
+      "type": "h3",
+      "text": "19.6 Step 5 - Dwelling type from 3DBAG geometry"
+    },
+    {
+      "type": "p",
+      "text": "The share of the building's outline that is a scheidingsmuur (party wall, shared with a neighbouring building) shows how the dwelling is built:"
+    },
+    {
+      "type": "table",
+      "head": [
+        "Party-wall share of the perimeter",
+        "Dwelling type"
+      ],
+      "rows": [
+        [
+          "below 0.05",
+          "vrijstaande woning (detached house)"
+        ],
+        [
+          "0.05 - 0.45 (one shared side)",
+          "hoekwoning / 2-onder-1-kapwoning (end-of-terrace / semi-detached house)"
+        ],
+        [
+          "0.45 and more (shared on two sides)",
+          "tussenwoning (terraced house)"
+        ],
+        [
+          "Two dwellings in one building",
+          "hoekwoning / 2-onder-1-kapwoning (end-of-terrace / semi-detached house)"
+        ],
+        [
+          "Three or more dwellings, or a dwelling in a building with other uses",
+          "appartement (apartment)"
+        ]
+      ]
+    },
+    {
+      "type": "h3",
+      "text": "19.7 Step 6 - Value a dwelling"
+    },
+    {
+      "type": "p",
+      "text": "buurt reference value = buurt avg WOZ (2025) x gemeente WOZ growth 2025-2026 x (price ratio of the dwelling type / buurt mix ratio). This is the expected WOZ of a typical dwelling of that type in that buurt."
+    },
+    {
+      "type": "p",
+      "text": "size factor = (floor area / typical floor area of the type in the gemeente) ^ elasticity, with elasticity 0.9 for smaller and 0.7 for larger dwellings, limited to 0.3 - 2. The typical area of the type is scaled to the gemeente with the CBS average floor area of its dwellings."
+    },
+    {
+      "type": "p",
+      "text": "dwelling value = buurt reference value x size factor x age factor"
+    },
+    {
+      "type": "table",
+      "head": [
+        "Dwelling type",
+        "CBS avg sale price",
+        "Price ratio",
+        "Typical floor area"
+      ],
+      "rows": [
+        [
+          "tussenwoning (terraced house)",
+          "€ 470,127",
+          "0.980",
+          "115 m2"
+        ],
+        [
+          "hoekwoning (end-of-terrace house)",
+          "€ 490,011",
+          "1.022",
+          "118 m2"
+        ],
+        [
+          "2-onder-1-kapwoning (semi-detached house)",
+          "€ 526,955",
+          "1.099",
+          "134 m2"
+        ],
+        [
+          "vrijstaande woning (detached house)",
+          "€ 709,651",
+          "1.480",
+          "183 m2"
+        ],
+        [
+          "appartement (apartment)",
+          "€ 394,258",
+          "0.822",
+          "70 m2"
+        ],
+        [
+          "All dwellings",
+          "€ 479,527",
+          "1.000",
+          "107 m2"
+        ]
+      ]
+    },
+    {
+      "type": "table",
+      "head": [
+        "Source",
+        "What is used",
+        "Period"
+      ],
+      "rows": [
+        [
+          "CBS 85791NED",
+          "Bestaande koopwoningen (existing owner-occupied homes): gemiddelde verkoopprijs (average sale price) per woningtype (dwelling type)",
+          "2025"
+        ],
+        [
+          "CBS 85140NED",
+          "Typical floor area per woningtype (dwelling type) = gemiddelde aardgaslevering (average gas delivery) / aardgas per m2 (gas per m2)",
+          "2025"
+        ],
+        [
+          "CBS 82550NED",
+          "Gemiddelde oppervlakte (average floor area) of the dwelling stock per gemeente and for the Netherlands",
+          "2026"
+        ]
+      ]
+    },
+    {
+      "type": "h3",
+      "text": "19.8 Step 7 - Value another unit"
+    },
+    {
+      "type": "p",
+      "text": "value = floor area x gemeente (municipality) price per m2 x location index x type factor x size factor x age factor"
+    },
+    {
+      "type": "li",
+      "text": "Gemeente price per m2: CBS average WOZ of dwellings / CBS average floor area, WOZ year 2026 (as Method 1)."
+    },
+    {
+      "type": "li",
+      "text": "Type factor: the factor of the unit's own gebruiksdoel (use); a unit with several uses gets their mean."
+    },
+    {
+      "type": "li",
+      "text": "Size factor: (floor area / 500 m2) ^ -0.1, limited to 0.6 - 1.2: larger units are worth less per m2."
+    },
+    {
+      "type": "table",
+      "head": [
+        "BAG gebruiksdoel (use)",
+        "Type factor"
+      ],
+      "rows": [
+        [
+          "woonfunctie (residential)",
+          "1.00"
+        ],
+        [
+          "winkelfunctie (retail)",
+          "0.90"
+        ],
+        [
+          "kantoorfunctie (office)",
+          "0.75"
+        ],
+        [
+          "logiesfunctie (lodging / hotel)",
+          "0.75"
+        ],
+        [
+          "gezondheidszorgfunctie (healthcare)",
+          "0.70"
+        ],
+        [
+          "bijeenkomstfunctie (assembly)",
+          "0.60"
+        ],
+        [
+          "celfunctie (detention)",
+          "0.60"
+        ],
+        [
+          "onderwijsfunctie (education)",
+          "0.55"
+        ],
+        [
+          "sportfunctie (sports)",
+          "0.45"
+        ],
+        [
+          "industriefunctie (industrial)",
+          "0.35"
+        ],
+        [
+          "overige gebruiksfunctie (other use)",
+          "0.25"
+        ]
+      ]
+    },
+    {
+      "type": "h3",
+      "text": "19.9 Step 8 - Age factor and total"
+    },
+    {
+      "type": "p",
+      "text": "Every unit gets the age factor of the band that contains the bouwjaar (year built) of the building. The building value is the sum of its units, rounded to the nearest € 1,000."
+    },
+    {
+      "type": "table",
+      "head": [
+        "Bouwjaar (year built) band",
+        "Age factor"
+      ],
+      "rows": [
+        [
+          "before 1906",
+          "1.00"
+        ],
+        [
+          "1906-1944",
+          "1.00"
+        ],
+        [
+          "1945-1964",
+          "0.90"
+        ],
+        [
+          "1965-1974",
+          "0.88"
+        ],
+        [
+          "1975-1994",
+          "0.93"
+        ],
+        [
+          "1995-2014",
+          "1.03"
+        ],
+        [
+          "2015-2026",
+          "1.10"
+        ]
+      ]
+    },
+    {
+      "type": "h3",
+      "text": "19.10 Missing data"
+    },
+    {
+      "type": "table",
+      "head": [
+        "Missing input",
+        "Replaced by"
+      ],
+      "rows": [
+        [
+          "Address not in PDOK",
+          "Postal code; else the gemeente (municipality) of Method 1"
+        ],
+        [
+          "Buurt (neighbourhood) figures",
+          "Wijk (district); else gemeente (municipality)"
+        ],
+        [
+          "Bouwjaar (year built)",
+          "Age factor 1.00"
+        ],
+        [
+          "Verblijfsobjecten (units)",
+          "The whole building as one unit with the building's gebruiksdoel (use)"
+        ],
+        [
+          "Perimeter (for the dwelling type)",
+          "tussenwoning (terraced house)"
+        ]
+      ]
+    },
+    {
+      "type": "h2",
+      "text": "20. Estimated WOZ Value (Method 2) - Assumptions"
+    },
+    {
+      "type": "table",
+      "head": [
+        "ID",
+        "Assumption",
+        "Value used",
+        "Why it is needed"
+      ],
+      "rows": [
+        [
+          "C1",
+          "The buurt (neighbourhood) average WOZ, corrected for its dwelling mix, measures the location",
+          "CBS 86165NED (2025)",
+          "No per-building price is available; the buurt is the finest official level"
+        ],
+        [
+          "C2",
+          "Buurt figures of 2025 move with the gemeente (municipality) to 2026",
+          "Gemeente WOZ growth",
+          "CBS has no buurt figures for 2026 yet"
+        ],
+        [
+          "C3",
+          "The national sale-price ratio of a dwelling type holds in every buurt",
+          "CBS 85791NED (2025)",
+          "WOZ per dwelling type is not published"
+        ],
+        [
+          "C4",
+          "Typical floor area per dwelling type = average gas / gas per m2",
+          "CBS 85140NED (2025)",
+          "Floor area per dwelling type is not published directly"
+        ],
+        [
+          "C5",
+          "The party-wall share of the 3DBAG outline gives the dwelling type",
+          "< 0.05 detached, >= 0.45 terraced",
+          "BAG does not register the dwelling type"
+        ],
+        [
+          "C6",
+          "Dwelling value grows less than proportionally with floor area",
+          "elasticity 0.9 (smaller) / 0.7 (larger)",
+          "Larger dwellings are worth less per m2"
+        ],
+        [
+          "C7",
+          "A residential unit over 400 m2 is not a single dwelling",
+          "Valued per m2",
+          "Care homes and student housing are often one unit"
+        ],
+        [
+          "C8",
+          "Other units: the gebruiksdoel (use) type factors of Method 1",
+          "11 factors, 0.25 - 1.00",
+          "CBS gives the price level for dwellings only"
+        ],
+        [
+          "C9",
+          "Larger non-residential units are worth less per m2",
+          "elasticity -0.1, reference 500 m2",
+          "Large halls and complexes sell for less per m2"
+        ],
+        [
+          "C10",
+          "BAG floor area is used unless it is more than 2 x the 3DBAG BVO",
+          "Capped at 2 x BVO",
+          "Units of another building can be registered on this one"
+        ],
+        [
+          "C11",
+          "Age changes the value per m2",
+          "7 bands, as Method 1",
+          "Newer buildings are usually valued higher"
+        ],
+        [
+          "C12",
+          "The building is valued as it stands, in use; land is included through the price level",
+          "No sloop (demolition) discount",
+          "WOZ includes land; the CBS averages do too"
+        ]
+      ]
+    },
+    {
+      "type": "h2",
+      "text": "21. Estimated WOZ Value (Method 2) - Example - Jan Provostlaan 16, Bilthoven"
+    },
+    {
+      "type": "table",
+      "head": [
+        "Step",
+        "Value"
+      ],
+      "rows": [
+        [
+          "pand_id (building ID)",
+          "0310100000664117"
+        ],
+        [
+          "Verblijfsobjecten (units)",
+          "1 unit, woonfunctie (residential), 137 m2"
+        ],
+        [
+          "Floor area check",
+          "BAG 137 m2 vs 3DBAG BVO 173 m2 -> BAG area used"
+        ],
+        [
+          "Buurt (neighbourhood)",
+          "De Leijen (BU03100505), gemeente (municipality) De Bilt"
+        ],
+        [
+          "CBS avg WOZ 2025: buurt / gemeente",
+          "€ 482,000 / € 608,000"
+        ],
+        [
+          "Dwelling mix ratio: buurt / gemeente",
+          "0.9438 / 1.0089"
+        ],
+        [
+          "Location index",
+          "(€ 482,000 / 0.9438) / (€ 608,000 / 1.0089) = 0.847"
+        ],
+        [
+          "Party-wall share -> dwelling type",
+          "25.7 m / 38.8 m = 0.661 -> tussenwoning (terraced house)"
+        ],
+        [
+          "Buurt reference value",
+          "€ 482,000 x 1.1086 x (0.9804 / 0.9438) = € 555,040"
+        ],
+        [
+          "Size factor",
+          "(137 m2 / 125.2 m2) ^ 0.7 = 1.065"
+        ],
+        [
+          "Bouwjaar (year built) -> age factor",
+          "1988 (1975-1994) -> 0.93"
+        ],
+        [
+          "Estimated WOZ Value (Method 2)",
+          "€ 555,040 x 1.065 x 0.93 = € 549,848 -> € 550,000"
+        ]
+      ]
+    },
+    {
+      "type": "p",
+      "text": "The calculation keeps full precision; the factors above are rounded, so a hand check can differ by a few hundred euros before the final rounding."
+    }
+  ]
+}
