@@ -12,7 +12,7 @@ export function useBuildingSearch() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const { recentSearches, addRecentSearch, removeRecentSearch } =
-    useRecentSearches();
+    useRecentSearches("datafuse_recent_searches_passport");
 
   const searchAddress = async (searchValue) => {
     const searchedAddress = (searchValue ?? "").trim();

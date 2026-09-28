@@ -7,7 +7,16 @@ import { PageHeader, RecordSkeleton } from "../components/ui";
 
 // Method 2: GET /method-2/search (3DBAG geometry x construction build-up)
 export default function Method2Page({ method2 }) {
-  const { address, setAddress, items, loading, error, searchAddress } = method2;
+  const {
+    address,
+    setAddress,
+    items,
+    loading,
+    error,
+    searchAddress,
+    recentSearches,
+    removeRecentSearch,
+  } = method2;
   const [searchParams, setSearchParams] = useSearchParams();
 
   // ?address=… lets the passport link straight to the Method 2 result
@@ -48,6 +57,8 @@ export default function Method2Page({ method2 }) {
         onSearch={searchAddress}
         loading={loading}
         error={error}
+        recentSearches={recentSearches}
+        onRemoveRecent={removeRecentSearch}
       />
 
       {loading && <RecordSkeleton />}

@@ -1,11 +1,12 @@
 import { useCallback, useState } from "react";
 
-const STORAGE_KEY = "datafuse_recent_searches";
+// Each search page keeps its own list; Method 1 uses the original key
+const DEFAULT_KEY = "datafuse_recent_searches";
 const MAX_RECENT_SEARCHES = 3;
 
-const readSearches = () => {
+const readSearches = (storageKey) => {
   try {
-    const parsed = JSON.parse(localStorage.getItem(STORAGE_KEY) ?? "[]");
+    const parsed = JSON.parse(localStorage.getItem(storageKey) ?? "[]");
 
     return Array.isArray(parsed)
       ? parsed
@@ -18,18 +19,20 @@ const readSearches = () => {
   }
 };
 
-const writeSearches = (searches) => {
+const writeSearches = (storageKey, searches) => {
   try {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(searches));
+    localStorage.setItem(storageKey, JSON.stringify(searches));
   } catch (error) {
     console.error("Could not save recent searches:", error);
   }
 };
 
 // Last 3 successful searches, newest first, no duplicates
-export function useRecentSearches() {
+export function useRecentSearches(storageKey = DEFAULT_KEY) {
   // Lazy initial state reads storage once, without an effect
-  const [recentSearches, setRecentSearches] = useState(readSearches);
+  const [recentSearches, setRecentSearches] = useState(() =>
+    readSearches(storageKey)
+  );
 
   const addRecentSearch = useCallback((value) => {
     const normalized = value.trim();
@@ -46,19 +49,19 @@ export function useRecentSearches() {
         ),
       ].slice(0, MAX_RECENT_SEARCHES);
 
-      writeSearches(next);
+      writeSearches(storageKey, next);
       return next;
     });
-  }, []);
+  }, [storageKey]);
 
   const removeRecentSearch = useCallback((value) => {
     setRecentSearches((current) => {
       const next = current.filter((item) => item !== value);
 
-      writeSearches(next);
+      writeSearches(storageKey, next);
       return next;
     });
-  }, []);
+  }, [storageKey]);
 
   return { recentSearches, addRecentSearch, removeRecentSearch };
 }
