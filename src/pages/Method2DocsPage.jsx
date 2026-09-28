@@ -1,14 +1,8 @@
 import DocPage from "../components/DocPage";
 import { RulerIcon } from "../components/Icons";
-import materialDoc from "../data/method2Doc.json";
-import wozDoc from "../data/method2WozDoc.json";
-
-// The Estimated WOZ Value (Method 2) sections follow the material document;
-// they are already numbered on from it (see dataset/build_woz_method2_doc.py).
-const doc = {
-  sections: [...materialDoc.sections, ...wozDoc.sections],
-  blocks: [...materialDoc.blocks, ...wozDoc.blocks],
-};
+// One process from 3DBAG geometry to material, CO₂ and the Estimated WOZ
+// Value (built by dataset/build_method2_full_doc.py)
+import doc from "../data/method2Doc.json";
 
 export default function Method2DocsPage() {
   return (
@@ -16,7 +10,7 @@ export default function Method2DocsPage() {
       doc={doc}
       documentTitle="Method 2 · Method and results · Resource Paspoort"
       eyebrow="Method 2 · documentation"
-      lede="How material mass and CO₂ are calculated for every building from the 3DBAG geometry: the measured surfaces, the construction build-up per building part, the assumptions, the worked example and the results. Followed by how the Estimated WOZ Value (Method 2) is calculated: the process, the assumptions and a worked example."
+      lede="Method 2 as one process: from the measured 3DBAG geometry of each building to its material mass, its embodied CO₂ and its Estimated WOZ Value — every step, every assumption, one building worked through from start to finish, and the results for all 1,082 buildings."
       backTo="/method-2"
       backLabel="Back to Method 2 search"
       backIcon={RulerIcon}

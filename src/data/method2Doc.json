@@ -1,9 +1,9 @@
 {
- "source": "Material_CO2_Estimation_Method_1082_Buildings.docx",
+ "source": "Method2_Material_CO2_WOZ_1082_Buildings.docx",
  "sections": [
   "1. Summary",
   "2. Input data",
-  "3. Method in 7 steps",
+  "3. The process in 15 steps",
   "4. Step 1 – Assign a build-up profile",
   "5. Step 2 – Measured inputs",
   "6. Step 3 – Derived geometry",
@@ -12,26 +12,40 @@
   "9. Step 5 – Component quantities",
   "10. Step 6 – Material mass",
   "11. Step 7 – CO2",
-  "12. Worked example – one building",
-  "13. Data quality flags",
-  "14. Results per profile",
-  "15. Database output",
-  "16. Limits",
-  "17. Comparison with the previous method",
-  "18. Change log"
+  "12. Estimated WOZ Value - overview",
+  "13. Step 8 - Split the building into verblijfsobjecten (units)",
+  "14. Step 9 - Check the floor area with 3DBAG",
+  "15. Step 10 - Find the buurt (neighbourhood)",
+  "16. Step 11 - Location index",
+  "17. Step 12 - Dwelling type from 3DBAG geometry",
+  "18. Step 13 - Value a dwelling",
+  "19. Step 14 - Value another unit",
+  "20. Step 15 - Age factor and total",
+  "21. Missing data in the WOZ estimate",
+  "22. Our own assumptions for the WOZ estimate",
+  "23. Worked example - one building from geometry to WOZ",
+  "24. Data quality flags",
+  "25. Results",
+  "26. Database output",
+  "27. Limits",
+  "28. Comparison with the previous method"
  ],
  "blocks": [
   {
    "type": "title",
-   "text": "Material & CO2 Estimation for 1,082 Buildings – Method and Results"
-  },
-  {
-   "type": "p",
-   "text": "23 September 2026"
+   "text": "Method 2 for 1,082 Buildings - From 3DBAG Geometry to Material, CO2 and Estimated WOZ Value"
   },
   {
    "type": "h2",
    "text": "1. Summary"
+  },
+  {
+   "type": "p",
+   "text": "This document describes Method 2 as one process: from the measured 3DBAG and BAG data of each building, to its material mass, its embodied CO2 and its Estimated WOZ Value. Part A (steps 1-7, sections 4-11) calculates materials and CO2; part B (steps 8-15, sections 12-22) calculates the Estimated WOZ Value. Section 23 follows one building through every step."
+  },
+  {
+   "type": "h3",
+   "text": "1.1 Material and CO2"
   },
   {
    "type": "p",
@@ -101,6 +115,47 @@
    "text": "Mass is unchanged by the factors; only CO2 moves. Before 23 September 2026 each detailed material had its own factor and the total was 447,580 t CO2e. The factors are now one flat value per reported material group (section 8.7), which gives 393,535 t CO2e, 12% lower. Steel falls most (156,131 → 132,686 t) because reinforcement went from 1.99 to 1.55 kg CO2e per kg; wood and brick rise slightly."
   },
   {
+   "type": "h3",
+   "text": "1.2 Estimated WOZ Value"
+  },
+  {
+   "type": "p",
+   "text": "Every building has an Estimated WOZ Value (Method 2) for WOZ year 2026 (valuation date 1 January 2025). It is a model estimate, not an official WOZ value."
+  },
+  {
+   "type": "table",
+   "head": [
+    "Item",
+    "Value"
+   ],
+   "rows": [
+    [
+     "Buildings estimated",
+     "1,082 of 1,082"
+    ],
+    [
+     "Sum of all estimates",
+     "€ 3,672,533,000"
+    ],
+    [
+     "Median estimate",
+     "€ 584,500"
+    ],
+    [
+     "Smallest / largest",
+     "€ 6,000 / € 537,808,000"
+    ],
+    [
+     "Location from the buurt (neighbourhood) / wijk (district) / gemeente (municipality)",
+     "1009 / 37 / 36 buildings"
+    ]
+   ]
+  },
+  {
+   "type": "h3",
+   "text": "1.3 How to read this document"
+  },
+  {
    "type": "p",
    "text": "Every number is one of three kinds:"
   },
@@ -118,11 +173,11 @@
   },
   {
    "type": "p",
-   "text": "Where the assumptions are: every assumption has an ID (A1–A19). Section 8.1 is the complete assumption register: value, where it is used, why it is needed and how much it changes the result. In the text and tables, an assumed value is marked [ASSUMED Ax]."
+   "text": "Where the assumptions are: every assumption has an ID. A1-A19 belong to the material and CO2 calculation (register in section 8.1); C1-C12 belong to the WOZ estimate (section 22). In the text an assumed value is marked [ASSUMED Ax]."
   },
   {
    "type": "p",
-   "text": "Section 12 repeats the whole calculation step by step for one building, so every figure can be checked by hand."
+   "text": "Section 23 repeats the whole calculation step by step for one building, from the measured 3DBAG fields to the Estimated WOZ Value, so every figure can be checked by hand."
   },
   {
    "type": "h2",
@@ -259,8 +314,66 @@
    ]
   },
   {
+   "type": "h3",
+   "text": "2.3 Sources for the WOZ estimate"
+  },
+  {
+   "type": "table",
+   "head": [
+    "Source",
+    "What is used",
+    "Used in"
+   ],
+   "rows": [
+    [
+     "BAG verblijfsobjecten",
+     "oppervlakte (floor area) and gebruiksdoel (use) of each unit",
+     "Steps 8, 13, 14"
+    ],
+    [
+     "3DBAG (this method)",
+     "BVO (gross floor area), perimeter, party wall length",
+     "Steps 9, 12"
+    ],
+    [
+     "PDOK Locatieserver",
+     "buurtcode, wijkcode, gemeentecode of the address",
+     "Step 10"
+    ],
+    [
+     "CBS 86165NED",
+     "Kerncijfers wijken en buurten 2025: average WOZ of dwellings and dwelling-type mix",
+     "Steps 11, 13"
+    ],
+    [
+     "CBS 85036NED",
+     "Average WOZ of dwellings per gemeente, 2025 and 2026",
+     "Steps 13, 14"
+    ],
+    [
+     "CBS 85791NED",
+     "Average sale price per dwelling type, 2025",
+     "Steps 11, 13"
+    ],
+    [
+     "CBS 85140NED",
+     "Gas per dwelling and per m2 per dwelling type, 2025 (typical floor area)",
+     "Step 13"
+    ],
+    [
+     "CBS 82550NED",
+     "Average floor area of dwellings per gemeente, 2026",
+     "Steps 13, 14"
+    ]
+   ]
+  },
+  {
    "type": "h2",
-   "text": "3. Method in 7 steps"
+   "text": "3. The process in 15 steps"
+  },
+  {
+   "type": "p",
+   "text": "Part A - material and CO2"
   },
   {
    "type": "li",
@@ -289,6 +402,42 @@
   {
    "type": "li",
    "text": "Calculate CO2 = mass × emission factor, and group into 7 materials (section 11)."
+  },
+  {
+   "type": "p",
+   "text": "Part B - Estimated WOZ Value"
+  },
+  {
+   "type": "li",
+   "text": "Split the building into its verblijfsobjecten (units), each with its own area and use (section 13)."
+  },
+  {
+   "type": "li",
+   "text": "Check the BAG floor area against the 3DBAG gross floor area (section 14)."
+  },
+  {
+   "type": "li",
+   "text": "Find the buurt (neighbourhood) of the address (section 15)."
+  },
+  {
+   "type": "li",
+   "text": "Calculate the location index of the buurt, corrected for its dwelling mix (section 16)."
+  },
+  {
+   "type": "li",
+   "text": "Determine the dwelling type from the 3DBAG party walls (section 17)."
+  },
+  {
+   "type": "li",
+   "text": "Value each dwelling: buurt reference value x size factor (section 18)."
+  },
+  {
+   "type": "li",
+   "text": "Value each other unit: floor area x price per m2 x factors (section 19)."
+  },
+  {
+   "type": "li",
+   "text": "Apply the age factor and add up the units (section 20)."
   },
   {
    "type": "h2",
@@ -1260,7 +1409,7 @@
     [
      "Load-bearing frame (draagconstructie)",
      "Structural steel 15.0",
-     "15.0"
+     "26.0"
     ],
     [
      "Internal walls (binnenwanden)",
@@ -1284,7 +1433,7 @@
     [
      "Façade, closed part (gevel)",
      "Steel sheet 10.0; Mineral wool 3.0",
-     "13.0"
+     "24.0"
     ],
     [
      "Windows (ramen)",
@@ -1309,7 +1458,7 @@
     [
      "Sloped roof (schuin dak)",
      "Steel sheet 10.0; Mineral wool 3.0",
-     "13.0"
+     "24.0"
     ],
     [
      "Flat roof (plat dak)",
@@ -1628,7 +1777,7 @@
   },
   {
    "type": "p",
-   "text": "[ASSUMED A12] CO2 released to produce the material (production stage A1–A3). There is one factor per reported material group: every detailed material takes the factor of the group it is reported in, so the CO2 of a group is simply its mass × that factor. All steel together is 85,604 t × 1.55 = 132,686 t CO2e, and all concrete 1,376,665 t × 0.12 = 165,200 t CO2e. Copper has no factor of its own: it is an installation material, so it takes the Other factor 0.50, while still being reported as its own group. These are coarse working values – the same set the earlier estimate used (section 17); for official Dutch reporting they should be replaced with Nationale Milieudatabase (National Environmental Database) values."
+   "text": "[ASSUMED A12] CO2 released to produce the material (production stage A1–A3). There is one factor per reported material group: every detailed material takes the factor of the group it is reported in, so the CO2 of a group is simply its mass × that factor. All steel together is 85,604 t × 1.55 = 132,686 t CO2e, and all concrete 1,376,665 t × 0.12 = 165,200 t CO2e. Copper has no factor of its own: it is an installation material, so it takes the Other factor 0.50, while still being reported as its own group. These are coarse working values – the same set the earlier estimate used (section 28); for official Dutch reporting they should be replaced with Nationale Milieudatabase (National Environmental Database) values."
   },
   {
    "type": "table",
@@ -1925,7 +2074,528 @@
   },
   {
    "type": "h2",
-   "text": "12. Worked example – one building"
+   "text": "12. Estimated WOZ Value - overview"
+  },
+  {
+   "type": "p",
+   "text": "This part describes how the Estimated WOZ Value (Method 2) is calculated for the 1,082 buildings in table method_2, the assumptions behind it, and one worked example. WOZ (Waardering Onroerende Zaken - valuation of real estate) is the Dutch property value used for local taxes."
+  },
+  {
+   "type": "p",
+   "text": "[IMPORTANT] Model estimate, not an official WOZ value. Official WOZ values are set by municipalities; this estimate is not issued by or taken from a municipality, Kadaster or the Waarderingskamer."
+  },
+  {
+   "type": "p",
+   "text": "Method 2 values every verblijfsobject (unit) of a building on its own and adds the values up. Dwellings and other units are valued in a different way. All buildings use the same reference year: WOZ year 2026, valuation date (waardepeildatum) 2025-01-01. The total is rounded to the nearest € 1,000."
+  },
+  {
+   "type": "table",
+   "head": [
+    "Unit",
+    "Formula"
+   ],
+   "rows": [
+    [
+     "Dwelling (woning)",
+     "buurt (neighbourhood) reference value of the dwelling type x size factor x age factor"
+    ],
+    [
+     "Other unit (shop, office, industry, ...)",
+     "floor area x gemeente (municipality) price per m2 x location index x type factor x size factor x age factor"
+    ]
+   ]
+  },
+  {
+   "type": "h3",
+   "text": "12.1 How Method 2 differs from Method 1"
+  },
+  {
+   "type": "table",
+   "head": [
+    "",
+    "Method 1",
+    "Method 2"
+   ],
+   "rows": [
+    [
+     "Unit of valuation",
+     "The whole pand (building)",
+     "Every verblijfsobject (unit) separately, with its own area and gebruiksdoel (use)"
+    ],
+    [
+     "Location",
+     "Gemeente (municipality)",
+     "Buurt (neighbourhood), corrected for the buurt's mix of dwelling types"
+    ],
+    [
+     "Dwelling type",
+     "Not used",
+     "Vrijstaand (detached), 2-onder-1-kap / hoek (semi-detached / end-of-terrace), tussenwoning (terraced) or appartement (apartment), from 3DBAG geometry"
+    ],
+    [
+     "Price level of a dwelling",
+     "CBS average WOZ per m2 of the gemeente",
+     "CBS average WOZ of the buurt x CBS sale-price ratio of the dwelling type"
+    ],
+    [
+     "Size",
+     "Value proportional to floor area",
+     "Value grows less than proportionally with floor area"
+    ],
+    [
+     "Mixed use",
+     "Equal weight per gebruiksdoel (use)",
+     "Each unit valued by its own use and area"
+    ],
+    [
+     "Floor area check",
+     "None",
+     "BAG floor area checked against the 3DBAG measured building"
+    ]
+   ]
+  },
+  {
+   "type": "h2",
+   "text": "13. Step 8 - Split the building into verblijfsobjecten (units)"
+  },
+  {
+   "type": "p",
+   "text": "The BAG verblijfsobjecten (units) of the pand (building) are read with their oppervlakte (floor area) and gebruiksdoel (use). The 1,082 buildings contain 3,907 units; their areas add up to the BAG gebruiksoppervlakte (usable floor area, GO) of each building."
+  },
+  {
+   "type": "li",
+   "text": "A unit with woonfunctie (residential use) of at most 400 m2 is valued as a dwelling."
+  },
+  {
+   "type": "li",
+   "text": "A residential unit over 400 m2 (for example a care home or student housing registered as one unit) and every other unit are valued per m2."
+  },
+  {
+   "type": "h2",
+   "text": "14. Step 9 - Check the floor area with 3DBAG"
+  },
+  {
+   "type": "p",
+   "text": "The BAG floor area is used, as it is the area WOZ valuations use. If it is more than 2 times the BVO (bruto vloeroppervlak - gross floor area) measured from the 3DBAG building, the units are scaled down to 2 x BVO: such a difference means units of another building are registered on this one."
+  },
+  {
+   "type": "h2",
+   "text": "15. Step 10 - Find the buurt (neighbourhood)"
+  },
+  {
+   "type": "li",
+   "text": "PDOK Locatieserver (location server): the postcode (postal code) and huisnummer (house number) give the buurtcode (neighbourhood code), wijkcode (district code) and gemeentecode (municipality code)."
+  },
+  {
+   "type": "li",
+   "text": "If the address is not found: the postal code alone; if that fails, the gemeente (municipality) found for Method 1."
+  },
+  {
+   "type": "li",
+   "text": "If CBS has no figures for the buurt: the wijk (district); else the gemeente (municipality)."
+  },
+  {
+   "type": "h2",
+   "text": "16. Step 11 - Location index"
+  },
+  {
+   "type": "p",
+   "text": "A buurt with many detached houses has a high average WOZ because of its dwellings, not only because of its location. The average is therefore corrected for the buurt's mix of dwelling types before it is compared with the gemeente (municipality)."
+  },
+  {
+   "type": "p",
+   "text": "mix ratio = sum over dwelling types of (share of the type in the area x price ratio of the type)"
+  },
+  {
+   "type": "p",
+   "text": "location index = (buurt avg WOZ / buurt mix ratio) / (gemeente avg WOZ / gemeente mix ratio), limited to 0.5 - 2."
+  },
+  {
+   "type": "table",
+   "head": [
+    "Source",
+    "What is used",
+    "Period"
+   ],
+   "rows": [
+    [
+     "CBS 86165NED",
+     "Kerncijfers wijken en buurten (key figures for districts and neighbourhoods): gemiddelde WOZ-waarde van woningen (average WOZ value of dwellings) and the percentage of each dwelling type, per buurt, wijk and gemeente",
+     "2025"
+    ],
+    [
+     "CBS 85036NED",
+     "Gemiddelde WOZ-waarde van woningen (average WOZ value of dwellings) per gemeente, to bring 2025 to 2026",
+     "2025, 2026"
+    ]
+   ]
+  },
+  {
+   "type": "h2",
+   "text": "17. Step 12 - Dwelling type from 3DBAG geometry"
+  },
+  {
+   "type": "p",
+   "text": "The share of the building's outline that is a scheidingsmuur (party wall, shared with a neighbouring building) shows how the dwelling is built:"
+  },
+  {
+   "type": "table",
+   "head": [
+    "Party-wall share of the perimeter",
+    "Dwelling type"
+   ],
+   "rows": [
+    [
+     "below 0.05",
+     "vrijstaande woning (detached house)"
+    ],
+    [
+     "0.05 - 0.45 (one shared side)",
+     "hoekwoning / 2-onder-1-kapwoning (end-of-terrace / semi-detached house)"
+    ],
+    [
+     "0.45 and more (shared on two sides)",
+     "tussenwoning (terraced house)"
+    ],
+    [
+     "Two dwellings in one building",
+     "hoekwoning / 2-onder-1-kapwoning (end-of-terrace / semi-detached house)"
+    ],
+    [
+     "Three or more dwellings, or a dwelling in a building with other uses",
+     "appartement (apartment)"
+    ]
+   ]
+  },
+  {
+   "type": "h2",
+   "text": "18. Step 13 - Value a dwelling"
+  },
+  {
+   "type": "p",
+   "text": "buurt reference value = buurt avg WOZ (2025) x gemeente WOZ growth 2025-2026 x (price ratio of the dwelling type / buurt mix ratio). This is the expected WOZ of a typical dwelling of that type in that buurt."
+  },
+  {
+   "type": "p",
+   "text": "size factor = (floor area / typical floor area of the type in the gemeente) ^ elasticity, with elasticity 0.9 for smaller and 0.7 for larger dwellings, limited to 0.3 - 2. The typical area of the type is scaled to the gemeente with the CBS average floor area of its dwellings."
+  },
+  {
+   "type": "p",
+   "text": "dwelling value = buurt reference value x size factor x age factor"
+  },
+  {
+   "type": "table",
+   "head": [
+    "Dwelling type",
+    "CBS avg sale price",
+    "Price ratio",
+    "Typical floor area"
+   ],
+   "rows": [
+    [
+     "tussenwoning (terraced house)",
+     "€ 470,127",
+     "0.980",
+     "115 m2"
+    ],
+    [
+     "hoekwoning (end-of-terrace house)",
+     "€ 490,011",
+     "1.022",
+     "118 m2"
+    ],
+    [
+     "2-onder-1-kapwoning (semi-detached house)",
+     "€ 526,955",
+     "1.099",
+     "134 m2"
+    ],
+    [
+     "vrijstaande woning (detached house)",
+     "€ 709,651",
+     "1.480",
+     "183 m2"
+    ],
+    [
+     "appartement (apartment)",
+     "€ 394,258",
+     "0.822",
+     "70 m2"
+    ],
+    [
+     "All dwellings",
+     "€ 479,527",
+     "1.000",
+     "107 m2"
+    ]
+   ]
+  },
+  {
+   "type": "table",
+   "head": [
+    "Source",
+    "What is used",
+    "Period"
+   ],
+   "rows": [
+    [
+     "CBS 85791NED",
+     "Bestaande koopwoningen (existing owner-occupied homes): gemiddelde verkoopprijs (average sale price) per woningtype (dwelling type)",
+     "2025"
+    ],
+    [
+     "CBS 85140NED",
+     "Typical floor area per woningtype (dwelling type) = gemiddelde aardgaslevering (average gas delivery) / aardgas per m2 (gas per m2)",
+     "2025"
+    ],
+    [
+     "CBS 82550NED",
+     "Gemiddelde oppervlakte (average floor area) of the dwelling stock per gemeente and for the Netherlands",
+     "2026"
+    ]
+   ]
+  },
+  {
+   "type": "h2",
+   "text": "19. Step 14 - Value another unit"
+  },
+  {
+   "type": "p",
+   "text": "value = floor area x gemeente (municipality) price per m2 x location index x type factor x size factor x age factor"
+  },
+  {
+   "type": "li",
+   "text": "Gemeente price per m2: CBS average WOZ of dwellings / CBS average floor area, WOZ year 2026 (as Method 1)."
+  },
+  {
+   "type": "li",
+   "text": "Type factor: the factor of the unit's own gebruiksdoel (use); a unit with several uses gets their mean."
+  },
+  {
+   "type": "li",
+   "text": "Size factor: (floor area / 500 m2) ^ -0.1, limited to 0.6 - 1.2: larger units are worth less per m2."
+  },
+  {
+   "type": "table",
+   "head": [
+    "BAG gebruiksdoel (use)",
+    "Type factor"
+   ],
+   "rows": [
+    [
+     "woonfunctie (residential)",
+     "1.00"
+    ],
+    [
+     "winkelfunctie (retail)",
+     "0.90"
+    ],
+    [
+     "kantoorfunctie (office)",
+     "0.75"
+    ],
+    [
+     "logiesfunctie (lodging / hotel)",
+     "0.75"
+    ],
+    [
+     "gezondheidszorgfunctie (healthcare)",
+     "0.70"
+    ],
+    [
+     "bijeenkomstfunctie (assembly)",
+     "0.60"
+    ],
+    [
+     "celfunctie (detention)",
+     "0.60"
+    ],
+    [
+     "onderwijsfunctie (education)",
+     "0.55"
+    ],
+    [
+     "sportfunctie (sports)",
+     "0.45"
+    ],
+    [
+     "industriefunctie (industrial)",
+     "0.35"
+    ],
+    [
+     "overige gebruiksfunctie (other use)",
+     "0.25"
+    ]
+   ]
+  },
+  {
+   "type": "h2",
+   "text": "20. Step 15 - Age factor and total"
+  },
+  {
+   "type": "p",
+   "text": "Every unit gets the age factor of the band that contains the bouwjaar (year built) of the building. The building value is the sum of its units, rounded to the nearest € 1,000."
+  },
+  {
+   "type": "table",
+   "head": [
+    "Bouwjaar (year built) band",
+    "Age factor"
+   ],
+   "rows": [
+    [
+     "before 1906",
+     "1.00"
+    ],
+    [
+     "1906-1944",
+     "1.00"
+    ],
+    [
+     "1945-1964",
+     "0.90"
+    ],
+    [
+     "1965-1974",
+     "0.88"
+    ],
+    [
+     "1975-1994",
+     "0.93"
+    ],
+    [
+     "1995-2014",
+     "1.03"
+    ],
+    [
+     "2015-2026",
+     "1.10"
+    ]
+   ]
+  },
+  {
+   "type": "h2",
+   "text": "21. Missing data in the WOZ estimate"
+  },
+  {
+   "type": "table",
+   "head": [
+    "Missing input",
+    "Replaced by"
+   ],
+   "rows": [
+    [
+     "Address not in PDOK",
+     "Postal code; else the gemeente (municipality) of Method 1"
+    ],
+    [
+     "Buurt (neighbourhood) figures",
+     "Wijk (district); else gemeente (municipality)"
+    ],
+    [
+     "Bouwjaar (year built)",
+     "Age factor 1.00"
+    ],
+    [
+     "Verblijfsobjecten (units)",
+     "The whole building as one unit with the building's gebruiksdoel (use)"
+    ],
+    [
+     "Perimeter (for the dwelling type)",
+     "tussenwoning (terraced house)"
+    ]
+   ]
+  },
+  {
+   "type": "h2",
+   "text": "22. Our own assumptions for the WOZ estimate"
+  },
+  {
+   "type": "table",
+   "head": [
+    "ID",
+    "Assumption",
+    "Value used",
+    "Why it is needed"
+   ],
+   "rows": [
+    [
+     "C1",
+     "The buurt (neighbourhood) average WOZ, corrected for its dwelling mix, measures the location",
+     "CBS 86165NED (2025)",
+     "No per-building price is available; the buurt is the finest official level"
+    ],
+    [
+     "C2",
+     "Buurt figures of 2025 move with the gemeente (municipality) to 2026",
+     "Gemeente WOZ growth",
+     "CBS has no buurt figures for 2026 yet"
+    ],
+    [
+     "C3",
+     "The national sale-price ratio of a dwelling type holds in every buurt",
+     "CBS 85791NED (2025)",
+     "WOZ per dwelling type is not published"
+    ],
+    [
+     "C4",
+     "Typical floor area per dwelling type = average gas / gas per m2",
+     "CBS 85140NED (2025)",
+     "Floor area per dwelling type is not published directly"
+    ],
+    [
+     "C5",
+     "The party-wall share of the 3DBAG outline gives the dwelling type",
+     "< 0.05 detached, >= 0.45 terraced",
+     "BAG does not register the dwelling type"
+    ],
+    [
+     "C6",
+     "Dwelling value grows less than proportionally with floor area",
+     "elasticity 0.9 (smaller) / 0.7 (larger)",
+     "Larger dwellings are worth less per m2"
+    ],
+    [
+     "C7",
+     "A residential unit over 400 m2 is not a single dwelling",
+     "Valued per m2",
+     "Care homes and student housing are often one unit"
+    ],
+    [
+     "C8",
+     "Other units: the gebruiksdoel (use) type factors of Method 1",
+     "11 factors, 0.25 - 1.00",
+     "CBS gives the price level for dwellings only"
+    ],
+    [
+     "C9",
+     "Larger non-residential units are worth less per m2",
+     "elasticity -0.1, reference 500 m2",
+     "Large halls and complexes sell for less per m2"
+    ],
+    [
+     "C10",
+     "BAG floor area is used unless it is more than 2 x the 3DBAG BVO",
+     "Capped at 2 x BVO",
+     "Units of another building can be registered on this one"
+    ],
+    [
+     "C11",
+     "Age changes the value per m2",
+     "7 bands, as Method 1",
+     "Newer buildings are usually valued higher"
+    ],
+    [
+     "C12",
+     "The building is valued as it stands, in use; land is included through the price level",
+     "No sloop (demolition) discount",
+     "WOZ includes land; the CBS averages do too"
+    ]
+   ]
+  },
+  {
+   "type": "h2",
+   "text": "23. Worked example - one building from geometry to WOZ"
   },
   {
    "type": "p",
@@ -1933,7 +2603,7 @@
   },
   {
    "type": "h3",
-   "text": "12.1 Measured"
+   "text": "23.1 Measured"
   },
   {
    "type": "table",
@@ -1987,7 +2657,7 @@
   },
   {
    "type": "h3",
-   "text": "12.2 Derived"
+   "text": "23.2 Derived"
   },
   {
    "type": "p",
@@ -2027,7 +2697,7 @@
   },
   {
    "type": "h3",
-   "text": "12.3 Mass per building part"
+   "text": "23.3 Mass per building part"
   },
   {
    "type": "p",
@@ -2190,7 +2860,7 @@
   },
   {
    "type": "h3",
-   "text": "12.4 Mass and CO2 per detailed material"
+   "text": "23.4 Mass and CO2 per detailed material"
   },
   {
    "type": "p",
@@ -2299,7 +2969,7 @@
   },
   {
    "type": "h3",
-   "text": "12.5 Result in 7 materials"
+   "text": "23.5 Result in 7 materials"
   },
   {
    "type": "table",
@@ -2327,7 +2997,7 @@
     [
      "Concrete (beton)",
      "138.621",
-     "16.635"
+     "27.635"
     ],
     [
      "Glass (glas)",
@@ -2352,8 +3022,73 @@
    ]
   },
   {
+   "type": "h3",
+   "text": "23.6 Estimated WOZ Value"
+  },
+  {
+   "type": "table",
+   "head": [
+    "Step",
+    "Value"
+   ],
+   "rows": [
+    [
+     "pand_id (building ID)",
+     "0310100000664117"
+    ],
+    [
+     "Verblijfsobjecten (units)",
+     "1 unit, woonfunctie (residential), 137 m2"
+    ],
+    [
+     "Floor area check",
+     "BAG 137 m2 vs 3DBAG BVO 173 m2 -> BAG area used"
+    ],
+    [
+     "Buurt (neighbourhood)",
+     "De Leijen (BU03100505), gemeente (municipality) De Bilt"
+    ],
+    [
+     "CBS avg WOZ 2025: buurt / gemeente",
+     "€ 482,000 / € 608,000"
+    ],
+    [
+     "Dwelling mix ratio: buurt / gemeente",
+     "0.9438 / 1.0089"
+    ],
+    [
+     "Location index",
+     "(€ 482,000 / 0.9438) / (€ 608,000 / 1.0089) = 0.847"
+    ],
+    [
+     "Party-wall share -> dwelling type",
+     "25.7 m / 38.8 m = 0.661 -> tussenwoning (terraced house)"
+    ],
+    [
+     "Buurt reference value",
+     "€ 482,000 x 1.1086 x (0.9804 / 0.9438) = € 555,040"
+    ],
+    [
+     "Size factor",
+     "(137 m2 / 125.2 m2) ^ 0.7 = 1.065"
+    ],
+    [
+     "Bouwjaar (year built) -> age factor",
+     "1988 (1975-1994) -> 0.93"
+    ],
+    [
+     "Estimated WOZ Value (Method 2)",
+     "€ 555,040 x 1.065 x 0.93 = € 549,848 -> € 550,000"
+    ]
+   ]
+  },
+  {
+   "type": "p",
+   "text": "The calculation keeps full precision; the factors above are rounded, so a hand check can differ by a few hundred euros before the final rounding."
+  },
+  {
    "type": "h2",
-   "text": "13. Data quality flags"
+   "text": "24. Data quality flags"
   },
   {
    "type": "p",
@@ -2408,8 +3143,16 @@
    "text": "468 buildings have no flags; together they hold 119,021 t and 26,558 t CO2e."
   },
   {
+   "type": "p",
+   "text": "For the WOZ estimate, 41 buildings have a BAG floor area of more than 2 x their 3DBAG gross floor area; their floor area is capped (section 14)."
+  },
+  {
    "type": "h2",
-   "text": "14. Results per profile"
+   "text": "25. Results"
+  },
+  {
+   "type": "h3",
+   "text": "25.1 Material and CO2 per profile"
   },
   {
    "type": "table",
@@ -2564,8 +3307,59 @@
    ]
   },
   {
+   "type": "h3",
+   "text": "25.2 Estimated WOZ Value per dwelling type"
+  },
+  {
+   "type": "table",
+   "head": [
+    "Dwelling type",
+    "Buildings",
+    "Sum of estimates",
+    "Median estimate"
+   ],
+   "rows": [
+    [
+     "vrijstaande woning (detached house)",
+     "326",
+     "€ 184,472,000",
+     "€ 510,500"
+    ],
+    [
+     "hoekwoning / 2-onder-1-kapwoning (end-of-terrace / semi-detached house)",
+     "265",
+     "€ 147,018,000",
+     "€ 430,000"
+    ],
+    [
+     "tussenwoning (terraced house)",
+     "80",
+     "€ 30,902,000",
+     "€ 366,500"
+    ],
+    [
+     "appartement (apartment)",
+     "117",
+     "€ 1,041,307,000",
+     "€ 2,701,000"
+    ],
+    [
+     "No dwelling (non-residential)",
+     "294",
+     "€ 2,268,834,000",
+     "€ 1,487,500"
+    ],
+    [
+     "Total",
+     "1,082",
+     "€ 3,672,533,000",
+     "€ 584,500"
+    ]
+   ]
+  },
+  {
    "type": "h2",
-   "text": "15. Database output"
+   "text": "26. Database output"
   },
   {
    "type": "p",
@@ -2617,8 +3411,16 @@
    "text": "SELECT pand_id, city, steel_tonnes, concrete_tonnes, total_co2_tonnes FROM material_estimation_geometry ORDER BY total_co2_tonnes DESC;"
   },
   {
+   "type": "p",
+   "text": "The Estimated WOZ Value is stored in table public.method_2 (one row per building), in the est_woz_* columns: value, label, reference year, gemeente, buurt, location index, CBS averages, dwelling type, party-wall share, floor area and its source, number of units, dwelling and other value, age factor, value per m2, imputed inputs, and est_woz_assumptions (JSON with the calculation of every unit). Re-running dataset/estimate_woz_method2.py recalculates them."
+  },
+  {
    "type": "h2",
-   "text": "16. Limits"
+   "text": "27. Limits"
+  },
+  {
+   "type": "h3",
+   "text": "27.1 Material and CO2"
   },
   {
    "type": "li",
@@ -2641,8 +3443,36 @@
    "text": "Emission factors are one coarse value per reported material group (8.7); replace with Nationale Milieudatabase values for official reporting."
   },
   {
+   "type": "h3",
+   "text": "27.2 Estimated WOZ Value"
+  },
+  {
+   "type": "li",
+   "text": "It is a model estimate, not an official WOZ value; no official WOZ value was used to check it."
+  },
+  {
+   "type": "li",
+   "text": "Buurt figures are averages. Condition, finish, plot size, monument status and energy label of the individual building are not included."
+  },
+  {
+   "type": "li",
+   "text": "The dwelling type from party walls cannot tell an end-of-terrace house from a semi-detached house; both use their mean."
+  },
+  {
+   "type": "li",
+   "text": "Non-residential units use the price level of dwellings with a type factor; for industry, healthcare and education this is the least certain part."
+  },
+  {
+   "type": "li",
+   "text": "The size elasticities, the 400 m2 dwelling limit and the 2 x BVO cap are our own choices (C6, C7, C10)."
+  },
+  {
    "type": "h2",
-   "text": "17. Comparison with the previous method"
+   "text": "28. Comparison with the previous method"
+  },
+  {
+   "type": "h3",
+   "text": "28.1 Material and CO2"
   },
   {
    "type": "p",
@@ -2684,33 +3514,42 @@
    "text": "This method is based on each building's own measured size, so a large building gets more material and a small one less. Both methods now use the same emission factors (8.7), so the whole CO2 difference comes from the material quantities. Both columns cover the same 1,081 notice buildings, so this method reads 1,800,432 t and 393,500 t CO2e here, without Jan Provostlaan 16."
   },
   {
-   "type": "h2",
-   "text": "18. Change log"
+   "type": "h3",
+   "text": "28.2 Estimated WOZ Value: Method 2 vs Method 1"
   },
   {
    "type": "table",
    "head": [
-    "Date",
-    "Change",
-    "Effect"
+    "",
+    "Method 1",
+    "Method 2"
    ],
    "rows": [
     [
-     "22 September 2026",
-     "First version: 1,081 demolition buildings from 3DBAG geometry.",
-     "1,800,432 t material, 447,543 t CO2e"
+     "Basis",
+     "BAG floor area x gemeente price per m2 x type x age",
+     "Each unit: buurt value of its dwelling type x size x age, or price per m2 for other units"
     ],
     [
-     "22 September 2026",
-     "Jan Provostlaan 16 added as building 1,082; the input file became 3dbag_input_1082.json.",
-     "+177 t material, +37 t CO2e"
+     "Sum of estimates",
+     "€ 4,200,304,000",
+     "€ 3,672,533,000"
     ],
     [
-     "23 September 2026",
-     "Emission factors simplified to one value per reported material group (section 8.7); mass, geometry and build-up unchanged. Mass and CO2 per detailed material are now also stored in tonnes.",
-     "1,800,610 t material, 393,535 t CO2e (-12% CO2)"
+     "Median estimate",
+     "€ 598,500",
+     "€ 584,500"
+    ],
+    [
+     "Jan Provostlaan 16",
+     "€ 656,000",
+     "€ 550,000"
     ]
    ]
+  },
+  {
+   "type": "p",
+   "text": "Method 2 differs from Method 1 where it has better information: the buurt instead of the gemeente, the dwelling type, a size effect, and a separate value for each unit of a mixed-use building."
   }
  ]
 }
