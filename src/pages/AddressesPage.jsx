@@ -1,8 +1,6 @@
-import { useId, useState } from "react";
-import { ChevronIcon, PinIcon } from "../components/Icons";
+import { PinIcon } from "../components/Icons";
 import Highlight from "../components/list/Highlight";
 import ListPage from "../components/list/ListPage";
-import WozMethod2 from "../components/WozMethod2";
 import { formatEuro } from "../lib/format";
 
 const FIELDS = [
@@ -15,10 +13,6 @@ const FIELDS = [
 // Address, House number, Postal code, City and the Method 2 Estimated WOZ
 // Value of the building (method_2.est_woz_value_eur, matched on pand_id)
 function AddressRow({ address, search }) {
-  const [showWoz, setShowWoz] = useState(false);
-  const detailsId = useId();
-  const woz = address.estimated_woz;
-
   return (
     <>
       <span className="record__icon record__icon--pin" aria-hidden="true">
@@ -44,29 +38,9 @@ function AddressRow({ address, search }) {
 
         <div className="address-field address-field--woz">
           <dt className="record__label">WOZ Estimation (Method 2)</dt>
-          <dd>
-            {formatEuro(address.est_woz_value_eur)}
-            {woz && (
-              <button
-                type="button"
-                className={`woz-toggle${showWoz ? " woz-toggle--open" : ""}`}
-                aria-expanded={showWoz}
-                aria-controls={detailsId}
-                onClick={() => setShowWoz((open) => !open)}
-              >
-                Details
-                <ChevronIcon />
-              </button>
-            )}
-          </dd>
+          <dd>{formatEuro(address.est_woz_value_eur)}</dd>
         </div>
       </dl>
-
-      {woz && showWoz && (
-        <div className="record__details" id={detailsId}>
-          <WozMethod2 woz={woz} />
-        </div>
-      )}
     </>
   );
 }
