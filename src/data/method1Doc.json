@@ -21,8 +21,7 @@
   "18. Worked example - one building from floor area to WOZ",
   "19. Validation",
   "20. Results - Estimated WOZ Value per building type",
-  "21. Limits",
-  "22. Comparison with Method 2"
+  "21. Limits"
  ],
  "blocks": [
   {
@@ -203,7 +202,7 @@
   },
   {
    "type": "p",
-   "text": "Method 1 uses no geometry: two buildings with the same floor area, type and age get the same material estimate, whatever their shape. Method 2 is the geometry-based estimate and is described in its own document; section 22 compares the two."
+   "text": "Method 1 uses no geometry: two buildings with the same floor area, type and age get the same material estimate, whatever their shape. Method 2 is the geometry-based estimate and is described in its own document."
   },
   {
    "type": "p",
@@ -1186,7 +1185,7 @@
      "42.09",
      "21.75",
      "19.52",
-     "22.18"
+     "15.18"
     ],
     [
      "Beton",
@@ -1239,10 +1238,10 @@
     ],
     [
      "Overig",
-     "22.71",
-     "22.71",
-     "22.71",
-     "22.71"
+     "15.71",
+     "15.71",
+     "15.71",
+     "15.71"
     ],
     [
      "Totaal",
@@ -1325,10 +1324,10 @@
     ],
     [
      "Glas",
-     "22.18",
-     "22.18",
-     "22.18",
-     "22.18"
+     "15.18",
+     "15.18",
+     "15.18",
+     "15.18"
     ],
     [
      "Keramiek",
@@ -2199,100 +2198,6 @@
   {
    "type": "li",
    "text": "Condition, finish, plot size, monument status and energy label are not included."
-  },
-  {
-   "type": "h2",
-   "text": "22. Comparison with Method 2"
-  },
-  {
-   "type": "h3",
-   "text": "22.1 Material and CO2"
-  },
-  {
-   "type": "p",
-   "text": "Method 2 measures each building's surfaces and volume in 3DBAG and applies a construction build-up per building part. Both cover the same 1,082 buildings."
-  },
-  {
-   "type": "table",
-   "head": [
-    "",
-    "Method 1 (this document)",
-    "Method 2"
-   ],
-   "rows": [
-    [
-     "Basis",
-     "Floor area (GO) x B2 intensity",
-     "3DBAG geometry x construction build-up"
-    ],
-    [
-     "Measured input",
-     "GO, building type, year built",
-     "Footprint, wall and roof areas, volume, plus GO"
-    ],
-    [
-     "Materials reported",
-     "13",
-     "7"
-    ],
-    [
-     "Total mass (t)",
-     "4,335,383",
-     "1,800,610"
-    ],
-    [
-     "Total CO2e (t)",
-     "1,874,724",
-     "393,535"
-    ],
-    [
-     "Mass per m2 GO",
-     "2,043 kg",
-     "about 1,000 kg per m2 BVO for a 1970-2000 house"
-    ]
-   ]
-  },
-  {
-   "type": "p",
-   "text": "Method 1 gives about 2.4 times the mass of Method 2. The difference sits almost entirely in 'Overige constructie mineralen', which B2 counts at 1,400 kg/m2 for a 1970-2000 house and Method 2 does not model as a separate group at all."
-  },
-  {
-   "type": "h3",
-   "text": "22.2 Estimated WOZ Value"
-  },
-  {
-   "type": "table",
-   "head": [
-    "",
-    "Method 1 (this document)",
-    "Method 2"
-   ],
-   "rows": [
-    [
-     "Basis",
-     "BAG floor area x gemeente price per m2 x type x age",
-     "Each unit: buurt value of its dwelling type x size x age, or price per m2 for other units"
-    ],
-    [
-     "Sum of estimates",
-     "€ 4,200,304,000",
-     "€ 3,672,533,000"
-    ],
-    [
-     "Median estimate",
-     "€ 598,500",
-     "€ 584,500"
-    ],
-    [
-     "Jan Provostlaan 16",
-     "€ 656,000",
-     "€ 550,000"
-    ]
-   ]
-  },
-  {
-   "type": "p",
-   "text": "Method 2 uses the buurt (neighbourhood) instead of the gemeente, the dwelling type from 3DBAG, a size effect and a separate value for each unit of a mixed-use building."
   }
  ]
 }
