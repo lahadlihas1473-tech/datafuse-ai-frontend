@@ -27,6 +27,7 @@
   --accent-hover: #0b4759;
   --accent-soft: #e7f0f3;
   --accent-line: #a7c6d1;
+  --on-accent: #ffffff;
 
   /* Status */
   --warn: #8a5300;
@@ -35,6 +36,10 @@
   --danger: #b3261e;
   --danger-soft: #fcecea;
   --danger-line: #efb9b3;
+  --danger-ink: #7d1a14;
+
+  /* Search-term highlight */
+  --mark: #fff0b3;
 
   /* Type */
   --font-sans: "IBM Plex Sans", "Segoe UI", system-ui, -apple-system,
@@ -54,6 +59,45 @@
   --header-height: 104px;
 
   color-scheme: light;
+}
+
+/* Dark theme: same structure, darker surfaces, lighter text and a lighter
+   accent so it keeps its contrast. Set by the theme button in the header
+   (data-theme="dark" on <html>, saved in localStorage). */
+:root[data-theme="dark"] {
+  --bg: #111417;
+  --surface: #181c20;
+  --surface-2: #1e2328;
+  --surface-3: #262c32;
+
+  --line: #2b3238;
+  --line-2: #363e46;
+  --line-3: #4b545d;
+
+  --ink: #e5e8eb;
+  --ink-2: #b4bbc2;
+  --ink-3: #8c959e;
+
+  --accent: #62b0cc;
+  --accent-hover: #82c3da;
+  --accent-soft: rgba(98, 176, 204, 0.14);
+  --accent-line: #2f6477;
+  --on-accent: #0c1418;
+
+  --warn: #e3b562;
+  --warn-soft: rgba(227, 181, 98, 0.12);
+  --warn-line: #6b5427;
+  --danger: #f08b81;
+  --danger-soft: rgba(240, 139, 129, 0.12);
+  --danger-line: #7a3a33;
+  --danger-ink: #f6b4ad;
+
+  --mark: rgba(255, 214, 102, 0.3);
+
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.3);
+  --shadow-pop: 0 6px 18px rgba(0, 0, 0, 0.45);
+
+  color-scheme: dark;
 }
 
 /* =========================================================

@@ -76,7 +76,7 @@
 
 mark {
   border-radius: 2px;
-  background: #fff0b3;
+  background: var(--mark);
   color: inherit;
 }
 
@@ -113,7 +113,7 @@ mark {
 
 .logo-mark path {
   fill: none;
-  stroke: #fff;
+  stroke: var(--on-accent);
   stroke-width: 2;
   stroke-linejoin: round;
 }
@@ -129,6 +129,31 @@ mark {
   border-left: 1px solid var(--line-2);
   color: var(--ink-3);
   font-size: 13px;
+}
+
+/* One button: moon in the light theme, sun in the dark theme */
+.theme-toggle {
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  margin-left: auto;
+  border: 1px solid var(--line-2);
+  border-radius: var(--r-md);
+  background: var(--surface);
+  color: var(--ink-2);
+  cursor: pointer;
+}
+
+.theme-toggle .icon {
+  width: 17px;
+  height: 17px;
+}
+
+.theme-toggle:hover {
+  border-color: var(--line-3);
+  background: var(--surface-2);
+  color: var(--ink);
 }
 
 .nav {
@@ -260,7 +285,7 @@ mark {
   border: 1px solid var(--accent);
   border-radius: var(--r-md);
   background: var(--accent);
-  color: #fff;
+  color: var(--on-accent);
   font-size: 14px;
   font-weight: 500;
   text-decoration: none;
@@ -315,8 +340,9 @@ mark {
 .spinner {
   width: 14px;
   height: 14px;
-  border: 2px solid rgba(255, 255, 255, 0.45);
-  border-top-color: #fff;
+  border: 2px solid transparent;
+  border-top-color: currentColor;
+  border-right-color: currentColor;
   border-radius: 50%;
   animation: spin 0.8s linear infinite;
 }
@@ -589,7 +615,7 @@ mark {
   border: 1px solid var(--danger-line);
   border-radius: var(--r-md);
   background: var(--danger-soft);
-  color: #7d1a14;
+  color: var(--danger-ink);
   font-size: 13.5px;
 }
 
@@ -1574,7 +1600,7 @@ mark {
 .page-button--active:hover:not(:disabled) {
   border-color: var(--accent);
   background: var(--accent);
-  color: #fff;
+  color: var(--on-accent);
 }
 
 .pagination__gap {

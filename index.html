@@ -5,6 +5,17 @@
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="theme-color" content="#ffffff" />
+    <script>
+      // Apply the saved theme before the first paint (see ThemeToggle.jsx)
+      try {
+        if (localStorage.getItem("resource-paspoort-theme") === "dark") {
+          document.documentElement.setAttribute("data-theme", "dark");
+          document.querySelector('meta[name="theme-color"]').setAttribute("content", "#181c20");
+        }
+      } catch (error) {
+        // Storage unavailable: stay in the light theme
+      }
+    </script>
     <title>Resource Paspoort — Material &amp; CO₂ Building Passport</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />

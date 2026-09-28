@@ -8,6 +8,7 @@ import {
   PinIcon,
   RulerIcon,
 } from "./Icons";
+import ThemeToggle from "./ThemeToggle";
 
 // `end` keeps a method page inactive while its documentation is open
 const NAV_ITEMS = [
@@ -30,6 +31,7 @@ export default function Header() {
             <span className="brand__name">Resource Paspoort</span>
           </Link>
           <span className="brand__subtitle">Material &amp; CO₂ Building Passport</span>
+          <ThemeToggle />
         </div>
       </div>
 

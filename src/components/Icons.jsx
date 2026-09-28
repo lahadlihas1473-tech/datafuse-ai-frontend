@@ -130,6 +130,20 @@ export const SortIcon = ({ direction, ...props }) => (
   </Icon>
 );
 
+// Theme button: moon while light (switch to dark), sun while dark
+export const MoonIcon = (props) => (
+  <Icon {...props}>
+    <path d="M19.5 14.2A7.5 7.5 0 0 1 9.8 4.5a7.5 7.5 0 1 0 9.7 9.7Z" />
+  </Icon>
+);
+
+export const SunIcon = (props) => (
+  <Icon {...props}>
+    <circle cx="12" cy="12" r="3.8" />
+    <path d="M12 3v2M12 19v2M3 12h2M19 12h2M5.6 5.6l1.4 1.4M17 17l1.4 1.4M5.6 18.4 7 17M17 7l1.4-1.4" />
+  </Icon>
+);
+
 export function LogoMark() {
   return (
     <svg className="logo-mark" viewBox="0 0 32 32" aria-hidden="true">
