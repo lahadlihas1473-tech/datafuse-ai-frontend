@@ -51,28 +51,35 @@ export default function PassportPage({ building }) {
       )}
 
       {!result && !loading && !error && (
-        <section className="section section--intro">
-          <div className="section__body">
-            <h2 className="section__title">What the passport shows</h2>
-            <ul className="intro-list">
-              <li>
-                <strong>Building information</strong> — address, year built,
-                building type and identifiers from BAG.
-              </li>
-              <li>
-                <strong>Geometry and measurements</strong> — surfaces, volume,
-                height and floor areas from 3DBAG.
-              </li>
-              <li>
-                <strong>Material and CO₂ estimation</strong> — mass and embodied
-                carbon per material, from Method 1 and Method 2.
-              </li>
-              <li>
-                <strong>WOZ estimation</strong> — the estimated WOZ value of
-                both methods; a model estimate, not an official WOZ value.
-              </li>
-            </ul>
-          </div>
+        <section className="intro" aria-labelledby="intro-title">
+          <h2 className="intro__title" id="intro-title">What the passport shows</h2>
+          <ul className="intro-list">
+            <li className="intro-card">
+              <strong className="intro-card__title">Building information</strong>
+              <span className="intro-card__text">
+                Address, year built, building type and identifiers from BAG.
+              </span>
+            </li>
+            <li className="intro-card">
+              <strong className="intro-card__title">Geometry and measurements</strong>
+              <span className="intro-card__text">
+                Surfaces, volume, height and floor areas from 3DBAG.
+              </span>
+            </li>
+            <li className="intro-card">
+              <strong className="intro-card__title">Material and CO₂ estimation</strong>
+              <span className="intro-card__text">
+                Mass and embodied carbon per material, from Method 1 and Method 2.
+              </span>
+            </li>
+            <li className="intro-card">
+              <strong className="intro-card__title">WOZ estimation</strong>
+              <span className="intro-card__text">
+                The estimated WOZ value of both methods; a model estimate, not an
+                official WOZ value.
+              </span>
+            </li>
+          </ul>
         </section>
       )}
     </>

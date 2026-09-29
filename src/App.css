@@ -174,7 +174,9 @@ mark {
 
 .nav__inner {
   display: flex;
-  gap: 4px;
+  gap: 2px;
+  /* The first link's icon lines up with the content edge */
+  padding-left: calc(var(--gutter) - 12px);
   overflow-x: auto;
   scrollbar-width: none;
 }
@@ -188,7 +190,7 @@ mark {
   flex: none;
   align-items: center;
   gap: 7px;
-  padding: 11px 10px 9px;
+  padding: 12px 12px 10px;
   border-bottom: 2px solid transparent;
   color: var(--ink-2);
   font-size: 13.5px;
@@ -230,7 +232,7 @@ mark {
   align-items: flex-end;
   justify-content: space-between;
   gap: 12px 24px;
-  margin: 28px 0 18px;
+  margin: 28px 0 20px;
 }
 
 .page-head__text {
@@ -417,7 +419,7 @@ mark {
 /* ---------- Search ---------- */
 
 .search-panel {
-  padding: 16px 18px;
+  padding: 20px 22px;
   border: 1px solid var(--line);
   border-radius: var(--r-lg);
   background: var(--surface);
@@ -426,22 +428,29 @@ mark {
 
 .search-form__label {
   display: block;
-  margin-bottom: 6px;
-  font-size: 13px;
+  margin-bottom: 8px;
+  font-size: 13.5px;
   font-weight: 600;
 }
 
 .search-form__row {
   display: flex;
-  gap: 8px;
+  align-items: stretch;
+  gap: 10px;
+}
+
+.search-form__row .search {
+  height: 44px;
 }
 
 .search-form__row .button {
-  height: 40px;
+  flex: none;
+  min-width: 120px;
+  height: 44px;
 }
 
 .search-form__hint {
-  margin-top: 6px;
+  margin-top: 8px;
   color: var(--ink-3);
   font-size: 12.5px;
 }
@@ -552,46 +561,52 @@ mark {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 6px 12px;
-  margin-top: 12px;
-  padding-top: 12px;
-  border-top: 1px solid var(--line);
+  gap: 8px 12px;
+  margin-top: 14px;
   font-size: 13px;
 }
 
 .recent__title {
   color: var(--ink-3);
+  font-size: 12.5px;
 }
 
 .recent__list {
   display: flex;
   flex-wrap: wrap;
-  gap: 4px 14px;
+  gap: 6px;
   margin: 0;
   padding: 0;
   list-style: none;
 }
 
+/* Compact pill: address + remove button */
 .recent__item {
   display: inline-flex;
   align-items: center;
   gap: 2px;
+  height: 26px;
+  padding: 0 3px 0 10px;
+  border: 1px solid var(--line-2);
+  border-radius: 13px;
+  background: var(--surface-2);
+}
+
+.recent__item:hover {
+  border-color: var(--line-3);
 }
 
 .recent__link {
   padding: 0;
   border: 0;
   background: none;
-  color: var(--accent);
-  font-size: 13px;
-  text-decoration: underline;
-  text-decoration-color: var(--accent-line);
-  text-underline-offset: 2px;
+  color: var(--ink-2);
+  font-size: 12.5px;
   cursor: pointer;
 }
 
 .recent__link:hover {
-  text-decoration-color: currentColor;
+  color: var(--accent);
 }
 
 .recent__remove {
@@ -600,7 +615,7 @@ mark {
   width: 20px;
   height: 20px;
   border: 0;
-  border-radius: var(--r-sm);
+  border-radius: 50%;
   background: none;
   color: var(--ink-3);
   cursor: pointer;
@@ -843,25 +858,50 @@ mark {
   font-weight: 600;
 }
 
-.section--intro {
-  margin-top: 16px;
+/* What the passport shows: four equal cards (4 / 2 / 1 columns) */
+.intro {
+  margin-top: 28px;
 }
 
-.section--intro .section__title {
-  margin-bottom: 8px;
+.intro__title {
+  margin-bottom: 12px;
+  color: var(--ink-2);
+  font-size: 14px;
+  font-weight: 600;
 }
 
 .intro-list {
   display: grid;
-  gap: 6px;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 16px;
   margin: 0;
-  padding-left: 18px;
-  color: var(--ink-2);
+  padding: 0;
+  list-style: none;
 }
 
-.intro-list strong {
+.intro-card {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+  padding: 16px 18px 18px;
+  border: 1px solid var(--line);
+  border-top: 2px solid var(--accent-line);
+  border-radius: var(--r-lg);
+  background: var(--surface);
+  box-shadow: var(--shadow-sm);
+}
+
+.intro-card__title {
   color: var(--ink);
+  font-size: 14px;
   font-weight: 600;
+}
+
+.intro-card__text {
+  color: var(--ink-2);
+  font-size: 13.5px;
+  line-height: 1.55;
 }
 
 .fields {
@@ -1857,6 +1897,12 @@ mark {
   }
 }
 
+@media (max-width: 960px) {
+  .intro-list {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
 @media (max-width: 900px) {
   .doc__layout {
     grid-template-columns: minmax(0, 1fr);
@@ -1989,6 +2035,24 @@ mark {
 
   .search-form__row {
     flex-direction: column;
+  }
+
+  /* In the column layout flex: 1 would squeeze the input's height */
+  .search-form__row .search {
+    flex: none;
+  }
+
+  .search-panel {
+    padding: 16px;
+  }
+
+  .intro {
+    margin-top: 20px;
+  }
+
+  .intro-list {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 10px;
   }
 
   .search-form__row .button {
