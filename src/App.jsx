@@ -6,6 +6,7 @@ import { useBuildingSearch } from "./hooks/useBuildingSearch";
 import { useMethod2Search } from "./hooks/useMethod2Search";
 import { usePassportSearch } from "./hooks/usePassportSearch";
 import AddressesPage from "./pages/AddressesPage";
+import AmsterdamGovernmentPage from "./pages/AmsterdamGovernmentPage";
 import Method1DocsPage from "./pages/Method1DocsPage";
 import Method1Page from "./pages/Method1Page";
 import Method2DocsPage from "./pages/Method2DocsPage";
@@ -46,6 +47,7 @@ function App() {
           <Route path="/method-2/docs" element={<Method2DocsPage />} />
           <Route path="/notices" element={<NoticesPage />} />
           <Route path="/addresses" element={<AddressesPage />} />
+          <Route path="/amsterdam-government" element={<AmsterdamGovernmentPage />} />
           <Route path="*" element={<NotFoundPage />} />
         </Routes>
       </main>

@@ -6,6 +6,7 @@ const LINKS = [
   { to: "/", label: "Passport" },
   { to: "/notices", label: "Notices" },
   { to: "/addresses", label: "Addresses" },
+  { to: "/amsterdam-government", label: "Amsterdam Government Buildings" },
   { to: "/method-1", label: "Method 1" },
   { to: "/method-1/docs", label: "Method 1 Documentation" },
   { to: "/method-2", label: "Method 2" },

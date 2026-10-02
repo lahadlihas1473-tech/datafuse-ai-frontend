@@ -1497,6 +1497,12 @@ mark {
   grid-template-columns: minmax(0, 2.2fr) minmax(0, 0.7fr) minmax(0, 0.8fr) minmax(0, 1.2fr);
 }
 
+.records__head--government,
+.records--government > .record {
+  grid-template-columns:
+    minmax(0, 2.2fr) minmax(0, 1.5fr) minmax(0, 0.7fr) minmax(0, 0.8fr) minmax(0, 0.8fr);
+}
+
 .records {
   margin: 0;
   padding: 0;
@@ -2007,14 +2013,16 @@ mark {
   }
 
   .records--notices > .record,
-  .records--addresses > .record {
+  .records--addresses > .record,
+  .records--government > .record {
     grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 8px 14px;
     padding: 12px 14px;
   }
 
   .cell--title,
-  .cell--street {
+  .cell--street,
+  .cell--building {
     grid-column: 1 / -1;
   }
 

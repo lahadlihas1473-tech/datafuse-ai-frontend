@@ -1,4 +1,5 @@
 import { useEffect } from "react";
+import { useSearchParams } from "react-router";
 import BuildingRecord from "../components/BuildingRecord";
 import SearchPanel from "../components/SearchPanel";
 import { PageHeader, RecordSkeleton } from "../components/ui";
@@ -17,9 +18,26 @@ export default function PassportPage({ building }) {
     removeRecentSearch,
   } = building;
 
+  const [searchParams, setSearchParams] = useSearchParams();
+
+  // ?address=… lets other pages link straight to a building's passport
+  const linkedAddress = searchParams.get("address");
+
   useEffect(() => {
     document.title = "Passport · Resource Paspoort";
   }, []);
+
+  useEffect(() => {
+    if (!linkedAddress) {
+      return;
+    }
+
+    setAddress(linkedAddress);
+    searchAddress(linkedAddress);
+    setSearchParams({}, { replace: true });
+    // Runs for a new ?address= only
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [linkedAddress]);
 
   return (
     <>

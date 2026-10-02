@@ -2,6 +2,7 @@ import { Link, NavLink } from "react-router";
 import {
   BookIcon,
   BuildingIcon,
+  GovernmentIcon,
   LayersIcon,
   LogoMark,
   NoticeIcon,
@@ -15,6 +16,11 @@ const NAV_ITEMS = [
   { to: "/", label: "Passport", icon: BuildingIcon, end: true },
   { to: "/notices", label: "Notices", icon: NoticeIcon },
   { to: "/addresses", label: "Addresses", icon: PinIcon },
+  {
+    to: "/amsterdam-government",
+    label: "Amsterdam Government Buildings",
+    icon: GovernmentIcon,
+  },
   { to: "/method-1", label: "Method 1", icon: LayersIcon, end: true },
   { to: "/method-1/docs", label: "Method 1 Documentation", icon: BookIcon },
   { to: "/method-2", label: "Method 2", icon: RulerIcon, end: true },

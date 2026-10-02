@@ -89,6 +89,14 @@ export const BuildingIcon = (props) => (
   </Icon>
 );
 
+// A public building: pediment, four columns and a base
+export const GovernmentIcon = (props) => (
+  <Icon {...props}>
+    <path d="M3.5 9 12 4l8.5 5h-17Z" />
+    <path d="M6 12v5.5M10 12v5.5M14 12v5.5M18 12v5.5M3.5 20.5h17M4.5 17.5h15" />
+  </Icon>
+);
+
 export const WeightIcon = (props) => (
   <Icon {...props}>
     <circle cx="12" cy="6" r="2.2" />
