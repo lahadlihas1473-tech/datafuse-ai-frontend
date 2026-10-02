@@ -27,7 +27,8 @@
   "24. Data quality flags",
   "25. Results - Estimated WOZ Value per dwelling type",
   "26. Limits",
-  "27. Comparison with the previous method"
+  "27. Comparison with the previous method",
+  "28. Amsterdam government buildings - floors estimated by us"
  ],
  "blocks": [
   {
@@ -3332,6 +3333,161 @@
   {
    "type": "p",
    "text": "Method 2 differs from Method 1 where it has better information: the buurt instead of the gemeente, the dwelling type, a size effect, and a separate value for each unit of a mixed-use building."
+  },
+  {
+   "type": "h2",
+   "text": "28. Amsterdam government buildings - floors estimated by us"
+  },
+  {
+   "type": "p",
+   "text": "On 2 October 2026, 13 City of Amsterdam (Gemeente Amsterdam) buildings were added: the city hall, the city and district offices, the City Archives and the GGD. 3DBAG gives no number of floors (bouwlagen) for any of them, because it only estimates floors for residential buildings of up to 5 floors. We therefore estimated the floors ourselves."
+  },
+  {
+   "type": "p",
+   "text": "Floors = volume_lod22 / (opp_grond x 2.8 m), rounded to a whole number, at least 1. This is volume / (footprint x storey height): the average number of floors over the whole footprint, with the 2.8 m storey height of the residential profiles."
+  },
+  {
+   "type": "table",
+   "head": [
+    "Building",
+    "Floors in 3DBAG",
+    "Floors we used",
+    "Volume / (footprint x 2.8)",
+    "Volume (m³)",
+    "Footprint (m²)",
+    "Height (m)"
+   ],
+   "rows": [
+    [
+     "Amstel 1, Amsterdam",
+     "—",
+     "6",
+     "6.23",
+     "356,231",
+     "20,424.0",
+     "31.8"
+    ],
+    [
+     "Jodenbreestraat 25, Amsterdam",
+     "—",
+     "7",
+     "6.63",
+     "96,118",
+     "5,181.3",
+     "25.7"
+    ],
+    [
+     "Weesperplein 8, Amsterdam",
+     "—",
+     "11",
+     "10.52",
+     "43,487",
+     "1,476.3",
+     "37.6"
+    ],
+    [
+     "Osdorpplein 946, Amsterdam",
+     "—",
+     "4",
+     "3.95",
+     "70,938",
+     "6,418.0",
+     "23.6"
+    ],
+    [
+     "Pieter Calandlaan 1, Amsterdam",
+     "—",
+     "7",
+     "6.78",
+     "61,284",
+     "3,226.9",
+     "44.8"
+    ],
+    [
+     "Buikslotermeerplein 2000, Amsterdam",
+     "—",
+     "7",
+     "6.74",
+     "34,907",
+     "1,851.0",
+     "30.4"
+    ],
+    [
+     "Oranje-Vrijstaatplein 2, Amsterdam",
+     "—",
+     "3",
+     "3.24",
+     "70,837",
+     "7,815.6",
+     "20.5"
+    ],
+    [
+     "Bos en Lommerplein 250, Amsterdam",
+     "—",
+     "7",
+     "7.42",
+     "88,567",
+     "4,260.7",
+     "26.8"
+    ],
+    [
+     "President Kennedylaan 923, Amsterdam",
+     "—",
+     "12",
+     "11.62",
+     "59,926",
+     "1,841.8",
+     "23.2"
+    ],
+    [
+     "Anton de Komplein 150, Amsterdam",
+     "—",
+     "7",
+     "7.17",
+     "53,167",
+     "2,649.3",
+     "31.9"
+    ],
+    [
+     "Nieuwstraat 70a, Weesp",
+     "—",
+     "3",
+     "3.38",
+     "5,143",
+     "543.9",
+     "11.3"
+    ],
+    [
+     "Vijzelstraat 32, Amsterdam",
+     "—",
+     "12",
+     "11.81",
+     "95,426",
+     "2,886.2",
+     "37.1"
+    ],
+    [
+     "Nieuwe Achtergracht 100, Amsterdam",
+     "—",
+     "7",
+     "6.80",
+     "21,674",
+     "1,137.7",
+     "26.1"
+    ]
+   ]
+  },
+  {
+   "type": "li",
+   "text": "These floors are our own estimate, not measured. Each record stores them with bouwlagen_source = 'ESTIMATED: volume_lod22 / (opp_grond x 2.8 m)'."
+  },
+  {
+   "type": "li",
+   "text": "The Method 2 material, CO2 and WOZ results do not change with this number: the gross floor area is volume / storey height of the building's profile (3.5-3.6 m for these non-residential profiles, section 7), and the BOUWLAGEN_MISSING flag stays, as 3DBAG has no storey count."
+  },
+  {
+   "type": "li",
+   "text": "For offices and public buildings, with storeys taller than 2.8 m, these counts can be too high: President Kennedylaan 923 is about 23 m tall, which fits about 8 floors, not 12."
   }
  ]
 }
